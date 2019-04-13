@@ -15,7 +15,7 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      auth: false,
+      auth: this.props.authenticated,
       anchorEl: null
     };
   }
@@ -33,10 +33,10 @@ class Header extends Component {
     return (
       <AppBar position="sticky">
         <Toolbar>
-          <Grid container spacing="8" wrap="nowrap" alignItems="center">
+          <Grid container spacing={8} wrap="nowrap" alignItems="center">
             <Grid item lg={2} md={2} sm={3}><Link to="/"><h2>Major Miner</h2></Link></Grid>
           {this.state.auth ? (
-            <Grid item lg={10} md={10} sm={9} container justify="flex-end" alignItems="center" spacing="16">
+            <Grid item lg={10} md={10} sm={9} container justify="flex-end" alignItems="center" spacing={16}>
               <Grid item lg={3} md={3} sm={4} xs={6}><h4>Score: XX</h4></Grid>
               <Grid item lg={3} md={3} sm={4} xs={6} className="account-button">
                 <IconButton

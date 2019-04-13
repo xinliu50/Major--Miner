@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { withRouter } from "react-router-dom";
+import app from "../base";
 import {
   Grid,
   Dialog,
@@ -27,11 +29,27 @@ class LoginForm extends Component {
     this.setState({ open: false });
   };
 
-  handleSubmit = event => {
+  handleKeyPress = event => {
+    if (event.key === 'Enter') {
+      document.getElementById("submitButton").click();
+    }
+  }
+
+  handleSubmit = async event => {
     event.preventDefault();
-    console.log(document.getElementById("username").value);
-    console.log(document.getElementById("password").value);
-    this.handleClose();
+    try {
+      const user = await app
+        .auth()
+        .signInWithEmailAndPassword(document.getElementById("email").value, document.getElementById("password").value);
+        console.log(user);
+        if (user) {
+          this.handleClose();
+          this.props.history.push("/main");
+        }
+    } catch (err) {
+      alert(err);
+    }
+    
   }
 
   render() {
@@ -46,23 +64,23 @@ class LoginForm extends Component {
         >
           <DialogTitle>Login</DialogTitle>
           <DialogContent>
-            <Grid container direction="column" spacing="16">
+            <Grid container direction="column" spacing={16}>
               <Grid item>
                 <FormControl margin="normal" fullWidth>
-                  <InputLabel>Username</InputLabel>
-                  <Input id="username" />
+                  <InputLabel>Email</InputLabel>
+                  <Input id="email" onKeyPress={this.handleKeyPress} />
                 </FormControl>
               </Grid>
               <Grid item>
                 <FormControl margin="normal" fullWidth>
                   <InputLabel>Password</InputLabel>
-                  <Input id="password" type="password" />
+                  <Input id="password" type="password" onKeyPress={this.handleKeyPress} />
                 </FormControl>
               </Grid>
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleSubmit}>Submit</Button>
+            <Button id="submitButton" onClick={this.handleSubmit}>Submit</Button>
           </DialogActions>
         </Dialog>
       </Grid>
@@ -70,4 +88,4 @@ class LoginForm extends Component {
   }
 }
 
-export default LoginForm;
+export default withRouter(LoginForm);

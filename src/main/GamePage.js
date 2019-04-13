@@ -11,25 +11,14 @@ import Send  from "@material-ui/icons/Send";
 import AudioAnalyser from "./AudioAnalyser";
 
 class GamePage extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      audio: null
-    };
-  }
-
   handleSubmit = () => {
     console.log(document.getElementById("tags").value);
     document.getElementById("tags").value = "";
   }
 
-  handleUpdateAudio = audio => {
-    this.setState({ audio });
-  }
-
   render() {
     return (
-      <Grid container className="game-container" direction="column" alignItems="center" spacing="16">
+      <Grid container className="game-container" direction="column" alignItems="center" spacing={16}>
         <Grid item>
           <h1>Describe this clip</h1>
         </Grid>

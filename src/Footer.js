@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 class Footer extends Component {
   render() {
     return (
-      <Grid container className="footer" justify="center" spacing="8">
+      <Grid container className="footer" justify="center" spacing={8}>
         <Grid item>
           <Link to="/">Home</Link>
         </Grid>

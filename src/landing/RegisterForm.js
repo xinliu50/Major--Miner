@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import app from "../base";
 import {
   Grid,
   Dialog,
@@ -50,7 +51,13 @@ class RegisterForm extends Component {
     this.setState({ openPolicy: false });
   };
 
-  handleSubmit = event => {
+  handleKeyPress = event => {
+    if (event.key === 'Enter') {
+      document.getElementById("submitButton").click();
+    }
+  }
+
+  handleSubmit = async event => {
     event.preventDefault();
     // check password match
     
@@ -58,12 +65,21 @@ class RegisterForm extends Component {
     // check policy agreed
     if (!this.state.agree) {
       this.setState({ policyError: true });
+    } else {
+      // create User in firebase
+      try {
+        const user = await app
+          .auth()
+          .createUserWithEmailAndPassword(document.getElementById("email").value, document.getElementById("password").value);
+          console.log(user);
+          if (user) {
+            this.handleCloseForm();
+            this.props.history.push("/main");
+          }
+      } catch(err) {
+        alert(err);
+      }
     }
-
-    // create User in firebase
-    console.log(document.getElementById("username").value);
-    console.log(document.getElementById("password").value);
-    this.handleCloseForm();
   }
 
   render() {
@@ -82,23 +98,29 @@ class RegisterForm extends Component {
         >
           <DialogTitle>Register</DialogTitle>
           <DialogContent>
-            <Grid container direction="column" spacing="16">
-              <Grid item sm={12} md={12} lg={12}>
+            <Grid container direction="column" spacing={16}>
+              {/* <Grid item sm={12} md={12} lg={12}>
                 <FormControl margin="normal" fullWidth>
                   <InputLabel>Username</InputLabel>
                   <Input id="username" />
+                </FormControl>
+              </Grid> */}
+              <Grid item>
+                <FormControl margin="normal" fullWidth>
+                  <InputLabel>Email</InputLabel>
+                  <Input id="email" type="email" onKeyPress={this.handleKeyPress} />
                 </FormControl>
               </Grid>
               <Grid item>
                 <FormControl margin="normal" fullWidth>
                   <InputLabel>Password</InputLabel>
-                  <Input id="password" type="password" />
+                  <Input id="password" type="password" onKeyPress={this.handleKeyPress} />
                 </FormControl>
               </Grid>
               <Grid item>
                 <FormControl margin="normal" fullWidth>
                   <InputLabel>Reenter password</InputLabel>
-                  <Input id="password2" type="password" />
+                  <Input id="password2" type="password" onKeyPress={this.handleKeyPress} />
                 </FormControl>
               </Grid>
               <Grid item>
@@ -139,7 +161,7 @@ class RegisterForm extends Component {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleSubmit}>Submit</Button>
+            <Button id="submitButton" onClick={this.handleSubmit}>Submit</Button>
           </DialogActions>
         </Dialog>
       </Grid>

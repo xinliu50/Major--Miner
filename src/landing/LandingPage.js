@@ -26,10 +26,12 @@ class LandingPage extends Component {
             the behavior of animals and how it is affected by human activity.
           </p>
         </Grid>
-        <Grid item sm={8} md={8} lg={8} container justify="center" spacing={16}>
-          <LoginForm />
-          <RegisterForm />
-        </Grid>
+        {this.props.authenticated ? ("") : (
+          <Grid item sm={8} md={8} lg={8} container justify="center" spacing={16}>     
+            <LoginForm />
+            <RegisterForm />
+          </Grid>
+        )}
       </Grid>
     );
   }

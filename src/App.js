@@ -1,15 +1,14 @@
 import React, { Component } from "react";
 import "./App.css";
-import { BrowserRouter as Router, Route } from "react-router-dom";
-import app from "./base";
-import { MuiThemeProvider, createMuiTheme } from "@material-ui/core";
+import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import firebase from "./base";
+import { MuiThemeProvider, createMuiTheme, CircularProgress } from "@material-ui/core";
 import LandingPage from "./landing/LandingPage";
 import Footer from "./Footer";
 import FaqPage from "./info/FaqPage";
 import ContactPage from "./info/ContactPage";
 import PrivacyPage from "./info/PrivacyPage";
 import Header from "./Header";
-import PrivateRoute from "./main";
 import GamePage from "./main/GamePage";
 import SummaryPage from "./main/SummaryPage";
 
@@ -27,6 +26,25 @@ const theme = createMuiTheme({
   }
 });
 
+function PrivateRoute({
+  component: Component,
+  authenticated,
+  ...rest
+}) {
+  return (
+    <Route
+      {...rest}
+      render={props =>
+        authenticated === true ? (
+          <Component {...props} {...rest} />
+        ) : (
+          <Redirect to="/" />
+        )
+      }
+    />
+  );
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -38,7 +56,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.listener = app.auth().onAuthStateChanged(user => {
+    this.listener = firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.setState({
           authenticated: true,
@@ -59,14 +77,27 @@ class App extends Component {
     this.listener();
   }
 
+  toggleAuth = (auth) => {
+    this.setState({ authenticated: auth });
+  }
+
   render() {
+    if (this.state.loading) {
+      return (
+        <MuiThemeProvider theme={theme}>
+          <div className="loading-container">
+            <CircularProgress size={100} thickness={3.6} />
+          </div>
+        </MuiThemeProvider>
+      )
+    }
     return (
       <MuiThemeProvider theme={theme}>
         <Router>
           <div className="App">
-            <Header authenticated={this.state.authenticated} />
+            <Header authenticated={this.state.authenticated} toggleAuth={this.toggleAuth} />
             <main>
-              <Route exact path="/" component={LandingPage} />
+              <Route exact path="/" render={props => <LandingPage {...props} authenticated={this.state.authenticated} />} />
               <Route path="/info/faq" component={FaqPage} />
               <Route path="/info/contact" component={ContactPage} />
               <Route path="/info/privacy" component={PrivacyPage} />

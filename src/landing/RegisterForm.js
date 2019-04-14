@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import app from "../base";
+import firebase from "../base";
 import {
   Grid,
   Dialog,
@@ -22,9 +22,12 @@ class RegisterForm extends Component {
     super(props);
     this.state = {
       openForm: false,
-      agree: false,
+      agreePolicy: false,
       openPolicy: false,
-      policyError: false
+      policyError: false,
+      emailError: false,
+      passwordError: false,
+      password2Error: false
     };
   }
 
@@ -33,11 +36,11 @@ class RegisterForm extends Component {
   };
 
   handleCloseForm = () => {
-    this.setState({ openForm: false });
+    this.setState({ openForm: false, agreePolicy: false });
   };
 
   handleAgreePolicy = event => {
-    this.setState({ agree: event.target.checked });
+    this.setState({ agreePolicy: event.target.checked });
     if (event.target.checked) {
       this.setState({ policyError: false });
     }
@@ -57,28 +60,56 @@ class RegisterForm extends Component {
     }
   }
 
+  validateForm = () => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const password2 = document.getElementById("password2").value;
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    
+    if (re.test(email)) {
+      this.setState({ emailError: false });
+    } else {
+      this.setState({ emailError: true });
+    }
+
+    if (password.length < 6) {
+      this.setState({ passwordError: true });
+    } else {
+      this.setState({ passwordError: false });
+    }
+
+    if (password !== password2) {
+      this.setState({ password2Error: true });
+    } else {
+      this.setState({ password2Error: false });
+    }
+    
+    if (!this.state.agreePolicy) {
+      this.setState({ policyError: true });
+    }
+  }
+
   handleSubmit = async event => {
     event.preventDefault();
-    // check password match
-    
-    
-    // check policy agreed
-    if (!this.state.agree) {
-      this.setState({ policyError: true });
-    } else {
+    // validation part
+    await this.validateForm();
+
+    if (!this.state.policyError && !this.state.emailError && !this.state.passwordError && !this.state.password2Error) {
       // create User in firebase
-      try {
-        const user = await app
-          .auth()
-          .createUserWithEmailAndPassword(document.getElementById("email").value, document.getElementById("password").value);
-          console.log(user);
-          if (user) {
-            this.handleCloseForm();
-            this.props.history.push("/main");
-          }
-      } catch(err) {
-        alert(err);
-      }
+      // try {
+      //   const user = await firebase
+      //     .auth()
+      //     .createUserWithEmailAndPassword(email, password);
+      //     console.log(user);
+      //     if (user) {
+      //       this.handleCloseForm();
+      //       this.props.history.push("/main");
+      //     }
+      // } catch(err) {
+      //   alert(err);
+      // }
+      console.log("register successful");
+      this.handleCloseForm();
     }
   }
 
@@ -110,24 +141,33 @@ class RegisterForm extends Component {
                   <InputLabel>Email</InputLabel>
                   <Input id="email" type="email" onKeyPress={this.handleKeyPress} />
                 </FormControl>
+                {this.state.emailError ? (
+                  <FormHelperText error={true}>Invalid email.</FormHelperText>
+                ) : ""}
               </Grid>
               <Grid item>
                 <FormControl margin="normal" fullWidth>
                   <InputLabel>Password</InputLabel>
                   <Input id="password" type="password" onKeyPress={this.handleKeyPress} />
                 </FormControl>
+                {this.state.passwordError ? (
+                  <FormHelperText error={true}>Password should be more than 6 characters.</FormHelperText>
+                ) : ""}
               </Grid>
               <Grid item>
                 <FormControl margin="normal" fullWidth>
                   <InputLabel>Reenter password</InputLabel>
                   <Input id="password2" type="password" onKeyPress={this.handleKeyPress} />
                 </FormControl>
+                {this.state.password2Error ? (
+                  <FormHelperText error={true}>Passwords didn't match.</FormHelperText>
+                ) : ""}
               </Grid>
               <Grid item>
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={this.state.agree}
+                      checked={this.state.agreePolicy}
                       onChange={this.handleAgreePolicy}
                     />
                   }

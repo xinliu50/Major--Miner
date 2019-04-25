@@ -16,6 +16,7 @@ import {
   Link
 } from "@material-ui/core";
 import PrivacyPage from "../info/PrivacyPage";
+import { withRouter } from "react-router-dom";
 
 class RegisterForm extends Component {
   constructor(props) {
@@ -87,29 +88,32 @@ class RegisterForm extends Component {
     if (!this.state.agreePolicy) {
       this.setState({ policyError: true });
     }
+
+    return ({ email, password });
   }
 
   handleSubmit = async event => {
+    const { history } = this.props;
     event.preventDefault();
     // validation part
-    await this.validateForm();
+    const { email, password } = await this.validateForm();
 
     if (!this.state.policyError && !this.state.emailError && !this.state.passwordError && !this.state.password2Error) {
       // create User in firebase
-      // try {
-      //   const user = await firebase
-      //     .auth()
-      //     .createUserWithEmailAndPassword(email, password);
-      //     console.log(user);
-      //     if (user) {
-      //       this.handleCloseForm();
-      //       this.props.history.push("/main");
-      //     }
-      // } catch(err) {
-      //   alert(err);
-      // }
-      console.log("register successful");
-      this.handleCloseForm();
+      try {
+        const user = await firebase
+          .auth()
+          .createUserWithEmailAndPassword(email, password);
+          console.log(user);
+          if (user) {
+            this.handleCloseForm();
+            history.push("/main");
+          }
+      } catch(err) {
+        alert(err);
+      }
+      // console.log("register successful");
+      // this.handleCloseForm();
     }
   }
 
@@ -209,4 +213,4 @@ class RegisterForm extends Component {
   }
 }
 
-export default RegisterForm;
+export default withRouter(RegisterForm);

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Grid } from "@material-ui/core";
+import { Link } from "react-router-dom";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 
@@ -26,7 +27,9 @@ class LandingPage extends Component {
             the behavior of animals and how it is affected by human activity.
           </p>
         </Grid>
-        {this.props.authenticated ? ("") : (
+        {this.props.authenticated ? (
+          <Link to="/main/clip">Play game!</Link>
+        ) : (
           <Grid item sm={8} md={8} lg={8} container justify="center" spacing={16}>     
             <LoginForm />
             <RegisterForm />

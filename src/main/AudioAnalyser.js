@@ -17,7 +17,7 @@ class AudioAnalyser extends Component {
     this.tick = this.tick.bind(this);
   }
 
-  componentDidMount() {
+  setupAudioContext = () => {
     // set up audioContext
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
     this.gainNode = this.audioContext.createGain();
@@ -41,6 +41,10 @@ class AudioAnalyser extends Component {
     }
   }
 
+  componentDidMount() {
+    this.setupAudioContext();
+  }
+
   tick() {
     this.analyser.getByteTimeDomainData(this.dataArray);
     this.setState({ audioData: this.dataArray });
@@ -48,6 +52,9 @@ class AudioAnalyser extends Component {
   }
 
   toggleAudio = () => {
+    if (this.state.play === false) {
+      this.setupAudioContext();
+    }
     this.setState({ play: !this.state.play });
     this.state.play ? this.audio.pause() : this.audio.play();
   };

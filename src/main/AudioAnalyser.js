@@ -3,16 +3,18 @@ import { Grid, IconButton } from "@material-ui/core";
 import PlayArrow from "@material-ui/icons/PlayArrow";
 import Pause from "@material-ui/icons/Pause";
 import AudioVisualizer from "./AudioVisualizer";
-import testAudio from "../test-audio.mp3";
+// import testAudio from "../test-audio.mp3";
+import firebase from "../base";
 
-// TODO: audio play only after recompile, no sound after refresh
+// TODO: get audio from firebase storage
 
 class AudioAnalyser extends Component {
   constructor(props) {
     super(props);
     this.state = {
       audioData: new Uint8Array(0),
-      play: false
+      play: false,
+      url: ''
     };
     this.tick = this.tick.bind(this);
   }
@@ -24,9 +26,11 @@ class AudioAnalyser extends Component {
     this.gainNode.gain.value = 15;
     this.gainNode.connect(this.audioContext.destination);
 
+    
     // set up audio
-    this.audio = new Audio(testAudio);
+    this.audio = new Audio(this.state.url);
     this.audioSource = this.audioContext.createMediaElementSource(this.audio);
+    this.audio.crossOrigin = "anonymous";
     this.audioSource.connect(this.gainNode);
 
     // set up audio analyser
@@ -42,7 +46,14 @@ class AudioAnalyser extends Component {
   }
 
   componentDidMount() {
-    this.setupAudioContext();
+    // get audio file from firebase storage
+    const storage = firebase.storage();
+    const storageRef = storage.ref();
+    const filename = "USGS_20160613_234225_2820m_00s__2880m_00s_28m_00s__30m_00s_01m_10s__01m_20s.mp3";
+    storageRef.child("Audios").child(filename).getDownloadURL().then(url => {
+      this.setState({ url: url });
+      this.setupAudioContext();
+    })    
   }
 
   tick() {
@@ -51,12 +62,12 @@ class AudioAnalyser extends Component {
     this.rafId = requestAnimationFrame(this.tick);
   }
 
-  toggleAudio = () => {
+  toggleAudio = async () => {
     if (this.state.play === false) {
       this.setupAudioContext();
     }
-    this.setState({ play: !this.state.play });
     this.state.play ? this.audio.pause() : this.audio.play();
+    await this.setState({ play: !this.state.play });
   };
 
   componentWillUnmount() {

@@ -45,7 +45,3 @@ class GamePage extends Component {
 }
 
 export default GamePage;
-
-// https://www.twilio.com/blog/audio-visualisation-web-audio-api--react
-// https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Visualizations_with_Web_Audio_API#Creating_a_waveformoscilloscope
-// https://code.tutsplus.com/tutorials/how-to-create-an-audio-oscillator-with-web-audio-api--cms-29943

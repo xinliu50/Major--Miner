@@ -29,7 +29,7 @@ class PrivacyPage extends Component {
           >
             mim@sci.brooklyn.cuny.edu
           </a>
-          or 718.951.5000 x2053. If you have any questions about your rights as
+          &nbsp;or 718.951.5000 x2053. If you have any questions about your rights as
           a research participant or if you would like to talk to someone other
           than the researchers, you can contact CUNY Research Compliance
           Administrator at 646-664-8918 or{" "}

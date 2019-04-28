@@ -3,10 +3,9 @@ import { Grid, IconButton } from "@material-ui/core";
 import PlayArrow from "@material-ui/icons/PlayArrow";
 import Pause from "@material-ui/icons/Pause";
 import AudioVisualizer from "./AudioVisualizer";
-// import testAudio from "../test-audio.mp3";
 import firebase from "../base";
 
-// TODO: get audio from firebase storage
+// TODO: seems like audio is stopped instead of pause(?)
 
 class AudioAnalyser extends Component {
   constructor(props) {
@@ -26,7 +25,6 @@ class AudioAnalyser extends Component {
     this.gainNode.gain.value = 15;
     this.gainNode.connect(this.audioContext.destination);
 
-    
     // set up audio
     this.audio = new Audio(this.state.url);
     this.audioSource = this.audioContext.createMediaElementSource(this.audio);
@@ -45,15 +43,17 @@ class AudioAnalyser extends Component {
     }
   }
 
-  componentDidMount() {
-    // get audio file from firebase storage
-    const storage = firebase.storage();
-    const storageRef = storage.ref();
-    const filename = "USGS_20160613_234225_2820m_00s__2880m_00s_28m_00s__30m_00s_01m_10s__01m_20s.mp3";
-    storageRef.child("Audios").child(filename).getDownloadURL().then(url => {
-      this.setState({ url: url });
+  async componentDidMount() {
+    const db = firebase.firestore();
+    try {
+      const doc = await db.collection('audios').doc('2').get();
+      const url = doc.data().Url;
+      console.log(url);
+      await this.setState({ url: url });
       this.setupAudioContext();
-    })    
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   tick() {
@@ -62,12 +62,16 @@ class AudioAnalyser extends Component {
     this.rafId = requestAnimationFrame(this.tick);
   }
 
-  toggleAudio = async () => {
+  toggleAudio = () => {
     if (this.state.play === false) {
-      this.setupAudioContext();
+      try {
+        this.setupAudioContext();
+      } catch(err) {
+        console.log(err);
+      }
     }
     this.state.play ? this.audio.pause() : this.audio.play();
-    await this.setState({ play: !this.state.play });
+    this.setState({ play: !this.state.play });
   };
 
   componentWillUnmount() {

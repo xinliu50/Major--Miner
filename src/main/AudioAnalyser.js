@@ -3,7 +3,6 @@ import { Grid, IconButton } from "@material-ui/core";
 import PlayArrow from "@material-ui/icons/PlayArrow";
 import Pause from "@material-ui/icons/Pause";
 import AudioVisualizer from "./AudioVisualizer";
-import firebase from "../base";
 
 // TODO: seems like audio is stopped instead of pause(?)
 
@@ -26,7 +25,7 @@ class AudioAnalyser extends Component {
     this.gainNode.connect(this.audioContext.destination);
 
     // set up audio
-    this.audio = new Audio(this.state.url);
+    this.audio = new Audio(this.props.url);
     this.audioSource = this.audioContext.createMediaElementSource(this.audio);
     this.audio.crossOrigin = "anonymous";
     this.audioSource.connect(this.gainNode);
@@ -43,17 +42,18 @@ class AudioAnalyser extends Component {
     }
   }
 
-  async componentDidMount() {
-    const db = firebase.firestore();
-    try {
-      const doc = await db.collection('audios').doc('2').get();
-      const url = doc.data().Url;
-      console.log(url);
-      await this.setState({ url: url });
-      this.setupAudioContext();
-    } catch(err) {
-      console.log(err);
-    }
+  componentDidMount() {
+    // const db = firebase.firestore();
+    // try {
+    //   const doc = await db.collection('audios').doc('2').get();
+    //   const url = doc.data().Url;
+    //   console.log(url);
+    //   await this.setState({ url: url });
+    //   this.setupAudioContext();
+    // } catch(err) {
+    //   console.log(err);
+    // }
+    this.setupAudioContext();
   }
 
   tick() {
@@ -83,7 +83,7 @@ class AudioAnalyser extends Component {
 
   render() {
     return (
-      <Grid item className="canvas-container">
+      <Grid item sm={6} md={6} lg={6} className="canvas-container">
         <IconButton
           className="play-button"
           onClick={this.toggleAudio}
@@ -91,9 +91,9 @@ class AudioAnalyser extends Component {
           disableTouchRipple
         >
           {this.state.play ? (
-            <Pause style={{ fontSize: "7em" }} />
+            <Pause style={{ fontSize: "180px" }} />
           ) : (
-            <PlayArrow style={{ fontSize: "7em" }} />
+            <PlayArrow style={{ fontSize: "180px" }} />
           )}
         </IconButton>
         {this.state.play ? (

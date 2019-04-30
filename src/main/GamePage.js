@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import {
   Grid,
   FormControl,
@@ -10,6 +11,7 @@ import {
 } from "@material-ui/core";
 import Send  from "@material-ui/icons/Send";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
+import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import AudioAnalyser from "./AudioAnalyser";
 import firebase from "../base";
 
@@ -92,7 +94,14 @@ class GamePage extends Component {
           <h1>Describe this clip</h1>
         </Grid>
         <Grid item container alignItems="center">
-          <Grid item sm={3} md={3} lg={3}></Grid>
+          <Grid item sm={3} md={3} lg={3}>
+            <Link to="/main" style={{ "textDecoration": "none" }}>
+              <IconButton id="gameSummary" style={{ "borderRadius": "0" }}>
+                <KeyboardArrowLeft />
+                Summary
+              </IconButton>
+            </Link>
+          </Grid>
           <AudioAnalyser url={url} />
           <Grid item sm={3} md={3} lg={3}>
             <IconButton id="nextClip" style={{ "borderRadius": "0" }}>

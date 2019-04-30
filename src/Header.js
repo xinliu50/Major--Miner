@@ -3,7 +3,11 @@ import {
   AppBar,
   Toolbar,
   IconButton,
-  Menu,
+  Popper,
+  Grow,
+  Paper,
+  ClickAwayListener,
+  MenuList,
   MenuItem,
   Grid
 } from "@material-ui/core";
@@ -16,16 +20,20 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      anchorEl: null
+      open: false
     };
   }
 
-  handleMenu = event => {
-    this.setState({ anchorEl: event.currentTarget });
+  handleToggle = () => {
+    this.setState(state => ({ open: !state.open }));
   };
 
-  handleClose = () => {
-    this.setState({ anchorEl: null });
+  handleClose = event => {
+    if (this.props.authenticated && this.anchorEl.contains(event.target)) {
+      return;
+    }
+
+    this.setState({ open: false });
   };
 
   logout = () => {
@@ -38,7 +46,7 @@ class Header extends Component {
   }
 
   render() {
-    const open = Boolean(this.state.anchorEl);
+    const { open } = this.state;
     return (
       <AppBar position="sticky">
         <Toolbar>
@@ -49,30 +57,33 @@ class Header extends Component {
               <Grid item lg={3} md={3} sm={4} xs={6}><h4>Score: XX</h4></Grid>
               <Grid item lg={3} md={3} sm={4} xs={6} className="account-button">
                 <IconButton
+                  buttonRef={node => {
+                    this.anchorEl = node;
+                  }}
                   aria-owns={open ? "account-menu" : undefined}
                   aria-haspopup="true"
-                  onClick={this.handleMenu}
+                  onClick={this.handleToggle}
                   color="inherit"
                 >
                   <AccountCircle />
                 </IconButton>
-                <Menu
-                    id="account-menu"
-                    anchorEl={this.state.anchorEl}
-                    anchorOrigin={{
-                      vertical: 'center',
-                      horizontal: 'right',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right',
-                    }}
-                    open={open}
-                    onClose={this.handleClose}
-                  >
-                  <MenuItem onClick={this.handleClose}>Change password</MenuItem>
-                  <MenuItem onClick={this.logout}>Logout</MenuItem>
-                </Menu>
+                <Popper open={open} anchorEl={this.anchorEl} placement="bottom-end" transition disablePortal>
+                  {({ TransitionProps }) => (
+                    <Grow
+                      {...TransitionProps}
+                    >
+                      <Paper>
+                        <ClickAwayListener onClickAway={this.handleClose}>
+                          <MenuList>
+                            <MenuItem onClick={this.handleClose}><Link to="/main">Summary</Link></MenuItem>
+                            <MenuItem onClick={this.handleClose}>Change password</MenuItem>
+                            <MenuItem onClick={this.logout}>Logout</MenuItem>
+                          </MenuList>
+                        </ClickAwayListener>
+                      </Paper>
+                    </Grow>
+                  )}
+                </Popper>
               </Grid>
             </Grid>
           ) : (

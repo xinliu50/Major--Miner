@@ -28,7 +28,14 @@ class LandingPage extends Component {
           </p>
         </Grid>
         {this.props.authenticated ? (
-          <Link to="/main/clip">Play game!</Link>
+          <Grid item sm={8} md={8} lg={8} container justify="center" spacing={16}>
+            <Grid item>
+              <Link to="/main">Summary</Link>
+            </Grid>
+            <Grid item>
+              <Link to="/main/clip">Play game!</Link>
+            </Grid>
+          </Grid>
         ) : (
           <Grid item sm={8} md={8} lg={8} container justify="center" spacing={16}>     
             <LoginForm />

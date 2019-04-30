@@ -29,9 +29,9 @@ class Header extends Component {
   };
 
   handleClose = event => {
-    if (this.props.authenticated && this.anchorEl.contains(event.target)) {
-      return;
-    }
+    // if (this.props.authenticated && this.anchorEl.contains(event.target)) {
+    //   return;
+    // }
 
     this.setState({ open: false });
   };
@@ -54,7 +54,7 @@ class Header extends Component {
             <Grid item lg={2} md={2} sm={3}><Link to="/"><h2>Major Miner</h2></Link></Grid>
           {this.props.authenticated ? (
             <Grid item lg={10} md={10} sm={9} container justify="flex-end" alignItems="center" spacing={16}>
-              <Grid item lg={3} md={3} sm={4} xs={6}><h4>Score: XX</h4></Grid>
+              <Grid item lg={3} md={3} sm={4} xs={6}><h4>Score: 0</h4></Grid>
               <Grid item lg={3} md={3} sm={4} xs={6} className="account-button">
                 <IconButton
                   buttonRef={node => {

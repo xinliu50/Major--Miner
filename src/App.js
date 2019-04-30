@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 import firebase from "./base";
-import { MuiThemeProvider, createMuiTheme, CircularProgress } from "@material-ui/core";
+import {
+  MuiThemeProvider,
+  createMuiTheme,
+  CircularProgress
+} from "@material-ui/core";
 import LandingPage from "./landing/LandingPage";
 import Footer from "./Footer";
 import FaqPage from "./info/FaqPage";
@@ -26,11 +30,7 @@ const theme = createMuiTheme({
   }
 });
 
-function PrivateRoute({
-  component: Component,
-  authenticated,
-  ...rest
-}) {
+function PrivateRoute({ component: Component, authenticated, ...rest }) {
   return (
     <Route
       {...rest}
@@ -77,9 +77,9 @@ class App extends Component {
     this.listener();
   }
 
-  toggleAuth = (auth) => {
+  toggleAuth = auth => {
     this.setState({ authenticated: auth });
-  }
+  };
 
   render() {
     if (this.state.loading) {
@@ -89,20 +89,41 @@ class App extends Component {
             <CircularProgress size={100} thickness={3.6} />
           </div>
         </MuiThemeProvider>
-      )
+      );
     }
     return (
       <MuiThemeProvider theme={theme}>
         <Router>
           <div className="App">
-            <Header authenticated={this.state.authenticated} toggleAuth={this.toggleAuth} />
+            <Header
+              authenticated={this.state.authenticated}
+              toggleAuth={this.toggleAuth}
+            />
             <main>
-              <Route exact path="/" render={props => <LandingPage {...props} authenticated={this.state.authenticated} />} />
+              <Route
+                exact
+                path="/"
+                render={props => (
+                  <LandingPage
+                    {...props}
+                    authenticated={this.state.authenticated}
+                  />
+                )}
+              />
               <Route path="/info/faq" component={FaqPage} />
               <Route path="/info/contact" component={ContactPage} />
               <Route path="/info/privacy" component={PrivacyPage} />
-              <PrivateRoute exact path="/main" component={SummaryPage} authenticated={this.state.authenticated} />
-              <PrivateRoute path="/main/clip" component={GamePage} authenticated={this.state.authenticated} />
+              <PrivateRoute
+                exact
+                path="/main"
+                component={SummaryPage}
+                authenticated={this.state.authenticated}
+              />
+              <PrivateRoute
+                path="/main/clip"
+                component={GamePage}
+                authenticated={this.state.authenticated}
+              />
             </main>
             <Footer />
           </div>

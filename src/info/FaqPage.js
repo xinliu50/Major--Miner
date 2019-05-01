@@ -13,7 +13,7 @@ class FaqPage extends Component {
           container
           className="faq-container"
           direction="column"
-          spacing="16"
+          spacing={16}
           alignItems="stretch"
         >
           <Grid item>

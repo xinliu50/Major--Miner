@@ -14,8 +14,7 @@ import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import AudioAnalyser from "./AudioAnalyser";
 import firebase from "../base";
-
-// TODO: firebase.firestore.FieldValue methods not available, why?
+import staticFirebase from "firebase";
 
 class GamePage extends Component {
   constructor(props) {
@@ -32,7 +31,6 @@ class GamePage extends Component {
     this.db = firebase.firestore();
     this.audioRef = this.db.collection('audios').doc(this.state.clipId);
     this.audioTagRef = this.audioRef.collection('tags');
-    // this.increment = firebase.firestore.FieldValue.increment(1);
     try {
       // load url
       const doc = await this.audioRef.get();
@@ -42,7 +40,10 @@ class GamePage extends Component {
       // load existing tags
       const tags = await this.audioTagRef.get();
       const existingTags = {};
-      tags.forEach(tag => (existingTags[tag.id] = tag.data().Count));
+      tags.forEach(tag => (existingTags[tag.id] = {
+        count: tag.data().Count,
+        userId: tag.data().UserId
+      }));
       await this.setState({ url, existingTags });
     } catch(err) {
       console.log(err);
@@ -54,7 +55,7 @@ class GamePage extends Component {
     const filteredTags = newTags.filter(tag => (!Object.keys(this.state.currentTags).includes(tag)));
     filteredTags.forEach(tag => {
       if (Object.keys(this.state.existingTags).includes(tag)) {
-        this.setState(prevState => ({ currentTags: {...prevState.currentTags, [tag]: this.state.existingTags[tag] + 1 }}));
+        this.setState(prevState => ({ currentTags: {...prevState.currentTags, [tag]: this.state.existingTags[tag].count + 1 }}));
       } else {
         this.setState(prevState => ({ currentTags: {...prevState.currentTags, [tag]: 1 }}));
       }
@@ -68,21 +69,33 @@ class GamePage extends Component {
     }
   }
 
-  // componentWillUnmount() {
-  //   Object.keys(this.state.currentTags).forEach(tag => {
-  //     if (this.state.currentTags[tag] > 1) {
-  //       this.audioTagRef.doc(tag).update({
-  //         Count: this.increment,
-  //         UserId: firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.uid)
-  //       })
-  //     } else {
-  //       this.audioTagRef.doc(tag).set({
-  //         Count: this.state.currentTags[tag],
-  //         UserId: firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.uid)
-  //       })
-  //     }
-  //   })
-  // }
+  componentWillUnmount() {
+    try {
+      const { currentTags, existingTags } = this.state;
+      const user = firebase.auth().currentUser;
+      Object.keys(currentTags).forEach(tag => {
+        // tag already exists
+        if (currentTags[tag] > 1) {
+          // user cannot input the same tag one more time
+          if (!existingTags[tag].userId.includes(user.uid)) {
+            this.audioTagRef.doc(tag).update({
+              Count: staticFirebase.firestore.FieldValue.increment(1),
+              UserId: staticFirebase.firestore.FieldValue.arrayUnion(user.uid)
+            })
+          }
+        } else {
+          this.audioTagRef.doc(tag).set({
+            Count: currentTags[tag],
+            UserId: staticFirebase.firestore.FieldValue.arrayUnion(user.uid)
+          })
+        }
+      })
+      console.log('data upload looks good..');
+      console.log('user score: ', document.getElementsByClassName("1-point").length);
+    } catch(err) {
+      console.log(err);
+    }
+  }
 
   render() {
     const { url, currentTags, existingTags } = this.state;
@@ -115,7 +128,7 @@ class GamePage extends Component {
             if (currentTags[tag] === 1) {
               return (<span key={i} className="gray">{tag}&nbsp;</span>)
             } else if (currentTags[tag] === 2) {
-              return (<i key={i}>{tag}&nbsp;</i>)
+              return (<i key={i} className="1-point">{tag}&nbsp;</i>)
             } else if (currentTags[tag] > 2) {
               return (<span key={i} className="pink">{tag}&nbsp;</span>)
             } else {

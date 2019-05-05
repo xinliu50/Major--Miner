@@ -7,7 +7,8 @@ import {
   InputLabel,
   InputAdornment,
   IconButton,
-  FormHelperText
+  FormHelperText,
+  CircularProgress
 } from "@material-ui/core";
 import Send from "@material-ui/icons/Send";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
@@ -23,16 +24,22 @@ class GamePage extends Component {
       clipId: '2',
       url: '',
       existingTags: {},
-      currentTags: {}
+      currentTags: {},
+      loading: true
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     this.db = firebase.firestore();
-    this.audioRef = this.db.collection('audios').doc(this.state.clipId);
-    this.audioTagRef = this.audioRef.collection('tags');
     this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
     this.userClipHistoryRef = this.userRef.collection('clipHistory');
+    
+    this.loadFromDb(this.state.clipId);
+  }
+
+  loadFromDb = async clipId => {
+    this.audioRef = this.db.collection('audios').doc(clipId);
+    this.audioTagRef = this.audioRef.collection('tags');
     try {
       // load url
       const doc = await this.audioRef.get();
@@ -42,11 +49,13 @@ class GamePage extends Component {
       // load existing tags
       const tags = await this.audioTagRef.get();
       const existingTags = {};
-      tags.forEach(tag => (existingTags[tag.id] = {
-        count: tag.data().count,
-        userId: tag.data().userId
-      }));
-      await this.setState({ url, existingTags });
+      if (tags) {
+        tags.forEach(tag => (existingTags[tag.id] = {
+          count: tag.data().count,
+          userId: tag.data().userId
+        }));
+      }
+      await this.setState({ url, existingTags, loading: false });
     } catch(err) {
       console.log(err);
     }
@@ -71,7 +80,7 @@ class GamePage extends Component {
     }
   }
 
-  componentWillUnmount() {
+  saveToDb = () => {
     const { currentTags, existingTags } = this.state;
     const user = firebase.auth().currentUser;
     try {
@@ -97,7 +106,6 @@ class GamePage extends Component {
 
       // update user.score in DB
       const scoreReceived = document.getElementsByClassName("1-point").length;
-      console.log('user score: ', scoreReceived);
       this.userRef.update({
         score: staticFirebase.firestore.FieldValue.increment(scoreReceived)
       });
@@ -122,10 +130,24 @@ class GamePage extends Component {
     }
   }
 
+  getNextClip = async () => {
+    this.saveToDb();
+    await this.setState({
+      clipId: '1',
+      url: '',
+      existingTags: {},
+      currentTags: {},
+      loading: true
+    });
+    this.loadFromDb(this.state.clipId);
+  }
+
+  componentWillUnmount() {
+    this.saveToDb();
+  }
+
   render() {
     const { url, currentTags, existingTags } = this.state;
-    console.log('existing tags: ', existingTags);
-    console.log('current tags: ', currentTags);
     return (
       <Grid container className="game-container" direction="column" alignItems="center" spacing={16}>
         <Grid item>
@@ -140,9 +162,15 @@ class GamePage extends Component {
               </IconButton>
             </Link>
           </Grid>
-          <AudioAnalyser url={url} />
+          {this.state.loading ? (
+            <Grid item sm={6} md={6} lg={6} className="canvas-container">
+              <CircularProgress size={100} thickness={3.6} />
+            </Grid>
+          ) : (
+            <AudioAnalyser url={url} />
+          )}
           <Grid item sm={3} md={3} lg={3}>
-            <IconButton id="nextClip" style={{ "borderRadius": "0" }}>
+            <IconButton id="nextClip" style={{ "borderRadius": "0" }} onClick={this.getNextClip}>
               Next Clip
               <KeyboardArrowRight />
             </IconButton>

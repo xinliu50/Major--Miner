@@ -97,6 +97,7 @@ class RegisterForm extends Component {
     event.preventDefault();
     // validation part
     const { email, password } = await this.validateForm();
+    const db = firebase.firestore();
 
     if (!this.state.policyError && !this.state.emailError && !this.state.passwordError && !this.state.password2Error) {
       // create User in firebase
@@ -104,11 +105,15 @@ class RegisterForm extends Component {
         const user = await firebase
           .auth()
           .createUserWithEmailAndPassword(email, password);
-          console.log(user);
-          if (user) {
-            this.handleCloseForm();
-            history.push("/main");
-          }
+        console.log(user);
+        if (user) {
+          // to create a new user document
+          db.collection('users').doc(firebase.auth().currentUser.uid).set({
+            score: 0
+          });
+          this.handleCloseForm();
+          history.push("/main");
+        }
       } catch(err) {
         alert(err);
       }

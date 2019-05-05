@@ -9,7 +9,7 @@ import {
   IconButton,
   FormHelperText
 } from "@material-ui/core";
-import Send  from "@material-ui/icons/Send";
+import Send from "@material-ui/icons/Send";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import AudioAnalyser from "./AudioAnalyser";
@@ -31,6 +31,7 @@ class GamePage extends Component {
     this.db = firebase.firestore();
     this.audioRef = this.db.collection('audios').doc(this.state.clipId);
     this.audioTagRef = this.audioRef.collection('tags');
+    this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
     try {
       // load url
       const doc = await this.audioRef.get();
@@ -41,8 +42,8 @@ class GamePage extends Component {
       const tags = await this.audioTagRef.get();
       const existingTags = {};
       tags.forEach(tag => (existingTags[tag.id] = {
-        count: tag.data().Count,
-        userId: tag.data().UserId
+        count: tag.data().count,
+        userId: tag.data().userId
       }));
       await this.setState({ url, existingTags });
     } catch(err) {
@@ -70,28 +71,40 @@ class GamePage extends Component {
   }
 
   componentWillUnmount() {
+    const { currentTags, existingTags } = this.state;
+    const user = firebase.auth().currentUser;
     try {
-      const { currentTags, existingTags } = this.state;
-      const user = firebase.auth().currentUser;
+      // update tags in DB
       Object.keys(currentTags).forEach(tag => {
         // tag already exists
         if (currentTags[tag] > 1) {
           // user cannot input the same tag one more time
           if (!existingTags[tag].userId.includes(user.uid)) {
             this.audioTagRef.doc(tag).update({
-              Count: staticFirebase.firestore.FieldValue.increment(1),
-              UserId: staticFirebase.firestore.FieldValue.arrayUnion(user.uid)
+              count: staticFirebase.firestore.FieldValue.increment(1),
+              userId: staticFirebase.firestore.FieldValue.arrayUnion(user.uid)
             })
           }
         } else {
           this.audioTagRef.doc(tag).set({
-            Count: currentTags[tag],
-            UserId: staticFirebase.firestore.FieldValue.arrayUnion(user.uid)
+            count: currentTags[tag],
+            userId: staticFirebase.firestore.FieldValue.arrayUnion(user.uid)
           })
         }
       })
       console.log('data upload looks good..');
-      console.log('user score: ', document.getElementsByClassName("1-point").length);
+
+      // update user.score in DB
+      const scoreReceived = document.getElementsByClassName("1-point").length;
+      console.log('user score: ', scoreReceived);
+      this.userRef.update({
+        score: staticFirebase.firestore.FieldValue.increment(scoreReceived)
+      });
+      this.userRef.collection('clipHistory').doc(this.state.clipId).set({
+        score: scoreReceived,
+        createdAt: staticFirebase.firestore.FieldValue.serverTimestamp()
+      })
+      console.log('user data upload seems good too..');
     } catch(err) {
       console.log(err);
     }

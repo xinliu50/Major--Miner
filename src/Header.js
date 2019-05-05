@@ -12,7 +12,7 @@ import {
   Grid
 } from "@material-ui/core";
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import firebase from "./base";
 import LoginForm from "./landing/LoginForm";
 
@@ -42,6 +42,7 @@ class Header extends Component {
     }).catch(err => {
       console.log(err);
     })
+    this.props.history.push('/');
     this.handleClose();
   }
 
@@ -99,4 +100,4 @@ class Header extends Component {
   }
 }
 
-export default Header;
+export default withRouter(Header);

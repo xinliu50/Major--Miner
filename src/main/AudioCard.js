@@ -19,6 +19,10 @@ class AudioCard extends Component {
     };
   }
 
+  componentDidMount() {
+    this.setupAudioContext();
+  }
+
   setupAudioContext = () => {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
     this.gainNode = this.audioContext.createGain();

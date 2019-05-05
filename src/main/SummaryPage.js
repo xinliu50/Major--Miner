@@ -41,7 +41,6 @@ class SummaryPage extends Component {
 
   render() {
     const { lastClips, lastScoredClips, clipHistory } = this.state;
-    console.log('current state of play: ', this.state.play);
     return (
       <Grid container className="summary-container" direction="column" alignItems="center">
         <Grid item>

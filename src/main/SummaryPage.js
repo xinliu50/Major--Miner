@@ -23,7 +23,7 @@ class SummaryPage extends Component {
     this.audioRef = this.db.collection('audios');
     this.userRef = this.db.collection('users').doc(this.user.uid);
 
-    const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('createdAt').limit(10).get();
+    const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
     const clipHistory = {};
     clipHistorySnapshot.forEach(clip => {
       clipHistory[clip.id] = { score: clip.data().score };

@@ -20,8 +20,19 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false
+      open: false,
+      score: 0
     };
+  }
+
+  componentDidMount() {
+    this.db = firebase.firestore();
+    this.user = firebase.auth().currentUser;
+    this.userRef = this.db.collection('users').doc(this.user.uid);
+
+    this.userDocListener = this.userRef.onSnapshot(user => {
+      this.setState({ score: user.data().score });
+    })
   }
 
   handleToggle = () => {
@@ -46,6 +57,10 @@ class Header extends Component {
     this.handleClose();
   }
 
+  componentWillUnmount() {
+    this.userDocListener();
+  }
+
   render() {
     const { open } = this.state;
     return (
@@ -55,7 +70,7 @@ class Header extends Component {
             <Grid item lg={2} md={2} sm={3}><Link to="/"><h2>Major Miner</h2></Link></Grid>
           {this.props.authenticated ? (
             <Grid item lg={10} md={10} sm={9} container justify="flex-end" alignItems="center" spacing={16}>
-              <Grid item lg={3} md={3} sm={4} xs={6}><h4>Score: 0</h4></Grid>
+              <Grid item lg={3} md={3} sm={4} xs={6}><h4>Score: {this.state.score}</h4></Grid>
               <Grid item lg={3} md={3} sm={4} xs={6} className="account-button">
                 <IconButton
                   buttonRef={node => {

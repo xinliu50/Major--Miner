@@ -32,6 +32,7 @@ class GamePage extends Component {
     this.audioRef = this.db.collection('audios').doc(this.state.clipId);
     this.audioTagRef = this.audioRef.collection('tags');
     this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
+    this.userClipHistoryRef = this.userRef.collection('clipHistory');
     try {
       // load url
       const doc = await this.audioRef.get();
@@ -100,10 +101,21 @@ class GamePage extends Component {
       this.userRef.update({
         score: staticFirebase.firestore.FieldValue.increment(scoreReceived)
       });
-      this.userRef.collection('clipHistory').doc(this.state.clipId).set({
-        score: scoreReceived,
-        createdAt: staticFirebase.firestore.FieldValue.serverTimestamp()
-      })
+      this.userClipHistoryRef.doc(this.state.clipId).get()
+       .then(doc => {
+         if (doc.exists) {
+          this.userClipHistoryRef.doc(this.state.clipId).update({
+            score: staticFirebase.firestore.FieldValue.increment(scoreReceived),
+            lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
+          });
+         } else {
+          this.userClipHistoryRef.doc(this.state.clipId).set({
+            score: scoreReceived,
+            createdAt: staticFirebase.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
+          });
+         }
+       })
       console.log('user data upload seems good too..');
     } catch(err) {
       console.log(err);

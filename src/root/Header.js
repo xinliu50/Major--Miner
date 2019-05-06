@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import {
   AppBar,
   Toolbar,
-  Grid
+  ButtonBase
 } from "@material-ui/core";
 import { Link, withRouter } from "react-router-dom";
 import firebase from "../base";
@@ -31,6 +31,9 @@ class Header extends Component {
   }
 
   logout = () => {
+    if (this.userDocListener) {
+      this.userDocListener();
+    }
     firebase.auth().signOut().then(() => {
       this.props.toggleAuth(false);
     }).catch(err => {
@@ -40,34 +43,34 @@ class Header extends Component {
   }
 
   componentWillUnmount() {
-    this.userDocListener();
+    if (this.userDocListener) {
+      this.userDocListener();
+    }
   }
 
   render() {
     return (
       <AppBar position="sticky">
         <Toolbar>
-          <Grid container spacing={8} wrap="nowrap" alignItems="center">
-            <Grid item lg={2} md={2} sm={3}><Link to="/"><h2>Major Miner</h2></Link></Grid>
+          <div className="nav-container">
+            <ButtonBase component={Link} to="/" className="nav-item"><b style={{ "fontSize": "1.5em" }}>Major Miner</b></ButtonBase>
+            {/* <Link to="/" className="nav-item"><h2>Major Miner</h2></Link> */}
             {this.props.authenticated ? (
-              <Grid item lg={1} md={1} sm={1}><Link to="/main/clip">Game</Link></Grid>
+              <ButtonBase component={Link} to="/main/clip" className="nav-item">Game</ButtonBase>
             ) : ""}
-            <Grid item lg={1} md={1} sm={1}><Link to="/info/leaders">Leaders</Link></Grid>
-            <Grid item lg={1} md={1} sm={1}><Link to="/search">Search</Link></Grid>
-          {this.props.authenticated ? (
-            <Grid item lg={8} md={8} sm={7} container justify="flex-end" alignItems="center" spacing={8}>
-              <Grid item lg={6} md={6} sm={4} xs={6}><h4>Score: {this.state.score}</h4></Grid>
-              <Grid item lg={6} md={6} sm={4} xs={6} className="account-button">
+            <ButtonBase component={Link} to="/info/leaders" className="nav-item">Leaders</ButtonBase>
+            <ButtonBase component={Link} to="/search" className="nav-item">Search</ButtonBase>
+            {this.props.authenticated ? (
+              <div className="account-button">
+                <h4 style={{ "margin": "0 0.5em", "padding": "0 0.5em" }}>Score: {this.state.score}</h4>
                 <AccountButton logout={this.logout} />
-              </Grid>
-            </Grid>
-          ) : (
-            <Grid item className="account-button">
-              {/* <Button color="inherit">Login</Button> */}
-              <LoginForm />
-            </Grid>
-          )}
-          </Grid>
+              </div>
+            ) : (
+              <div className="account-button">
+                <LoginForm />
+              </div>
+            )}
+          </div>
         </Toolbar>
       </AppBar>
     );

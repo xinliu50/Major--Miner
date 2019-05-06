@@ -127,7 +127,7 @@ class RegisterForm extends Component {
       <Grid item>
         <Button
           color="default"
-          variant="contained"
+          variant="outlined"
           onClick={this.handleClickOpenForm}
         >Register</Button>
         <Dialog

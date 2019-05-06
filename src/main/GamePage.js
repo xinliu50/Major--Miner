@@ -37,7 +37,7 @@ class GamePage extends Component {
     this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
     this.userClipHistoryRef = this.userRef.collection('clipHistory');
     
-    //this.loadFromDb(this.state.clipId);
+    this.loadFromDb(this.state.clipId);
   }
 
   loadFromDb = async clipId => {
@@ -146,7 +146,7 @@ class GamePage extends Component {
   }
 
   componentWillUnmount() {
-    // this.saveToDb();
+    this.saveToDb();
   }
 
   render() {

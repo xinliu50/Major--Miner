@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-import app from "../base";
+import firebase from "../base";
 import {
   Grid,
   Dialog,
@@ -16,17 +16,26 @@ import {
 class LoginForm extends Component {
   constructor(props) {
     super(props);
+    this._isMounted = false;
     this.state = {
       open: false
     };
   }
 
+  componentDidMount() {
+    this._isMounted = true;
+  }
+
   handleClickOpen = () => {
-    this.setState({ open: true });
+    if (this._isMounted) {
+      this.setState({ open: true });
+    }
   };
 
   handleClose = () => {
-    this.setState({ open: false });
+    if (this._isMounted) {
+      this.setState({ open: false });
+    }
   };
 
   handleKeyPress = event => {
@@ -38,7 +47,7 @@ class LoginForm extends Component {
   handleSubmit = async event => {
     event.preventDefault();
     try {
-      const user = await app
+      const user = await firebase
         .auth()
         .signInWithEmailAndPassword(document.getElementById("email").value, document.getElementById("password").value);
         console.log(user);
@@ -49,13 +58,16 @@ class LoginForm extends Component {
     } catch (err) {
       alert(err);
     }
-    
+  }
+  
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {
     return (
       <Grid item>
-        <Button color="default" variant="contained" onClick={this.handleClickOpen}>Login</Button>
+        <Button color="default" variant="outlined" onClick={this.handleClickOpen}>Login</Button>
         <Dialog
           open={this.state.open}
           onClose={this.handleClose}

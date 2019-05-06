@@ -9,6 +9,7 @@ import AudioVisualizer from "./AudioVisualizer";
 class AudioAnalyser extends Component {
   constructor(props) {
     super(props);
+    this._isMounted = false;
     this.state = {
       audioData: new Uint8Array(0),
       play: false,
@@ -38,17 +39,22 @@ class AudioAnalyser extends Component {
 
     // put 'play' state to false when the sound ends
     this.audio.onended = () => {
-      this.setState({ play: false });
+      if (this._isMounted) {
+        this.setState({ play: false });
+      }
     }
   }
 
   componentDidMount() {
+    this._isMounted = true;
     this.setupAudioContext();
   }
 
   tick() {
     this.analyser.getByteTimeDomainData(this.dataArray);
-    this.setState({ audioData: this.dataArray });
+    if (this._isMounted) {
+      this.setState({ audioData: this.dataArray });
+    }
     this.rafId = requestAnimationFrame(this.tick);
   }
 
@@ -61,7 +67,9 @@ class AudioAnalyser extends Component {
       }
     }
     this.state.play ? this.audio.pause() : this.audio.play();
-    this.setState({ play: !this.state.play });
+    if (this._isMounted) {
+      this.setState({ play: !this.state.play });
+    }
   };
 
   componentWillUnmount() {
@@ -69,6 +77,7 @@ class AudioAnalyser extends Component {
     this.analyser.disconnect();
     this.gainNode.disconnect();
     this.audioSource.disconnect();
+    this._isMounted = false;
   }
 
   render() {

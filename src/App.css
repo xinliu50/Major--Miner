@@ -64,18 +64,39 @@ a:visited {
   color: black;
 }
 
+.privacy-in-dialog {
+  padding: 0 0!important;
+  font-size: 0.9em;
+}
+
+/**************
+ *   Header   *
+ *************/
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.nav-item {
+  margin: 0 0.5em !important;
+  padding: 0.5em 0.5em !important;
+}
+
+.nav-item:hover {
+  text-decoration: underline;
+}
+
 .account-button {
-  position: absolute;
+  display: flex;
+  align-items: center;
+  position: fixed;
   right: 1em;
+  margin: 0 1em;
 }
 
 header a:link {
   text-decoration: none;
-}
-
-.privacy-in-dialog {
-  padding: 0 0!important;
-  font-size: 0.9em;
 }
 
 /*****************

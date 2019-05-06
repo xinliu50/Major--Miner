@@ -8,13 +8,15 @@ import {
   CircularProgress
 } from "@material-ui/core";
 import LandingPage from "./landing/LandingPage";
-import Footer from "./Footer";
+import Footer from "./root/Footer";
 import FaqPage from "./info/FaqPage";
 import ContactPage from "./info/ContactPage";
 import PrivacyPage from "./info/PrivacyPage";
-import Header from "./Header";
+import Header from "./root/Header";
 import GamePage from "./main/GamePage";
 import SummaryPage from "./main/SummaryPage";
+import LeadersPage from "./info/LeadersPage";
+import SearchPage from "./search/SearchPage";
 
 const theme = createMuiTheme({
   palette: {
@@ -113,6 +115,8 @@ class App extends Component {
               <Route path="/info/faq" component={FaqPage} />
               <Route path="/info/contact" component={ContactPage} />
               <Route path="/info/privacy" component={PrivacyPage} />
+              <Route path="/info/leaders" component={LeadersPage} />
+              <Route path="/search" component={SearchPage} />
               <PrivateRoute
                 exact
                 path="/main"

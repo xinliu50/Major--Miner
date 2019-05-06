@@ -6,13 +6,16 @@ import {
   Input,
   InputLabel,
   InputAdornment,
+  Icon,
   IconButton,
   FormHelperText,
-  CircularProgress
+  CircularProgress,
+  Tooltip
 } from "@material-ui/core";
 import Send from "@material-ui/icons/Send";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
+import Help from "@material-ui/icons/HelpOutline";
 import AudioAnalyser from "./AudioAnalyser";
 import firebase from "../base";
 import staticFirebase from "firebase";
@@ -25,7 +28,7 @@ class GamePage extends Component {
       url: '',
       existingTags: {},
       currentTags: {},
-      loading: true
+      loading: false
     };
   }
 
@@ -34,7 +37,7 @@ class GamePage extends Component {
     this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
     this.userClipHistoryRef = this.userRef.collection('clipHistory');
     
-    this.loadFromDb(this.state.clipId);
+    //this.loadFromDb(this.state.clipId);
   }
 
   loadFromDb = async clipId => {
@@ -143,7 +146,7 @@ class GamePage extends Component {
   }
 
   componentWillUnmount() {
-    this.saveToDb();
+    // this.saveToDb();
   }
 
   render() {
@@ -201,6 +204,16 @@ class GamePage extends Component {
                   <IconButton id="submitButton" onClick={this.handleSubmit}>
                     <Send />
                   </IconButton>
+                  <Tooltip
+                    title={
+                      <p>You can input more than one tag <br />by using commas to separate.</p>
+                    }
+                    placement="right"
+                  >
+                    <Icon>
+                      <Help />
+                    </Icon>
+                  </Tooltip>
                 </InputAdornment>
               }
             />

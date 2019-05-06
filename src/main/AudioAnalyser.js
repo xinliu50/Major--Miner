@@ -43,16 +43,6 @@ class AudioAnalyser extends Component {
   }
 
   componentDidMount() {
-    // const db = firebase.firestore();
-    // try {
-    //   const doc = await db.collection('audios').doc('2').get();
-    //   const url = doc.data().Url;
-    //   console.log(url);
-    //   await this.setState({ url: url });
-    //   this.setupAudioContext();
-    // } catch(err) {
-    //   console.log(err);
-    // }
     this.setupAudioContext();
   }
 

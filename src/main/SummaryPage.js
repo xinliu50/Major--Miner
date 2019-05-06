@@ -11,9 +11,8 @@ class SummaryPage extends Component {
     super(props);
     this.state = {
       clipHistory: {},
-      play: false,
-      lastClips: ['AAAAAAAAAAAAAAAAAAAAAA', 'BBB', 'CCC', 'DDD', 'EEE', 'FFF', 'GGG', 'HHH'],
-      lastScoredClips: ['AAA', 'BBB', 'CCC', 'DDD', 'EEE', 'FFF', 'GGG', 'HHH']
+      scoredClipHistory: {},
+      play: false
     }
   }
 
@@ -33,6 +32,17 @@ class SummaryPage extends Component {
         this.setState({ clipHistory });
       })
     });
+
+    const scoredClipHistorySnapshot = await this.userRef.collection('clipHistory').where("score", ">", 0).orderBy("score").limit(10).get();
+    const scoredClipHistory = {};
+    scoredClipHistorySnapshot.forEach(clip => {
+      scoredClipHistory[clip.id] = { score: clip.data().score };
+      this.audioRef.doc(clip.id).get().then(audio => {
+        scoredClipHistory[clip.id].title = audio.data().Title;
+        scoredClipHistory[clip.id].url = audio.data().Url;
+        this.setState({ scoredClipHistory });
+      })
+    })
   }
 
   togglePlay = play => {
@@ -40,7 +50,7 @@ class SummaryPage extends Component {
   }
 
   render() {
-    const { lastClips, lastScoredClips, clipHistory } = this.state;
+    const { clipHistory, scoredClipHistory } = this.state;
     return (
       <Grid container className="summary-container" direction="column" alignItems="center">
         <Grid item>
@@ -66,9 +76,13 @@ class SummaryPage extends Component {
         <h2>Your last scored clips</h2>
         <Grid item className="card-list-container"> 
           <Grid container className="card-list" spacing={8}>
-          {lastScoredClips.map((clip, i) =>(
+          {Object.keys(scoredClipHistory).map((clip, i) =>(
             <Grid item key={i}>
-              <AudioCard clip={clip} />
+              <AudioCard
+                url={scoredClipHistory[clip].url}
+                clip={scoredClipHistory[clip].title}
+                togglePlay={this.togglePlay}
+              />
             </Grid>
           ))}
           </Grid>

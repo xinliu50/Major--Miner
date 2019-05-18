@@ -19,6 +19,7 @@ import Help from "@material-ui/icons/HelpOutline";
 import AudioAnalyser from "./AudioAnalyser";
 import firebase from "../base";
 import staticFirebase from "firebase";
+import GameRuleDialog from "./GameRuleDialog";
 
 class GamePage extends Component {
   constructor(props) {
@@ -153,8 +154,12 @@ class GamePage extends Component {
     const { url, currentTags, existingTags } = this.state;
     return (
       <Grid container className="game-container" direction="column" alignItems="center" spacing={16}>
-        <Grid item>
-          <h1>Describe this clip</h1>
+        <Grid item container alignItems="center">
+          <Grid item sm={1} md={1} lg={1}><GameRuleDialog /></Grid>
+          <Grid item sm={10} md={10} lg={10}>
+            <h1>Describe this clip</h1>
+          </Grid>
+          <Grid item sm={1} md={1} lg={1}></Grid>
         </Grid>
         <Grid item container alignItems="center">
           <Grid item sm={3} md={3} lg={3}>

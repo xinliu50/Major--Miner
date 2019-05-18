@@ -7,6 +7,7 @@ import {
   ButtonBase
 } from "@material-ui/core";
 
+//TODO: Read from DB to check if user is the first time to play game and pop up the game rule if true
 class GameRuleDialog extends Component {
   constructor(props) {
     super(props);

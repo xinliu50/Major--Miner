@@ -6,6 +6,7 @@ import {
 import AudioCard from "./AudioCard";
 import firebase from "../base";
 
+//TODO: load tags from DB
 class SummaryPage extends Component {
   constructor(props) {
     super(props);

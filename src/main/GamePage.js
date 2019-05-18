@@ -21,6 +21,8 @@ import firebase from "../base";
 import staticFirebase from "firebase";
 import GameRuleDialog from "./GameRuleDialog";
 
+//TODO: modify calls to the new collection
+//TODO: add randomness to load songs
 class GamePage extends Component {
   constructor(props) {
     super(props);

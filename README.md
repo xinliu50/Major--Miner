@@ -7,10 +7,11 @@
 npm install
 ```
 3. Get Firebase credentials
-    1. Choose Project settings
-    ![project-setting](images/project-setting.png)
-    2. Locate the SDK config snippet
-    ![config-snippet](images/config-snippet.png)
+   1. Choose Project settings
+    <img src="images/project-setting.png" width="430" height="81" />
+    
+   2. Locate the SDK config snippet
+    <img src="images/config-snippet.png" width="610" height="367" />
 4. Create `.env` file inside project root directory to include firebase project credentials
 ```
 REACT_APP_FIREBASE_KEY=

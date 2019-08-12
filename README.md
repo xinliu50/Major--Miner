@@ -30,12 +30,12 @@ REACT_APP_FIREBASE_SENDER_ID=
 ```
 *You can access firebase SDK by going to **Project Overview***
 .Click **1 app**:
-<img src="images/1app.png" width=“300” height=“100” />
+<img src="images/1app.png" width=“508” height=“278” />
 .Click setting icon:
-<img src="images/settingicon.png" width=“300” height=“100” />
+<img src="images/settingicon.png" width=“506” height=“320” />
 
 .Under **General** page, you will see the SDK values.
-<img src="images/SDK.png" width=“300” height=“100” />
+<img src="images/SDK.png" width=“502” height=“318” />
 
 ## Other setup
 - [CORS configuration](https://firebase.google.com/docs/storage/web/download-files#cors_configuration) (For access to Firebase data)

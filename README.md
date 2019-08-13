@@ -40,7 +40,7 @@ You can access firebase SDK by going to **Project Overview**
 ## Firebase set up
 
 1. Enable the **Email/Password** sign-in method under **Authentication**:
-<img src="images/signInMethod.png" width="800" height="300"/>
+<img src="images/signInMethod.png"/>
 
 2. Create database
 - **Start in locked mode** finish creating **Cloud Firestore**
@@ -66,7 +66,7 @@ service firebase.storage {
 }
 ```
 4. Adding collections and copy the **Url** from each clip files under firebase storage:
-<img src="images/collections.png" width="800" height="300"/>
+<img src="images/collections.png"/>
 
 5. Run
 ```bash

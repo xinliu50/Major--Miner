@@ -35,7 +35,55 @@ You can access firebase SDK by going to **Project Overview**
 <img src="images/settingicon.png" />
 
 .Under **General** page, you will see the SDK values.
-<img src="images/SDK.png" />
+<img src="images/SDK.png"  />
 
+## Firebase set up
+
+1. Enable the **Email/Password** sign-in method under **Authentication**:
+<img src="images/signInMethod.png" />
+
+2. Create database
+- **Start in locked mode** finish creating **Cloud Firestore**
+- Modify **Rules** to allow read and write:
+```
+service cloud.firestore {
+    match /databases/{database}/documents {
+        match /{document=**} {
+            allow read, write: if request.auth.uid != null;
+        }
+    }
+}
+```
+3. Upload audio clips into firebase storage, then make sure the **Rules**
+```
+rules_version = '2';
+service firebase.storage {
+    match /b/{bucket}/o {
+        match /{allPaths=**} {
+            allow read, write: if true;
+        }
+    }
+}
+```
+4. Adding collections and copy the **Url** from each clip files under firebase storage:
+<img src="images/collections.png" width="769" height="66"/>
+
+5. Run
+```bash
+ gsutil cors set cors.json gs://<your-cloud-storage-bucket>
+```
+to successfully load the clips from firebase storage.
+**Hint:**
+If you have not download gcloud yet, you will get a error message
+**Download gcloud:**
+```bash
+curl https://sdk.cloud.google.com | bash
+```
+```bash
+exec -l $SHELL
+```
+```bash
+gcloud init
+```
 ## Other setup
 - [CORS configuration](https://firebase.google.com/docs/storage/web/download-files#cors_configuration) (For access to Firebase data)

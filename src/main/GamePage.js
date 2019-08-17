@@ -27,7 +27,7 @@ class GamePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      clipId: '2',
+      clipId: '',
       url: '',
       existingTags: {},
       currentTags: {},
@@ -39,7 +39,10 @@ class GamePage extends Component {
     this.db = firebase.firestore();
     this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
     this.userClipHistoryRef = this.userRef.collection('clipHistory');
-    
+    this.state.clipId = '0';
+    //adding random method to load random clips
+    var id = Math.floor((Math.random()*5));
+    this.state.clipId = id + '';
     this.loadFromDb(this.state.clipId);
   }
 
@@ -139,12 +142,14 @@ class GamePage extends Component {
   getNextClip = async () => {
     this.saveToDb();
     await this.setState({
-      clipId: '1',
+      clipId: '',
       url: '',
       existingTags: {},
       currentTags: {},
       loading: true
     });
+    var id = Math.floor((Math.random()*5));
+    this.state.clipId = id + '';
     this.loadFromDb(this.state.clipId);
   }
 

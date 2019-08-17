@@ -72,8 +72,8 @@ class GamePage extends Component {
 
   handleSubmit = () => {
     this.userClipHistoryRef = this.userRef.collection('clipHistory');
-    const newTags = document.getElementById("tags").value.toLowerCase().replace(/\s/g,'').split(",");
-    const filteredTags = newTags.filter(tag => (!Object.keys(this.state.currentTags).includes(tag)));
+    this.newTags = document.getElementById("tags").value.toLowerCase().replace(/\s/g,'').split(",");
+    const filteredTags = this.newTags.filter(tag => (!Object.keys(this.state.currentTags).includes(tag)));
     filteredTags.forEach(tag => {
       if (Object.keys(this.state.existingTags).includes(tag)) {
         this.setState(prevState => ({ currentTags: {...prevState.currentTags, [tag]: this.state.existingTags[tag].count + 1 }}));
@@ -133,6 +133,11 @@ class GamePage extends Component {
             lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
           });
          }
+        this.newTags.forEach(tag => {
+         this.userClipHistoryRef.doc(this.state.clipId).update({
+            TAG: staticFirebase.firestore.FieldValue.arrayUnion(tag)
+          })
+         })
        })
       console.log('user data upload seems good too..');
     } catch(err) {

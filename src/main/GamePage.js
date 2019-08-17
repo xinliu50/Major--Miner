@@ -38,7 +38,7 @@ class GamePage extends Component {
   componentDidMount() {
     this.db = firebase.firestore();
     this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
-    this.userClipHistoryRef = this.userRef.collection('clipHistory');
+    //this.userClipHistoryRef = this.userRef.collection('clipHistory');
     this.state.clipId = '0';
     //adding random method to load random clips
     var id = Math.floor((Math.random()*5));
@@ -71,6 +71,7 @@ class GamePage extends Component {
   }
 
   handleSubmit = () => {
+    this.userClipHistoryRef = this.userRef.collection('clipHistory');
     const newTags = document.getElementById("tags").value.toLowerCase().replace(/\s/g,'').split(",");
     const filteredTags = newTags.filter(tag => (!Object.keys(this.state.currentTags).includes(tag)));
     filteredTags.forEach(tag => {

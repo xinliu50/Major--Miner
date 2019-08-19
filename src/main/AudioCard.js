@@ -9,6 +9,7 @@ import PlayArrow from "@material-ui/icons/PlayArrow";
 import Pause from "@material-ui/icons/Pause";
 import Group from "@material-ui/icons/Group";
 import Person from "@material-ui/icons/Person";
+import firebase from "../base";
 
 class AudioCard extends Component {
   constructor(props) {
@@ -21,6 +22,7 @@ class AudioCard extends Component {
 
   componentDidMount() {
     this.setupAudioContext();
+    this.getTags();
   }
 
   setupAudioContext = () => {
@@ -62,14 +64,44 @@ class AudioCard extends Component {
     this.audioSource.disconnect();
   }
 
+  getTags(){
+    this.db = firebase.firestore();
+    this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
+    this.userClipHistoryRef = this.userRef.collection('clipHistory');
+    /*this.userClipHistoryRef.doc('0').get()
+      .then((querysnapshot) => {
+        querysnapshot.forEach(doc => {
+          let items = doc.data();
+          items = JSON.stringify(items);
+          this.setState({items : items})
+        })
+      });*/
+    //this.userClipHistoryRef.once("value")
+     // .then(function(snapshot){
+       // snapshot.toString();
+      //});
+   // console.log(this.userClipHistoryRef.doc('0'));
+   this.userClipHistoryRef.doc('1').get()
+    .then(documentSnapshot => {
+      if (documentSnapshot.exists) {
+        let TAG = documentSnapshot.get("TAG");
+        TAG = JSON.stringify(TAG);
+        this.setState({TAG : TAG})
+        console.log(`Retrieved field value: ${TAG}`);
+        //console.log('Document retrieved successfully.');
+      }
+    });
+
+  }
   render() {
     return (
       <Card className="audio-card">
         <CardContent>
           <h5>{this.props.clip}</h5>
-          <p>Your tags: aaa, bbb</p>
+          <p>Your tags: {this.state.TAG || 'loading'}</p>
+
           {this.state.seeOthers ? (
-            <p>Other's tags: ccc, ddd</p>
+            <p>Other's tags: ccc, ddd </p>
           ) : ""}
         </CardContent>
         <CardActions style={{ paddingTop: "0" }}>

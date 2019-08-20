@@ -30,6 +30,7 @@ class SummaryPage extends Component {
       this.audioRef.doc(clip.id).get().then(audio => {
         clipHistory[clip.id].title = audio.data().Title;
         clipHistory[clip.id].url = audio.data().Url;
+        clipHistory[clip.id].id = clip.id;
         this.setState({ clipHistory });
       })
     });
@@ -68,6 +69,7 @@ class SummaryPage extends Component {
               <AudioCard
                 url={clipHistory[clip].url}
                 clip={clipHistory[clip].title}
+                clipId={clipHistory[clip].id}
                 togglePlay={this.togglePlay}
               />
             </Grid>

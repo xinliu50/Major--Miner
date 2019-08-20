@@ -68,30 +68,15 @@ class AudioCard extends Component {
     this.db = firebase.firestore();
     this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
     this.userClipHistoryRef = this.userRef.collection('clipHistory');
-    /*this.userClipHistoryRef.doc('0').get()
-      .then((querysnapshot) => {
-        querysnapshot.forEach(doc => {
-          let items = doc.data();
-          items = JSON.stringify(items);
-          this.setState({items : items})
-        })
-      });*/
-    //this.userClipHistoryRef.once("value")
-     // .then(function(snapshot){
-       // snapshot.toString();
-      //});
-   // console.log(this.userClipHistoryRef.doc('0'));
-   this.userClipHistoryRef.doc('1').get()
-    .then(documentSnapshot => {
-      if (documentSnapshot.exists) {
-        let TAG = documentSnapshot.get("TAG");
-        TAG = JSON.stringify(TAG);
-        this.setState({TAG : TAG})
-        console.log(`Retrieved field value: ${TAG}`);
-        //console.log('Document retrieved successfully.');
-      }
-    });
-
+    this.userClipHistoryRef.doc(this.props.clipId+'').get()
+        .then(documentSnapshot => {
+        if (documentSnapshot.exists) {
+          let TAG = documentSnapshot.get("TAG");
+          TAG = JSON.stringify(TAG);
+          this.setState({TAG : TAG})
+        }
+      });
+    console.log(this.props.clipId);
   }
   render() {
     return (

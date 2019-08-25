@@ -13,7 +13,8 @@ class AudioAnalyser extends Component {
     this.state = {
       audioData: new Uint8Array(0),
       play: false,
-      url: ''
+      url: '',
+      firstPlay: 0
     };
     this.tick = this.tick.bind(this);
   }
@@ -40,7 +41,7 @@ class AudioAnalyser extends Component {
     // put 'play' state to false when the sound ends
     this.audio.onended = () => {
       if (this._isMounted) {
-        this.setState({ play: false });
+        this.setState({ play: false, firstPlay: 0});
       }
     }
   }
@@ -59,7 +60,7 @@ class AudioAnalyser extends Component {
   }
 
   toggleAudio = () => {
-    if (this.state.play === false) {
+    if (this.state.firstPlay == 0) {
       try {
         this.setupAudioContext();
       } catch(err) {
@@ -70,6 +71,9 @@ class AudioAnalyser extends Component {
     if (this._isMounted) {
       this.setState({ play: !this.state.play });
     }
+    this.state.firstPlay ++;
+    console.log(this._isMounted);
+     console.log(this.state.play);
   };
 
   componentWillUnmount() {

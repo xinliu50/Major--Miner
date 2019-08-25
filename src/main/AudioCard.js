@@ -18,24 +18,31 @@ class AudioCard extends Component {
       play: false,
       seeOthers: false
     };
+    //this.getTags = this.getTags.bind(this);
   }
 
   componentDidMount() {
     this.setupAudioContext();
+    //this.getTags = this.getTags.bind(this);
     this.getTags();
   }
-
   setupAudioContext = () => {
-    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    this.gainNode = this.audioContext.createGain();
-    this.gainNode.gain.value = 15;
-    this.gainNode.connect(this.audioContext.destination);
+    try{
+      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      this.gainNode = this.audioContext.createGain();
+      this.gainNode.gain.value = 15;
+      this.gainNode.connect(this.audioContext.destination);
+    }catch(error){
+      console.log(error);
+    }
 
     this.audio = new Audio(this.props.url);
     this.audioSource = this.audioContext.createMediaElementSource(this.audio);
     this.audio.crossOrigin = "anonymous";
     this.audioSource.connect(this.gainNode);
-
+    this.audioContext.resume().then(() => {
+      console.log('Playback resumed successfully');
+    })
     this.audio.onended = () => {
       this.setState({ play: false });
       this.props.togglePlay(false);

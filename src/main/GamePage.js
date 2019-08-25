@@ -40,9 +40,12 @@ class GamePage extends Component {
     this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
     //this.userClipHistoryRef = this.userRef.collection('clipHistory');
     this.state.clipId = '0';
+    //this.setState({clipId: '0'});
     //adding random method to load random clips
-    var id = Math.floor((Math.random()*5));
+    var id = Math.floor((Math.random()*6));
     this.state.clipId = id + '';
+    //id = id+'';
+    //this.setState({clipId:id});
     this.loadFromDb(this.state.clipId);
   }
 
@@ -52,7 +55,7 @@ class GamePage extends Component {
     try {
       // load url
       const doc = await this.audioRef.get();
-      const url = doc.data().Url;
+      const url = "https://firebasestorage.googleapis.com/v0/b/majorminer-dd13a.appspot.com/o/FUNNY%20and%20COMEDY%20SOUND%20EFFECTS%20I.mp3?alt=media&token=49f53e58-15e6-47e7-96ad-cf17a97f0113"//doc.data().Url;
       console.log(url);
 
       // load existing tags
@@ -154,8 +157,10 @@ class GamePage extends Component {
       currentTags: {},
       loading: true
     });
-    var id = Math.floor((Math.random()*5));
+    var id = Math.floor((Math.random()*6));
     this.state.clipId = id + '';
+    //id = id +'';
+    //this.setState({clipId:id});
     this.loadFromDb(this.state.clipId);
   }
 

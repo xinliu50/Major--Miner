@@ -27,7 +27,7 @@ class GamePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      clipId: '',
+      clipId: '2',
       url: '',
       existingTags: {},
       currentTags: {},
@@ -38,14 +38,8 @@ class GamePage extends Component {
   componentDidMount() {
     this.db = firebase.firestore();
     this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
-    //this.userClipHistoryRef = this.userRef.collection('clipHistory');
-    this.state.clipId = '0';
-    //this.setState({clipId: '0'});
-    //adding random method to load random clips
-    var id = Math.floor((Math.random()*6));
-    this.state.clipId = id + '';
-    //id = id+'';
-    //this.setState({clipId:id});
+    this.userClipHistoryRef = this.userRef.collection('clipHistory');
+    
     this.loadFromDb(this.state.clipId);
   }
 
@@ -55,7 +49,7 @@ class GamePage extends Component {
     try {
       // load url
       const doc = await this.audioRef.get();
-      const url = "https://firebasestorage.googleapis.com/v0/b/majorminer-dd13a.appspot.com/o/FUNNY%20and%20COMEDY%20SOUND%20EFFECTS%20I.mp3?alt=media&token=49f53e58-15e6-47e7-96ad-cf17a97f0113"//doc.data().Url;
+      const url = doc.data().Url;
       console.log(url);
 
       // load existing tags
@@ -74,9 +68,8 @@ class GamePage extends Component {
   }
 
   handleSubmit = () => {
-    this.userClipHistoryRef = this.userRef.collection('clipHistory');
-    this.newTags = document.getElementById("tags").value.toLowerCase().replace(/\s/g,'').split(",");
-    const filteredTags = this.newTags.filter(tag => (!Object.keys(this.state.currentTags).includes(tag)));
+    const newTags = document.getElementById("tags").value.toLowerCase().replace(/\s/g,'').split(",");
+    const filteredTags = newTags.filter(tag => (!Object.keys(this.state.currentTags).includes(tag)));
     filteredTags.forEach(tag => {
       if (Object.keys(this.state.existingTags).includes(tag)) {
         this.setState(prevState => ({ currentTags: {...prevState.currentTags, [tag]: this.state.existingTags[tag].count + 1 }}));
@@ -136,11 +129,6 @@ class GamePage extends Component {
             lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
           });
          }
-        this.newTags.forEach(tag => {
-         this.userClipHistoryRef.doc(this.state.clipId).update({
-            TAG: staticFirebase.firestore.FieldValue.arrayUnion(tag)
-          })
-         })
        })
       console.log('user data upload seems good too..');
     } catch(err) {
@@ -151,16 +139,12 @@ class GamePage extends Component {
   getNextClip = async () => {
     this.saveToDb();
     await this.setState({
-      clipId: '',
+      clipId: '1',
       url: '',
       existingTags: {},
       currentTags: {},
       loading: true
     });
-    var id = Math.floor((Math.random()*6));
-    this.state.clipId = id + '';
-    //id = id +'';
-    //this.setState({clipId:id});
     this.loadFromDb(this.state.clipId);
   }
 

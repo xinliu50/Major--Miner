@@ -60,7 +60,9 @@ class AudioAnalyser extends Component {
   }
 
   toggleAudio = () => {
-    if (this.state.firstPlay == 0) {
+    this.audioContext.resume().then(()=>{
+      console.log('Playback resumed successfully');
+      if (this.state.firstPlay === 0) {
       try {
         this.setupAudioContext();
       } catch(err) {
@@ -72,8 +74,7 @@ class AudioAnalyser extends Component {
       this.setState({ play: !this.state.play });
     }
     this.state.firstPlay ++;
-    console.log(this._isMounted);
-     console.log(this.state.play);
+    });
   };
 
   componentWillUnmount() {

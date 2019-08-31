@@ -13,7 +13,7 @@ import FaqPage from "./info/FaqPage";
 import ContactPage from "./info/ContactPage";
 import PrivacyPage from "./info/PrivacyPage";
 import Header from "./root/Header";
-import GamePage from "./main/GamePage";
+import NewGamePage from "./main/NewGamePage";
 import SummaryPage from "./main/SummaryPage";
 import LeadersPage from "./info/LeadersPage";
 import SearchPage from "./search/SearchPage";
@@ -125,7 +125,7 @@ class App extends Component {
               />
               <PrivateRoute
                 path="/main/clip"
-                component={GamePage}
+                component={NewGamePage}
                 authenticated={this.state.authenticated}
               />
             </main>

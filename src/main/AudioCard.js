@@ -24,6 +24,7 @@ class AudioCard extends Component {
   componentDidMount() {
     this.setupAudioContext();
     //this.getTags = this.getTags.bind(this);
+    //console.log('ss');
     this.getTags();
   }
   setupAudioContext = () => {
@@ -71,7 +72,7 @@ class AudioCard extends Component {
     this.audioSource.disconnect();
   }
 
-  getTags(){
+  /*getTags(){
     this.db = firebase.firestore();
     this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
     this.userClipHistoryRef = this.userRef.collection('clipHistory');
@@ -84,13 +85,33 @@ class AudioCard extends Component {
         }
       });
     console.log(this.props.clipId);
-  }
+  }*/
+
+  getTags = () => {
+
+    this.db = firebase.firestore();
+    this.audioRef = this.db.collection('audios').doc('2');
+    //this.audioTagRef = this.audioRef.collection('tags');
+    //this.audioTagRef.doc()
+    //var query = this.audioRef.where("Url", "==", true)
+   this.audioRef.collection('tags').where("userId", "==", true)
+    .get()
+    .then(querySnapshot => {
+        querySnapshot.forEach(function(doc) {
+            // doc.data() is never undefined for query doc snapshots
+            console.log(doc.id, " => ", doc.data());
+        });
+    })
+    .catch(function(error) {
+        console.log("Error getting documents: ", error);
+    });
+  };
   render() {
     return (
       <Card className="audio-card">
         <CardContent>
           <h5>{this.props.clip}</h5>
-          <p>Your tags: {this.state.TAG || 'loading'}</p>
+          <p>Your tags: aaa{/*{this.state.TAG || 'loading'}*/}</p>
 
           {this.state.seeOthers ? (
             <p>Other's tags: ccc, ddd </p>

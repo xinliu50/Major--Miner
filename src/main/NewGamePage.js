@@ -61,39 +61,26 @@
           
         await this.setState({ loading: false });
       }
-      loadExistingTag = async () => {
-        // load existing tags
-        //this.audioRef = await this.db.collection('audios').doc(this.clipId);
-        //let ref = await this.db.collection('audios').doc('0');
-        //let tagRef = await ref.collection('tags');
-        //const tags = await this.audioTagRef.get();
-        //this.existingTags = {};
-        this.audioRef.collection('tags').where('count','==',true)
-          .get()
-          .then(querySnapshot => {
-            querySnapshot.forEach(doc => {
-              console.log(doc.id, "=>", doc.data());
-            })
-          })
-        /*try{
+      loadExistingTag = async (tags) => {
+        // load existing tags       
+       // const tags = await this.audioTagRef.get();
+        try{
           if (tags) {
           tags.forEach(tag => (this.existingTags[tag.id] = {
-            //count: tag.data().count,
             count: tag.data().count,
-           // userId: tag.data().userId,
           }));
-         // console.log(this.clipId);
-           //console.log();
           console.log(this.existingTags);}
         }catch(err){
           console.log("loadExistingTagError: " + err);
-        }*/
-        //await this.setState({existingTags: existingTags});
+        }
+        return [this.existingTags, this.state.currentTags];
       }
+      
       getNextClip = async () => {
         await this.setState({loading: true});
         this.loadUrl();
       }
+      
       handleSubmit = async () => {
         const newTags = document.getElementById("tags").value.toLowerCase().replace(/\s/g,'').split(",");
         const filteredTags = newTags.filter(tag => (!Object.keys(this.state.currentTags).includes(tag)));
@@ -104,13 +91,18 @@
         document.getElementById("tags").value = "";
         
         this.audioTagRef = await this.audioRef.collection('tags');
-        //const tags = await this.audioTagRef.get();
+        const tags = await this.audioTagRef.get();
         
-        this.loadExistingTag();
+        var relatedTag = await this.loadExistingTag(tags);
+        this.existingTags = relatedTag[0];
+        
+        console.log(this.existingTags);
+       
+        var currentTags = relatedTag[1];
         //console.log(this.existingTags);
-        this.loadTagsToDb(this.state.currentTags);
+        this.loadTagsToDb(currentTags);
       }
-      loadTagsToDb = async (currentTags) => {
+      loadTagsToDb = currentTags => {
         //this.audioTagRef = await this.audioRef.collection('tags');
 
         //await tags document created?

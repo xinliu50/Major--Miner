@@ -51,7 +51,7 @@
         try {
           // load url
           const doc = await this.audioRef.get();
-          this.url = "https://firebasestorage.googleapis.com/v0/b/majorminer-dd13a.appspot.com/o/FUNNY%20and%20COMEDY%20SOUND%20EFFECTS%20I.mp3?alt=media&token=49f53e58-15e6-47e7-96ad-cf17a97f0113";//doc.data().Url;
+          this.url = doc.data().Url;
           console.log(this.clipId);
           console.log(this.url);
         
@@ -69,11 +69,11 @@
           tags.forEach(tag => (this.existingTags[tag.id] = {
             count: tag.data().count,
           }));
-          console.log(this.existingTags);}
+         }
         }catch(err){
           console.log("loadExistingTagError: " + err);
         }
-        return [this.existingTags, this.state.currentTags];
+        return this.existingTags;
       }
       
       getNextClip = async () => {
@@ -83,34 +83,46 @@
       
       handleSubmit = async () => {
         const newTags = document.getElementById("tags").value.toLowerCase().replace(/\s/g,'').split(",");
-        const filteredTags = newTags.filter(tag => (!Object.keys(this.state.currentTags).includes(tag)));
-        await this.setState({currentTags: {water:1 , jj:1, xin: 0, ff: 2}});
-        console.log("newTags: " + newTags);
-        console.log("filteredTags: " + filteredTags);
-        console.log("currentTags: " + this.state.currentTags);
-        document.getElementById("tags").value = "";
-        
+        //generate temporatyTags set from new Tags
+        var tempCurrentTags = {};
         this.audioTagRef = await this.audioRef.collection('tags');
         const tags = await this.audioTagRef.get();
         
-        var relatedTag = await this.loadExistingTag(tags);
-        this.existingTags = relatedTag[0];
+        //generate exitingTags from DB
+        this.existingTags = await this.loadExistingTag(tags);
         
+        console.log("existingTags");
         console.log(this.existingTags);
+        //see how many times this tag has been upload
+        newTags.forEach(tag => {
+          if(Object.keys(this.existingTags).includes(tag)){
+            tempCurrentTags[tag] = {
+              count: this.existingTags[tag].count,
+            }
+          }else{
+           tempCurrentTags[tag] = {
+              count: 0,
+            }
+          }
+        });
+        console.log("tempCurrentTags");
+        console.log(tempCurrentTags);
        
-        var currentTags = relatedTag[1];
+        console.log("newTags: " + newTags);
+        //console.log("filteredTags: " + filteredTags);
+  
+        document.getElementById("tags").value = "";
+       
         //console.log(this.existingTags);
-        this.loadTagsToDb(currentTags);
+        this.loadTagsToDb(tempCurrentTags);
+        await this.setState({currentTags: tempCurrentTags});
       }
       loadTagsToDb = currentTags => {
-        //this.audioTagRef = await this.audioRef.collection('tags');
-
-        //await tags document created?
         try{
           // update tags in DB
           Object.keys(currentTags).forEach(tag => {
           // tag already exists
-          if (currentTags[tag] >= 1) {
+          if (currentTags[tag].count >= 1) {
             this.audioTagRef.doc(tag).update({
                 count: staticFirebase.firestore.FieldValue.increment(1),
                 userId: staticFirebase.firestore.FieldValue.arrayUnion(this.user.uid)
@@ -163,11 +175,11 @@
             </Grid>
            <Grid item sm={10} md={6} lg={8}>
               {Object.keys(currentTags).map((tag, i) => {
-                if (currentTags[tag] === 1) {
+                if (currentTags[tag].count === 0) {
                   return (<span key={i} className="gray">{tag}&nbsp;</span>)
-                } else if (currentTags[tag] === 2) {
+                } else if (currentTags[tag].count === 1) {
                   return (<i key={i} className="1-point">{tag}&nbsp;</i>)
-                } else if (currentTags[tag] > 2) {
+                } else if (currentTags[tag].count > 1) {
                   return (<span key={i} className="pink">{tag}&nbsp;</span>)
                 } else {
                   return (<b key={i}>{tag}&nbsp;</b>)

@@ -38,11 +38,14 @@
         this.user = firebase.auth().currentUser;
         this.db = firebase.firestore();
         this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
-
+        //this.firstUserId = '';
+        //this.firstUserRef = ;
+        //this.firstUserClipHistoryRef;
         this.loadUrl();
       }
       //random loading Url
       loadUrl = async () => {
+        console.log("currentUser: " + firebase.auth().currentUser.uid);
         this.existingTags = {};
         var querySnapshot = await this.db.collection('audios').get();
         var id = Math.floor((Math.random()*querySnapshot.size)) + '';
@@ -126,23 +129,77 @@
         await this.setState({currentTags: tempCurrentTags});
 
         console.log(this.state.currentTags);
+
       }
       
       //loading user input tags into database
       loadTagsToDb = currentTags => {
+       //let firstUserId = '';
+       // var firstUserRef;
+        //var firstUserClipHistoryRef;
         try{
           // update tags in DB
           Object.keys(currentTags).forEach(tag => {
           // tag already exists
-          if (currentTags[tag].count == 1) {
-            //var score = this.calculateScore(currentTags[tag].count);
+          if (currentTags[tag].count === 1) {
+            //if this user is the second person describe the tag, add 2 points to the first user
+            this.audioTagRef.doc(tag).get()
+              .then(doc => {
+                //this.firstUserId = doc.get('userId');
+                 var userIdArray = doc.get('userId');
+                 var firstUserId = userIdArray[0];
+                 console.log("firstUserId: " + firstUserId);
+                 //if(firstUserId !== firebase.auth().currentUser.uid){
+                  //var firstUserRef = this.db.collection('users').doc(firstUserId);
+                  /*this.db.collection('users').doc(firstUserId).getReference()
+                    .then(ref => {
+                      //var firstUserRef = ref;
+                      var firstUserClipHistoryRef = ref.collection('clipHistory');
+                      firstUserClipHistoryRef.doc(this.clipId).get()
+                        .then(doc => {
+                          if (doc.exists) {
+                            firstUserClipHistoryRef.doc(this.clipId).update({
+                              score: staticFirebase.firestore.FieldValue.increment(2),
+                              lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
+                            });
+                          }
+                        });
+                    });*/
+                  //var firstUserClipHistoryRef = firstUserRef.collection('clipHistory');
+
+                  /*firstUserClipHistoryRef.doc(this.clipId).get()
+                    .then(doc => {
+                      if (doc.exists) {
+                        firstUserClipHistoryRef.doc(this.clipId).update({
+                          score: staticFirebase.firestore.FieldValue.increment(2),
+                          lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
+                        });
+                      }
+                    });*/
+                 // }
+
+               });
+               //console.log("firstUserId: " + firstUserId);
+            /*if(this.firstUserId != firebase.auth().currentUser.uid){
+              firstUserRef = this.db.collection('users').doc(this.firstUserId);
+              firstUserClipHistoryRef = firstUserRef.collection('clipHistory');
+
+              firstUserClipHistoryRef.doc(this.clipId).get()
+                .then(doc => {
+                  if (doc.exists) {
+                    firstUserClipHistoryRef.doc(this.clipId).update({
+                      score: staticFirebase.firestore.FieldValue.increment(2),
+                      lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
+                    });
+                  }
+                });
+            }*/
             //get 1 point if the user is the second person describe this tag
             currentTags[tag].score = 1;
             this.audioTagRef.doc(tag).update({
                 count: staticFirebase.firestore.FieldValue.increment(1),
                 userId: staticFirebase.firestore.FieldValue.arrayUnion(this.user.uid)
                 })
-            //this.firstUserId = 
           } else if(currentTags[tag].count == 0){ //if the user is the first person, 0 score for now, count = 1
             this.audioTagRef.doc(tag).set({
                 count: 1,
@@ -159,6 +216,17 @@
         return currentTags;
       }
       
+      snapshotToArray = snapshot => {
+        let returnArr = [];
+
+        snapshot.forEach(childSnapshot => {
+            let item = childSnapshot.val();
+            item.key = childSnapshot.key;
+            returnArr.push(item);
+        });
+
+      return returnArr;
+      };
       //calculate how much score could get
       calculateScore = count => {
         var score = 0;

@@ -55,11 +55,9 @@
           this.url = doc.data().Url;
           console.log(this.clipId);
           console.log(this.url);
-        
         }catch(err){
           console.log(err);
-        }
-          
+        } 
         await this.setState({ loading: false });
       }
       //getting existing tags from database
@@ -75,8 +73,7 @@
           console.log("loadExistingTagError: " + err);
         }
         return this.existingTags;
-      }
-      
+      }      
       //getting next clips
       getNextClip = async () => {
         await this.setState({currentTags:{}, loading: true});
@@ -84,20 +81,17 @@
       }  
       //submit tags
       handleSubmit = async () => {
-        //this.userClipHistoryRef = this.userRef.collection('clipHistory');
         const newTags = document.getElementById("tags").value.toLowerCase().replace(/\s/g,'').split(",");
         //generate temporatyTags set from new Tags
         var tempCurrentTags = {};
         this.audioTagRef = await this.audioRef.collection('tags');
         const tags = await this.audioTagRef.get();
-        
         //generate exitingTags from DB
         this.existingTags = await this.loadExistingTag(tags);
-        
+       
         console.log("existingTags");
         console.log(this.existingTags);
-        //see how many times this tag has been upload, initialize 0 score 
-       // tempCurrentTags = await this.generateTempCurrentTag(newTags);
+      
         newTags.forEach(tag => {
           if(Object.keys(this.existingTags).includes(tag)){
             tempCurrentTags[tag] = {
@@ -116,14 +110,18 @@
        
         console.log("newTags: " + newTags);
         document.getElementById("tags").value = "";
-        tempCurrentTags = Promise.resolve(this.loadTagsToDb(tempCurrentTags));
+        //tempCurrentTags = Promise.resolve(this.loadTagsToDb(tempCurrentTags));
         //this.createHistory(tempCurrentTags);
+        this.loadTagsToDb(tempCurrentTags).then(tempCurrentTags => {
+          tempCurrentTags = tempCurrentTags;
+        })
         await this.setState({currentTags: tempCurrentTags});
         console.log("currentTags:");
-        this.state.currentTags.then(value => {
-          console.log(value);
-        });
+        
+        console.log(this.state.currentTags);
+        
       }
+      //get first user Id 
       getUserId = async tag => {
         var doc = await this.audioTagRef.doc(tag).get();
         var userIdArray = await doc.get('userId');
@@ -134,7 +132,7 @@
         console.log("firstUserId"+this.firstUserId );
         return this.firstUserId;
       }
-
+      //laoding tags into DB
       loadTagsToDb = async (currentTags) => {
         try{
           for(const tag of Object.keys(currentTags)){ 
@@ -143,22 +141,17 @@
               var firstUserId = await this.getUserId(tag);
               var firstUserRef = await this.db.collection('users').doc(firstUserId);
               console.log("!!firstUserId: " + firstUserId);
-              if(firstUserId !== this.currentId){
-
-                   //await this.scoreUser(firstUserId,2);
+              if(firstUserId !== this.currentId){//if the first user is not current user 
                    this.History(firstUserRef,2);
                    this.refreshTotalScore(firstUserRef,2);
-                  //get 1 point if the user is the second person describe this tag
+                  //get 1 point if current user is the second person describe this tag
                    currentTags[tag].score = 1;
                    this.addSecondUser(tag);
                    this.History(this.userRef,1);
                    this.refreshTotalScore(this.userRef,1);
-                   //await this.scoreUser(this.currentId,1);
-                   //await this.refreshTotalScore(this.userRef,1);
               }else{
-                this.incrementCount(tag);
-              }
-              
+                this.incrementCount(tag);//if current user is the first user, no point. count ++
+              }              
             } else if(currentTags[tag].count === 0){ //if the user is the first person, 0 score for now, count = 1
               this.isFrist(tag);
               this.History(this.userRef,0);
@@ -171,32 +164,6 @@
           console.log("can't upload tags into DB!!:  "+ err);
         }
         return currentTags;
-      }
-      scoreFirstUser = firstUserId => {
-        var ref = this.db.collection('users').doc(firstUserId);
-        var firstUserClipHistoryRef = ref.collection('clipHistory');
-        firstUserClipHistoryRef.doc(this.clipId).get()
-          .then(doc => {
-            if (doc.exists) {
-              firstUserClipHistoryRef.doc(this.clipId).update({
-              score: staticFirebase.firestore.FieldValue.increment(2),
-              lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
-              });
-            }
-          });  
-      }
-      scoreUser = (UserId,score) => {
-        var ref = this.db.collection('users').doc(UserId);
-        var userClipHistoryRef = ref.collection('clipHistory');
-        userClipHistoryRef.doc(this.clipId).get()
-          .then(doc => {
-            if (doc.exists) {
-              userClipHistoryRef.doc(this.clipId).update({
-              score: staticFirebase.firestore.FieldValue.increment(score),
-              lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
-              });
-            }
-          });  
       }
       addSecondUser = tag => {
         this.audioTagRef.doc(tag).update({
@@ -220,47 +187,6 @@
           count: staticFirebase.firestore.FieldValue.increment(1),
         })
       }  
-      /*refreshTotalScore = firstUserRef => {
-        firstUserRef.update({
-          score: staticFirebase.firestore.FieldValue.increment(2)
-        })
-      }*/
-      //create clipHistory and scoring system
-     
-/////////////////////////////////////////////////
-     /* History = currentTags => {
-        try{
-          //adding all scores user gains in terms of current tags
-          this.userClipHistoryRef = this.userRef.collection('clipHistory');
-          var score = 0;
-          Object.keys(currentTags).forEach(tag => {
-            score += currentTags[tag].score;
-          })
-          //upload scores into clipHistory colletion individually 
-          this.userClipHistoryRef.doc(this.clipId).get()
-           .then(doc => {
-             if (doc.exists) {
-              this.userClipHistoryRef.doc(this.clipId).update({
-                score: staticFirebase.firestore.FieldValue.increment(score),
-                lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
-              });
-             } else {
-              this.userClipHistoryRef.doc(this.clipId).set({
-                score: staticFirebase.firestore.FieldValue.increment(score),
-                createdAt: staticFirebase.firestore.FieldValue.serverTimestamp(),
-                lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
-              });
-             }
-             //update total scores
-             this.userRef.update({
-              score: staticFirebase.firestore.FieldValue.increment(score)
-             })
-            })
-         }catch(err){
-           console.log("Can't create clipHistory!! " + err);
-         }
-      }*/
-/////////////////////////////////
       History = (userRef, score) => {
         try{
         var userClipHistoryRef = userRef.collection('clipHistory');
@@ -279,7 +205,6 @@
 
       }
       updateHistory = (userClipHistoryRef,score) => {
-       // var userClipHistoryRef = userRef.collection('clipHistory');
         try{
           userClipHistoryRef.doc(this.clipId).update({
             score: staticFirebase.firestore.FieldValue.increment(score),
@@ -290,7 +215,6 @@
         }
       }
       createHistory = (userClipHistoryRef,score) => {
-        //var userClipHistoryRef = userRef.collection('clipHistory');
         try{
           userClipHistoryRef.doc(this.clipId).set({
             score: staticFirebase.firestore.FieldValue.increment(score),

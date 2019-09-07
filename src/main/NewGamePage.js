@@ -34,7 +34,8 @@
       componentDidMount(){
         this.user = firebase.auth().currentUser;
         this.db = firebase.firestore();
-        this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
+        this.currentId = firebase.auth().currentUser.uid;
+        this.userRef = this.db.collection('users').doc(this.currentId);
         this.firstUserId = '';
         this.loadUrl();
       }
@@ -141,14 +142,15 @@
               var firstUserId = await this.getUserId(tag);
               var firstUserRef = await this.db.collection('users').doc(firstUserId);
               console.log("!!firstUserId: " + firstUserId);
-              if(firstUserId !== firebase.auth().currentUser.uid){
-                   await this.scoreUser(firstUserId);
-                   this.refreshTotalScore(firstUserRef);
+              if(firstUserId !== this.currentId){
+                   await this.scoreUser(firstUserId,2);
+                   await this.refreshTotalScore(firstUserRef,2);
                   //get 1 point if the user is the second person describe this tag
-                   //currentTags[tag].score = 1;
+                   currentTags[tag].score = 1;
                    this.addSecondUser(tag);
-                   await this.scoreUser(firebase.auth().currentUser.uid);
-                   this.refreshTotalScore(firebase.auth().currentUser.uid);
+
+                   //await this.scoreUser(this.currentId,1);
+                   //await this.refreshTotalScore(this.userRef,1);
               }else{
                 this.incrementCount(tag);
               }
@@ -179,11 +181,11 @@
       }
       scoreUser = (UserId,score) => {
         var ref = this.db.collection('users').doc(UserId);
-        var firstUserClipHistoryRef = ref.collection('clipHistory');
-        firstUserClipHistoryRef.doc(this.clipId).get()
+        var userClipHistoryRef = ref.collection('clipHistory');
+        userClipHistoryRef.doc(this.clipId).get()
           .then(doc => {
             if (doc.exists) {
-              firstUserClipHistoryRef.doc(this.clipId).update({
+              userClipHistoryRef.doc(this.clipId).update({
               score: staticFirebase.firestore.FieldValue.increment(score),
               lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
               });

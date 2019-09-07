@@ -84,6 +84,7 @@
       }  
       //submit tags
       handleSubmit = async () => {
+        //this.userClipHistoryRef = this.userRef.collection('clipHistory');
         const newTags = document.getElementById("tags").value.toLowerCase().replace(/\s/g,'').split(",");
         //generate temporatyTags set from new Tags
         var tempCurrentTags = {};
@@ -116,7 +117,7 @@
         console.log("newTags: " + newTags);
         document.getElementById("tags").value = "";
         tempCurrentTags = Promise.resolve(this.loadTagsToDb(tempCurrentTags));
-        this.createHistory(tempCurrentTags);
+        //this.createHistory(tempCurrentTags);
         await this.setState({currentTags: tempCurrentTags});
         console.log("currentTags:");
         this.state.currentTags.then(value => {
@@ -143,12 +144,15 @@
               var firstUserRef = await this.db.collection('users').doc(firstUserId);
               console.log("!!firstUserId: " + firstUserId);
               if(firstUserId !== this.currentId){
-                   await this.scoreUser(firstUserId,2);
-                   await this.refreshTotalScore(firstUserRef,2);
+
+                   //await this.scoreUser(firstUserId,2);
+                   this.History(firstUserRef,2);
+                   this.refreshTotalScore(firstUserRef,2);
                   //get 1 point if the user is the second person describe this tag
                    currentTags[tag].score = 1;
                    this.addSecondUser(tag);
-
+                   this.History(this.userRef,1);
+                   this.refreshTotalScore(this.userRef,1);
                    //await this.scoreUser(this.currentId,1);
                    //await this.refreshTotalScore(this.userRef,1);
               }else{
@@ -157,8 +161,10 @@
               
             } else if(currentTags[tag].count === 0){ //if the user is the first person, 0 score for now, count = 1
               this.isFrist(tag);
+              this.History(this.userRef,0);
             }else{//if the user is the third or more than third person, only increment count but not saving userID
               this.incrementCount(tag);
+              this.History(this.userRef,0);
             }
            }
           }catch(err){
@@ -222,7 +228,7 @@
       //create clipHistory and scoring system
      
 /////////////////////////////////////////////////
-      createHistory = currentTags => {
+     /* History = currentTags => {
         try{
           //adding all scores user gains in terms of current tags
           this.userClipHistoryRef = this.userRef.collection('clipHistory');
@@ -253,6 +259,47 @@
          }catch(err){
            console.log("Can't create clipHistory!! " + err);
          }
+      }*/
+/////////////////////////////////
+      History = (userRef, score) => {
+        try{
+        var userClipHistoryRef = userRef.collection('clipHistory');
+         userClipHistoryRef.doc(this.clipId).get()
+            .then(doc => {
+               if (doc.exists) {
+                 this.updateHistory(userClipHistoryRef,score);
+               } else {
+                 this.createHistory(userClipHistoryRef,score);
+                 this.refreshTotalScore(userRef,0);
+               }
+            });
+        }catch(err){
+          console.log("Can't create clipHistory!! " + err);
+        }
+
+      }
+      updateHistory = (userClipHistoryRef,score) => {
+       // var userClipHistoryRef = userRef.collection('clipHistory');
+        try{
+          userClipHistoryRef.doc(this.clipId).update({
+            score: staticFirebase.firestore.FieldValue.increment(score),
+            lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
+          });
+        }catch(err){
+          console.log("Can't update clipHistory: " + err);
+        }
+      }
+      createHistory = (userClipHistoryRef,score) => {
+        //var userClipHistoryRef = userRef.collection('clipHistory');
+        try{
+          userClipHistoryRef.doc(this.clipId).set({
+            score: staticFirebase.firestore.FieldValue.increment(score),
+            createdAt: staticFirebase.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
+          });
+        }catch(err){
+          console.log("Can't create clipHistory: " + err);
+        }
       }
       render() {
        const url = this.url;

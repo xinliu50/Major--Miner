@@ -36,6 +36,7 @@ const fbConfig = {
   //projectId: "FIREBASE_PROJECT_ID",
   //storageBucket: "",
   //messagingSenderId: "526186255270"
+  ////////
 };
 
 firebase.initializeApp(fbConfig);

@@ -20,13 +20,15 @@
     import firebase from "../base";
     import staticFirebase from "firebase";
     import GameRuleDialog from "./GameRuleDialog";
+    //import {SFC} from 'react';
+    //import fire from "../fire"
 
     const INITIAL_STATE = {
       currentTags:{},
       loading: false,
     };
 
-    class GamePage extends Component {
+    export default class GamePage extends Component {
       constructor(props) {
         super(props);
         this.state = {...INITIAL_STATE};
@@ -38,6 +40,7 @@
         this.userRef = this.db.collection('users').doc(this.currentId);
         this.firstUserId = '';
         this.loadUrl();
+        term();
       }
       //random loading Url
       loadUrl = async () => {
@@ -136,6 +139,8 @@
       loadTagsToDb = async (currentTags) => {
         try{
           for(const tag of Object.keys(currentTags)){ 
+            if( currentTags[tag].count !== 0)
+              this.addUser(tag);
             if (currentTags[tag].count === 1) {
               //if this user is the second person describe the tag, add 2 points to the first user
               var firstUserId = await this.getUserId(tag);
@@ -146,17 +151,13 @@
                    this.refreshTotalScore(firstUserRef,2);
                   //get 1 point if current user is the second person describe this tag
                    currentTags[tag].score = 1;
-                   this.addSecondUser(tag);
                    this.History(this.userRef,1);
                    this.refreshTotalScore(this.userRef,1);
-              }else{
-                this.incrementCount(tag);//if current user is the first user, no point. count ++
-              }              
+              }          
             } else if(currentTags[tag].count === 0){ //if the user is the first person, 0 score for now, count = 1
               this.isFrist(tag);
               this.History(this.userRef,0);
             }else{//if the user is the third or more than third person, only increment count but not saving userID
-              this.incrementCount(tag);
               this.History(this.userRef,0);
             }
            }
@@ -165,11 +166,15 @@
         }
         return currentTags;
       }
-      addSecondUser = tag => {
-        this.audioTagRef.doc(tag).update({
-          count: staticFirebase.firestore.FieldValue.increment(1),
-          userId: staticFirebase.firestore.FieldValue.arrayUnion(this.user.uid)
+      addUser = tag => {
+        try{
+          this.audioTagRef.doc(tag).update({
+            count: staticFirebase.firestore.FieldValue.increment(1),
+            userId: staticFirebase.firestore.FieldValue.arrayUnion(this.user.uid)
           })
+        }catch(err){
+          console.log("can't add user: " + err);
+        }
       }
       refreshTotalScore = (userRef,score) => {
         userRef.update({
@@ -225,6 +230,8 @@
           console.log("Can't create clipHistory: " + err);
         }
       }
+  
+      
       render() {
        const url = this.url;
        const {currentTags,existingTags} = this.state;
@@ -307,5 +314,7 @@
         );
       }
     }
-
-    export default GamePage;
+    const term = (x,y) => {
+        return x+y;
+    }
+    export {term}

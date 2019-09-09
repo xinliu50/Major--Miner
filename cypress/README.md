@@ -12,11 +12,10 @@ Make sure install npm and Node.js first: [To Download](https://docs.npmjs.com/do
 ```bash
 npm i --save-dev cypress
 ```
-4. Add cypress folder by
+4. Add cypress folder by (No EVERY case!)
 ```bash
 cypress open
 ```
-(No EVERY case!)
 **Note:** You would get instruction on how to run cypress from the command window after you successfuly installed it.
 <img src="images/installedCy.png" />
 
@@ -41,6 +40,8 @@ SyntaxError: Unexpected token ...
 ```
 Looks like:
 <img src="images/errorMessage.png" />
+
+
 It's because you might have different version of Node.js and npm! You might need to go back to install Node version managers again, to check the version of your Node.js and npm:
 ```bash
 node -v
@@ -54,17 +55,14 @@ npm i cypress-firebase --save-dev
     see [details](https://github.com/prescottprue/cypress-firebase#folders)
 And compelete the instruction from the Link.
 ## Error and Solved
-1. After set up all the files and plug in, **Error: .firebaserc file not found**, you have to run
+1. After set up all the files and plug in, **Error: .firebaserc file not found**, you have to run [see instruction](https://firebase.google.com/docs/cli)
 ```bash
 firebase init
 ```
-[see instruction](https://firebase.google.com/docs/cli)
-If you don't know how to set up your project after
+If you don't know how to set up your project after [see article](https://medium.com/google-developer-experts/deploy-your-app-to-firebase-in-seconds-b3a9a37dff47)
 ```bash
 firebase init
 ```
-[see article](https://medium.com/google-developer-experts/deploy-your-app-to-firebase-in-seconds-b3a9a37dff47)
-
 2. Error for firebase functions: run (**INSIDE** your ```functions``` folder)
 ```bash
 npm install
@@ -76,4 +74,4 @@ npm run start:dist
 open your **firebase.json** file, make sure under **"hosting"** section:
 ```"public": "build",```
 
-## **WARNING!:** Don't push your ```serviceAccount.json``` (and any files contains your private keys) into public resources! 
+## **WARNING!:** Don't push your ```serviceAccount.json``` (and any files contains your private keys) into public resources!

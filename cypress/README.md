@@ -50,6 +50,6 @@ If you don't know how to set up your project after ```bash firebase init ```,
 
 2. Error for firebase functions: run ```bash npm install ``` **INSIDE** your **functions** folder.
 3. If you getting blank page inside Cypress after ```bash npm run start:dist```, open your **firebase.json** file, make sure under **"hosting"** section:
-```**"public": "build",**```
+```"public": "build",```
 
 ## **WARNING!:** Don't push your **serviceAccount.json** (and any files contains your private keys) into public resources! 

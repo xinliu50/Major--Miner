@@ -25,9 +25,9 @@ yarn-error.log*
 
 
 .env
-.cypress.json
-.cypress.env.json
-.firebase-debug.log
-.firebase.json
-/cypress/support/.commands.js
+cypress.json
+cypress.env.json
+firebase-debug.log
+firebase.json
+/cypress/support/commands.js
 *.mp3

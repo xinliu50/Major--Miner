@@ -35,18 +35,21 @@ It's because you might have different version of Node.js and npm! You might need
 node -v
 npm -v
 ```
-6. If you successfullt install firebase CLI, install cypress-firebase by callling:
+6. If you successfully install firebase CLI, install cypress-firebase by callling:
 ```bash
 npm i cypress-firebase --save-dev
 ```
-7. Modify your **package.json**, **cypress/config.json**(You might need to manually create it), **cypress/support/commands.js** **cypress/plugins/index.js** files, see [details](https://github.com/prescottprue/cypress-firebase#folders)
+7. Modify your **package.json**,  **cypress/config.json**(You might need to manually create it),  **cypress/support/commands.js** , **cypress/plugins/index.js** files.
+    see [details](https://github.com/prescottprue/cypress-firebase#folders)
 And compelete the instruction from the Link.
 ## Error and Solved
 1. After set up all the files and plug in, **Error: .firebaserc file not found**, you have to run ```bash firebase init```
 [see instruction](https://firebase.google.com/docs/cli)
-If you don't know how to set up your project after ```bash firebase init ```, [see article](https://medium.com/google-developer-experts/deploy-your-app-to-firebase-in-seconds-b3a9a37dff47)
+If you don't know how to set up your project after ```bash firebase init ```,
+[see article](https://medium.com/google-developer-experts/deploy-your-app-to-firebase-in-seconds-b3a9a37dff47)
 
 2. Error for firebase functions: run ```bash npm install ``` **INSIDE** your **functions** folder.
-3. If you getting blank page inside Cypress after ```bash npm run start:dist```, open your **firebase.json** file, make sure under **"hosting"** section: **"public": "build",**
+3. If you getting blank page inside Cypress after ```bash npm run start:dist```, open your **firebase.json** file, make sure under **"hosting"** section:
+```**"public": "build",**```
 
 ## **WARNING!:** Don't push your **serviceAccount.json** (and any files contains your private keys) into public resources! 

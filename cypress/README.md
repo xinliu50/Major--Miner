@@ -14,7 +14,7 @@ npm i --save-dev cypress
 ```
 4. Add cypress folder by ```bash cypress open ``` (No EVERY case!)
 **Note:** You would get instruction on how to run cypress from the command window after you successfuly installed it.
-<img src="../images/installedCy.png" />
+<img src="images/installedCy.png" />
 
 So in this case: ```bash node_modules/.bin/cypress open```
 
@@ -29,7 +29,7 @@ SyntaxError: Unexpected token ...
 ....
 ```
 Looks like:
-<img src="../images/errorMessage.png" />
+<img src="images/errorMessage.png" />
 It's because you might have different version of Node.js and npm! You might need to go back to install Node version managers again, to check the version of your Node.js and npm:
 ```bash
 node -v

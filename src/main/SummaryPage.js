@@ -25,6 +25,7 @@ class SummaryPage extends Component {
     const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
     const clipHistory = {};
     var tempTag = [];
+    var tempTag1 = [];
    for (const clip of clipHistorySnapshot.docs){
       clipHistory[clip.id] = { score: clip.data().score };
       var audio = await this.audioRef.doc(clip.id).get();
@@ -32,13 +33,21 @@ class SummaryPage extends Component {
       clipHistory[clip.id].url = audio.data().Url;
       clipHistory[clip.id].id = clip.id;
       tempTag = [];
+      tempTag1 = [];
       var tagsSnapshot = await this.audioRef.doc(clip.id).collection('tags').where("userId", 'array-contains',this.userId).get();
       for(const tag of tagsSnapshot.docs){
-         tempTag.push(tag.id + ", ");
+         tempTag.push(tag.id);
       }
-      clipHistory[clip.id].TAG = tempTag;
+       clipHistory[clip.id].TAG = tempTag.join(", ");
+      var otherTagSnapshot = await this.audioRef.doc(clip.id).collection('tags').get();
+      for(const tag of otherTagSnapshot.docs){
+      	 if(!tempTag.includes(tag.id)){
+      	 	tempTag1.push(tag.id);
+      	 }
+      }
+      	clipHistory[clip.id].other = tempTag1.join(", ");
 
-       this.setState({ clipHistory });
+      this.setState({ clipHistory });
    }
     const scoredClipHistorySnapshot = await this.userRef.collection('clipHistory').where("score", ">", 0).orderBy("score").limit(10).get();
     const scoredClipHistory = {};
@@ -51,9 +60,9 @@ class SummaryPage extends Component {
       tempTag = [];
       var scoreTagsSnapshot = await this.audioRef.doc(clip.id).collection('tags').where("userId", 'array-contains',this.userId).get();
       for(const tag of scoreTagsSnapshot.docs){
-         tempTag.push(tag.id + ", ");
+         tempTag.push(tag.id);
       }
-      scoredClipHistory[clip.id].TAG = tempTag;
+      scoredClipHistory[clip.id].TAG = tempTag.join(", ");
       this.setState({ scoredClipHistory });
     }
 
@@ -84,6 +93,7 @@ class SummaryPage extends Component {
                 clipId={clipHistory[clip].id}
                 TAG={clipHistory[clip].TAG}
                 togglePlay={this.togglePlay}
+                other={clipHistory[clip].other}
               />
             </Grid>
           ))}
@@ -99,6 +109,7 @@ class SummaryPage extends Component {
                 clip={scoredClipHistory[clip].title}
                 TAG={scoredClipHistory[clip].TAG}
                 clipId={scoredClipHistory[clip].id}
+                 other={clipHistory[clip].other}
                 togglePlay={this.togglePlay}
               />
             </Grid>

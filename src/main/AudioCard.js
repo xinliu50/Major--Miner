@@ -18,14 +18,10 @@ class AudioCard extends Component {
       play: false,
       seeOthers: false
     };
-    //this.getTags = this.getTags.bind(this);
   }
 
   componentDidMount() {
     this.setupAudioContext();
-    //this.getTags = this.getTags.bind(this);
-    //console.log('ss');
-    this.getTags();
   }
   setupAudioContext = () => {
     try{
@@ -71,50 +67,15 @@ class AudioCard extends Component {
     this.gainNode.disconnect();
     this.audioSource.disconnect();
   }
-
-  /*getTags(){
-    this.db = firebase.firestore();
-    this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
-    this.userClipHistoryRef = this.userRef.collection('clipHistory');
-    this.userClipHistoryRef.doc(this.props.clipId+'').get()
-        .then(documentSnapshot => {
-        if (documentSnapshot.exists) {
-          let TAG = documentSnapshot.get("TAG");
-          TAG = JSON.stringify(TAG);
-          this.setState({TAG : TAG})
-        }
-      });
-    console.log(this.props.clipId);
-  }*/
-
-  getTags = () => {
-
-    this.db = firebase.firestore();
-    this.audioRef = this.db.collection('audios').doc('2');
-    //this.audioTagRef = this.audioRef.collection('tags');
-    //this.audioTagRef.doc()
-    //var query = this.audioRef.where("Url", "==", true)
-   this.audioRef.collection('tags').where("userId", "==", true)
-    .get()
-    .then(querySnapshot => {
-        querySnapshot.forEach(function(doc) {
-            // doc.data() is never undefined for query doc snapshots
-            console.log(doc.id, " => ", doc.data());
-        });
-    })
-    .catch(function(error) {
-        console.log("Error getting documents: ", error);
-    });
-  };
   render() {
     return (
       <Card className="audio-card">
         <CardContent>
           <h5>{this.props.clip}</h5>
-          <p>Your tags: aaa{/*{this.state.TAG || 'loading'}*/}</p>
+          <p>Your tags: {this.props.TAG || 'loading'}</p>
 
           {this.state.seeOthers ? (
-            <p>Other's tags: ccc, ddd </p>
+           <p>Other's tags: ccc, ddd </p>
           ) : ""}
         </CardContent>
         <CardActions style={{ paddingTop: "0" }}>

@@ -5,7 +5,6 @@ import {
 } from "@material-ui/core";
 import AudioCard from "./AudioCard";
 import firebase from "../base";
-
 //TODO: load tags from DB
 class SummaryPage extends Component {
   constructor(props) {
@@ -21,32 +20,45 @@ class SummaryPage extends Component {
     this.user = firebase.auth().currentUser;
     this.db = firebase.firestore();
     this.audioRef = this.db.collection('audios');
-    this.userRef = this.db.collection('users').doc(this.user.uid);
-
+    this.userId = this.user.uid;
+    this.userRef = this.db.collection('users').doc(this.userId);
     const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
     const clipHistory = {};
-    clipHistorySnapshot.forEach(clip => {
+    var tempTag = [];
+   for (const clip of clipHistorySnapshot.docs){
       clipHistory[clip.id] = { score: clip.data().score };
-      this.audioRef.doc(clip.id).get().then(audio => {
-        clipHistory[clip.id].title = audio.data().Title;
-        clipHistory[clip.id].url = audio.data().Url;
-        clipHistory[clip.id].id = clip.id;
-        this.setState({ clipHistory });
-      })
-    });
+      var audio = await this.audioRef.doc(clip.id).get();
+      clipHistory[clip.id].title = audio.data().Title;
+      clipHistory[clip.id].url = audio.data().Url;
+      clipHistory[clip.id].id = clip.id;
+      tempTag = [];
+      var tagsSnapshot = await this.audioRef.doc(clip.id).collection('tags').where("userId", 'array-contains',this.userId).get();
+      for(const tag of tagsSnapshot.docs){
+         tempTag.push(tag.id + ", ");
+      }
+      clipHistory[clip.id].TAG = tempTag;
 
+       this.setState({ clipHistory });
+   }
     const scoredClipHistorySnapshot = await this.userRef.collection('clipHistory').where("score", ">", 0).orderBy("score").limit(10).get();
     const scoredClipHistory = {};
-    scoredClipHistorySnapshot.forEach(clip => {
+    for(const clip of scoredClipHistorySnapshot.docs){
       scoredClipHistory[clip.id] = { score: clip.data().score };
-      this.audioRef.doc(clip.id).get().then(audio => {
-        scoredClipHistory[clip.id].title = audio.data().Title;
-        scoredClipHistory[clip.id].url = audio.data().Url;
-        this.setState({ scoredClipHistory });
-      })
-    })
-  }
+      var audio = await this.audioRef.doc(clip.id).get();
+      scoredClipHistory[clip.id].title = audio.data().Title;
+      scoredClipHistory[clip.id].url = audio.data().Url;
+      scoredClipHistory[clip.id].id = clip.id;
+      tempTag = [];
+      var scoreTagsSnapshot = await this.audioRef.doc(clip.id).collection('tags').where("userId", 'array-contains',this.userId).get();
+      for(const tag of scoreTagsSnapshot.docs){
+         tempTag.push(tag.id + ", ");
+      }
+      scoredClipHistory[clip.id].TAG = tempTag;
+      this.setState({ scoredClipHistory });
+    }
 
+
+  }
   togglePlay = play => {
     this.setState({ play });
   }
@@ -70,6 +82,7 @@ class SummaryPage extends Component {
                 url={clipHistory[clip].url}
                 clip={clipHistory[clip].title}
                 clipId={clipHistory[clip].id}
+                TAG={clipHistory[clip].TAG}
                 togglePlay={this.togglePlay}
               />
             </Grid>
@@ -84,6 +97,8 @@ class SummaryPage extends Component {
               <AudioCard
                 url={scoredClipHistory[clip].url}
                 clip={scoredClipHistory[clip].title}
+                TAG={scoredClipHistory[clip].TAG}
+                clipId={scoredClipHistory[clip].id}
                 togglePlay={this.togglePlay}
               />
             </Grid>

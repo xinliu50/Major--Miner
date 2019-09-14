@@ -40,7 +40,7 @@
         this.userRef = this.db.collection('users').doc(this.currentId);
         this.firstUserId = '';
         this.loadUrl();
-        term();
+        
       }
       //random loading Url
       loadUrl = async () => {
@@ -267,7 +267,7 @@
                 </IconButton>
               </Grid>
             </Grid>
-           <Grid item sm={10} md={6} lg={8}>
+           <Grid item id="listTag" sm={10} md={6} lg={8}>
               {Object.keys(currentTags).map((tag, i) => {
                 if (currentTags[tag].count === 0) {
                   return (<span key={i} className="gray">{tag}&nbsp;</span>)
@@ -314,7 +314,4 @@
         );
       }
     }
-    const term = (x,y) => {
-        return x+y;
-    }
-    export {term}
+   

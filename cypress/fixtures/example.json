@@ -1,0 +1,13 @@
+{
+  "tags": {
+  	"bird":{
+  		"count": 6,
+  		"userId": "asc"
+  	},
+  	"water":{
+  		"count": 2,
+  		"userId": "xxc"
+  	}
+
+  }
+}

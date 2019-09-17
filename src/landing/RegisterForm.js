@@ -28,7 +28,8 @@ class RegisterForm extends Component {
       policyError: false,
       emailError: false,
       passwordError: false,
-      password2Error: false
+      password2Error: false,
+      usernameError:false
     };
   }
 
@@ -62,6 +63,7 @@ class RegisterForm extends Component {
   }
 
   validateForm = () => {
+    const username = document.getElementById("username").value;
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     const password2 = document.getElementById("password2").value;
@@ -84,22 +86,28 @@ class RegisterForm extends Component {
     } else {
       this.setState({ password2Error: false });
     }
+
+    if(username == ''){
+      this.setState({usernameError: true});
+    }else{
+      this.setState({usernameError: false});
+    }
     
     if (!this.state.agreePolicy) {
       this.setState({ policyError: true });
     }
 
-    return ({ email, password });
+    return ({ email, password, username });
   }
 
   handleSubmit = async event => {
     const { history } = this.props;
     event.preventDefault();
     // validation part
-    const { email, password } = await this.validateForm();
+    const { email, password, username } = await this.validateForm();
     const db = firebase.firestore();
 
-    if (!this.state.policyError && !this.state.emailError && !this.state.passwordError && !this.state.password2Error) {
+    if (!this.state.policyError && !this.state.emailError && !this.state.passwordError && !this.state.password2Error && !this.state.usernameError) {
       // create User in firebase
       try {
         const user = await firebase
@@ -109,6 +117,7 @@ class RegisterForm extends Component {
         if (user) {
           // to create a new user document
           db.collection('users').doc(firebase.auth().currentUser.uid).set({
+            username: username,
             score: 0
           });
           this.handleCloseForm();
@@ -117,8 +126,6 @@ class RegisterForm extends Component {
       } catch(err) {
         alert(err);
       }
-      // console.log("register successful");
-      // this.handleCloseForm();
     }
   }
 
@@ -145,6 +152,15 @@ class RegisterForm extends Component {
                   <Input id="username" />
                 </FormControl>
               </Grid> */}
+              <Grid item>
+                <FormControl margin="normal" fullWidth>
+                  <InputLabel>Username</InputLabel>
+                  <Input id="username" type="text" onKeyPress={this.handleKeyPress} />
+                </FormControl>
+                 {this.state.usernameError ? (
+                  <FormHelperText error={true}>Must Enter Your Username.</FormHelperText>
+                ) : ""}
+              </Grid>
               <Grid item>
                 <FormControl margin="normal" fullWidth>
                   <InputLabel>Email</InputLabel>

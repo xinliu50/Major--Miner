@@ -188,11 +188,11 @@ class GamePage extends Component {
         </Grid>
         <Grid item sm={10} md={6} lg={8}>
           {Object.keys(currentTags).map((tag, i) => {
-            if (currentTags[tag] === 1) {
+            if (currentTags[tag].count === 0) {
               return (<span key={i} className="gray">{tag}&nbsp;</span>)
-            } else if (currentTags[tag] === 2) {
+            } else if (currentTags[tag].count === 1) {
               return (<i key={i} className="1-point">{tag}&nbsp;</i>)
-            } else if (currentTags[tag] > 2) {
+            } else if (currentTags[tag].count > 1) {
               return (<span key={i} className="pink">{tag}&nbsp;</span>)
             } else {
               return (<b key={i}>{tag}&nbsp;</b>)

@@ -9,6 +9,7 @@ import PlayArrow from "@material-ui/icons/PlayArrow";
 import Pause from "@material-ui/icons/Pause";
 import Group from "@material-ui/icons/Group";
 import Person from "@material-ui/icons/Person";
+import firebase from "../base";
 
 class AudioCard extends Component {
   constructor(props) {
@@ -22,18 +23,23 @@ class AudioCard extends Component {
   componentDidMount() {
     this.setupAudioContext();
   }
-
   setupAudioContext = () => {
-    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    this.gainNode = this.audioContext.createGain();
-    this.gainNode.gain.value = 15;
-    this.gainNode.connect(this.audioContext.destination);
+    try{
+      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      this.gainNode = this.audioContext.createGain();
+      this.gainNode.gain.value = 15;
+      this.gainNode.connect(this.audioContext.destination);
+    }catch(error){
+      console.log(error);
+    }
 
     this.audio = new Audio(this.props.url);
     this.audioSource = this.audioContext.createMediaElementSource(this.audio);
     this.audio.crossOrigin = "anonymous";
     this.audioSource.connect(this.gainNode);
-
+    this.audioContext.resume().then(() => {
+      console.log('Playback resumed successfully');
+    })
     this.audio.onended = () => {
       this.setState({ play: false });
       this.props.togglePlay(false);
@@ -61,16 +67,15 @@ class AudioCard extends Component {
     this.gainNode.disconnect();
     this.audioSource.disconnect();
   }
-
   render() {
     return (
       <Card className="audio-card">
         <CardContent>
           <h5>{this.props.clip}</h5>
-          <p>Your tags: aaa, bbb</p>
+          <p>Your tags: {this.props.TAG || 'loading'}</p>
+
           {this.state.seeOthers ? (
-            <p>Other's tags: ccc, ddd</p>
-          ) : ""}
+           <p>Other's tags: {this.props.other || 'loading'} </p>) : ""}
         </CardContent>
         <CardActions style={{ paddingTop: "0" }}>
           <IconButton onClick={this.toggleAudio}>

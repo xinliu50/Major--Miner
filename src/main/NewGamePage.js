@@ -20,8 +20,7 @@
     import firebase from "../base";
     import staticFirebase from "firebase";
     import GameRuleDialog from "./GameRuleDialog";
-    //import {SFC} from 'react';
-    //import fire from "../fire"
+
 
     const INITIAL_STATE = {
       currentTags:{},
@@ -88,6 +87,19 @@
         //generate temporatyTags set from new Tags
         var tempCurrentTags = {};
         this.audioTagRef = await this.audioRef.collection('tags');
+        this.audioUsersRef = await this.audioRef.collection('users');
+        /*if(this.isFirstUser(this.clipId)){
+          await this.audioRef.collection('users').set(this.currentId);//adding users collection
+        }else{
+          console.log("Is not first user");
+        }*/
+        //console.log("isFirstUser: "+ this.isFirstUser(this.clipId));
+        /*this.isFirstUser(this.clipId).then(result=>{
+          this.firstUser = result;
+           console.log("isFirstUser: ", this.firstUser);
+        });*/
+        
+        
         const tags = await this.audioTagRef.get();
         //generate exitingTags from DB
         this.existingTags = await this.loadExistingTag(tags);
@@ -139,6 +151,9 @@
       loadTagsToDb = async (currentTags) => {
         try{
           for(const tag of Object.keys(currentTags)){ 
+            await this.audioUsersRef.doc(this.currentId).set({
+              tags: staticFirebase.firestore.FieldValue.arrayUnion(tag)//add the user to "users" collection,save the tags as array
+            },{ merge: true });
             if( currentTags[tag].count !== 0)
               this.addUser(tag);
             if (currentTags[tag].count === 1) {
@@ -186,6 +201,7 @@
           count: 1,
           userId: staticFirebase.firestore.FieldValue.arrayUnion(this.user.uid)
         })
+       // this.audioUsersRef.doc(this.user.uid).set(tag);
       }
       incrementCount = tag => {
         this.audioTagRef.doc(tag).update({
@@ -231,7 +247,13 @@
         }
       }
   
-      
+     /* isNewUser = async clipId => {
+        //var snap = await this.db.collection('audios').doc(this.clipId);
+        var snap = await this.audioRef.collection('users').
+        for(const user of snap){
+
+        }
+      }*/
       render() {
        const url = this.url;
        const {currentTags,existingTags} = this.state;

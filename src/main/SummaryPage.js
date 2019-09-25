@@ -28,25 +28,43 @@ class SummaryPage extends Component {
     var tempTag1 = [];
    for (const clip of clipHistorySnapshot.docs){
       clipHistory[clip.id] = { score: clip.data().score };
-      var audio = await this.audioRef.doc(clip.id).get();
+     /* var audio = await this.audioRef.doc(clip.id).get();
       clipHistory[clip.id].title = audio.data().Title;
       clipHistory[clip.id].url = audio.data().Url;
-      clipHistory[clip.id].id = clip.id;
+      clipHistory[clip.id].id = clip.id;*/
+      var audio = this.audioRef.doc(clip.id).get();
+      
       tempTag = [];
       tempTag1 = [];
-      var tagsSnapshot = await this.audioRef.doc(clip.id).collection('tags').where("userId", 'array-contains',this.userId).get();
-      for(const tag of tagsSnapshot.docs){
-         tempTag.push(tag.id);
-      }
-       clipHistory[clip.id].TAG = tempTag.join(", ");
+      
+      /*var tagsSnapshot = await this.audioRef.doc(clip.id).collection('users').doc(this.userId).get();
+      tempTag = tagsSnapshot.data().tags;
+      clipHistory[clip.id].TAG = tempTag.join(", ");
+
       var otherTagSnapshot = await this.audioRef.doc(clip.id).collection('tags').get();
       for(const tag of otherTagSnapshot.docs){
-      	 if(!tempTag.includes(tag.id)){
-      	 	tempTag1.push(tag.id);
-      	 }
+         if(!tempTag.includes(tag.id)){
+          tempTag1.push(tag.id);
+         }
       }
-      	clipHistory[clip.id].other = tempTag1.join(", ");
+        clipHistory[clip.id].other = tempTag1.join(", ");*/
+      var tagsSnapshot = this.audioRef.doc(clip.id).collection('users').doc(this.userId).get();
+      var otherTagSnapshot = this.audioRef.doc(clip.id).collection('tags').get();
 
+      const [audio1,tagsSnapshot1,otherTagSnapshot1] = await Promise.all([audio,tagsSnapshot,otherTagSnapshot]);
+      clipHistory[clip.id].title = audio1.data().Title;
+      clipHistory[clip.id].url = audio1.data().Url;
+      clipHistory[clip.id].id = clip.id;
+
+      tempTag = tagsSnapshot1.data().tags;
+      clipHistory[clip.id].TAG = tempTag.join(", ");
+
+      for(const tag of otherTagSnapshot1.docs){
+         if(!tempTag.includes(tag.id)){
+          tempTag1.push(tag.id);
+         }
+      }
+        clipHistory[clip.id].other = tempTag1.join(", ");
       this.setState({ clipHistory });
    }
     const scoredClipHistorySnapshot = await this.userRef.collection('clipHistory').where("score", ">", 0).orderBy("score").limit(10).get();

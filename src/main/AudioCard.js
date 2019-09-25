@@ -72,9 +72,10 @@ class AudioCard extends Component {
       <Card className="audio-card">
         <CardContent>
           <h5>{this.props.clip}</h5>
+
           <p>Your tags: {this.props.TAG || 'loading'}</p>
 
-          {this.state.seeOthers ? (
+         {this.state.seeOthers ? (
            <p>Other's tags: {this.props.other || 'loading'} </p>) : ""}
         </CardContent>
         <CardActions style={{ paddingTop: "0" }}>

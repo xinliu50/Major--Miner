@@ -3,8 +3,8 @@ import { Grid, IconButton } from "@material-ui/core";
 import PlayArrow from "@material-ui/icons/PlayArrow";
 import Pause from "@material-ui/icons/Pause";
 import AudioVisualizer from "./AudioVisualizer";
-
-// TODO: seems like audio is stopped instead of pause(?)
+import firebase from "../base";
+import staticFirebase from "firebase";
 
 class AudioAnalyser extends Component {
   constructor(props) {
@@ -49,6 +49,9 @@ class AudioAnalyser extends Component {
   componentDidMount() {
     this._isMounted = true;
     this.setupAudioContext();
+    this.user = firebase.auth().currentUser;
+    this.db = firebase.firestore();
+    this.currentId = firebase.auth().currentUser.uid;
   }
 
   tick() {
@@ -63,11 +66,17 @@ class AudioAnalyser extends Component {
     this.audioContext.resume().then(()=>{
       console.log('Playback resumed successfully');
       if (this.state.firstPlay === 0) {
-      try {
-        this.setupAudioContext();
-      } catch(err) {
-        console.log(err);
-      }
+        try {
+          this.setupAudioContext();//first time hit play, set up audio context
+          console.log("props!" , this.props.clipId);
+          this.db.collection('Randomize').doc(this.props.clipId).set({//this clip has been seen once by this user
+            count:  staticFirebase.firestore.FieldValue.increment(1),
+            updated: staticFirebase.firestore.FieldValue.serverTimestamp(),
+            userId: staticFirebase.firestore.FieldValue.arrayUnion(this.currentId)
+          },{merge:true});
+        } catch(err) {
+          console.log(err);
+        }
     }
     this.state.play ? this.audio.pause() : this.audio.play();
     if (this._isMounted) {

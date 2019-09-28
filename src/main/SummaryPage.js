@@ -22,35 +22,22 @@ class SummaryPage extends Component {
     this.audioRef = this.db.collection('audios');
     this.userId = this.user.uid;
     this.userRef = this.db.collection('users').doc(this.userId);
-    const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
-    const clipHistory = {};
-    var tempTag = [];
+   var tempTag = [];
     var tempTag1 = [];
+    const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
+   
+    
+    const clipHistory = {};
+    
    for (const clip of clipHistorySnapshot.docs){
       clipHistory[clip.id] = { score: clip.data().score };
-     /* var audio = await this.audioRef.doc(clip.id).get();
-      clipHistory[clip.id].title = audio.data().Title;
-      clipHistory[clip.id].url = audio.data().Url;
-      clipHistory[clip.id].id = clip.id;*/
       var audio = this.audioRef.doc(clip.id).get();
-      
       tempTag = [];
       tempTag1 = [];
-      
-      /*var tagsSnapshot = await this.audioRef.doc(clip.id).collection('users').doc(this.userId).get();
-      tempTag = tagsSnapshot.data().tags;
-      clipHistory[clip.id].TAG = tempTag.join(", ");
-
-      var otherTagSnapshot = await this.audioRef.doc(clip.id).collection('tags').get();
-      for(const tag of otherTagSnapshot.docs){
-         if(!tempTag.includes(tag.id)){
-          tempTag1.push(tag.id);
-         }
-      }
-        clipHistory[clip.id].other = tempTag1.join(", ");*/
       var tagsSnapshot = this.audioRef.doc(clip.id).collection('users').doc(this.userId).get();
       var otherTagSnapshot = this.audioRef.doc(clip.id).collection('tags').get();
-
+     // var otherTagSnapshot = this.audioRef.doc(clip.id).collection('users').where
+      
       const [audio1,tagsSnapshot1,otherTagSnapshot1] = await Promise.all([audio,tagsSnapshot,otherTagSnapshot]);
       clipHistory[clip.id].title = audio1.data().Title;
       clipHistory[clip.id].url = audio1.data().Url;
@@ -67,16 +54,20 @@ class SummaryPage extends Component {
         clipHistory[clip.id].other = tempTag1.join(", ");
       this.setState({ clipHistory });
    }
+  // this.loadHistory();
     const scoredClipHistorySnapshot = await this.userRef.collection('clipHistory').where("score", ">", 0).orderBy("score").limit(10).get();
     const scoredClipHistory = {};
     for(const clip of scoredClipHistorySnapshot.docs){
       scoredClipHistory[clip.id] = { score: clip.data().score };
-      var audio = await this.audioRef.doc(clip.id).get();
+      var audio = this.audioRef.doc(clip.id).get();
+      var scoreTagsSnapshot = this.audioRef.doc(clip.id).collection('tags').where("userId", 'array-contains',this.userId).get();
+
+     const [audio1,scoreTagsSnapshot1] = await Promise.all([audio,scoreTagsSnapshot]);
       scoredClipHistory[clip.id].title = audio.data().Title;
       scoredClipHistory[clip.id].url = audio.data().Url;
       scoredClipHistory[clip.id].id = clip.id;
       tempTag = [];
-      var scoreTagsSnapshot = await this.audioRef.doc(clip.id).collection('tags').where("userId", 'array-contains',this.userId).get();
+
       for(const tag of scoreTagsSnapshot.docs){
          tempTag.push(tag.id);
       }
@@ -85,6 +76,33 @@ class SummaryPage extends Component {
     }
 
 
+  }
+  loadHistory = async() => {
+     const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
+      
+      const clipHistory = {};
+      var tempTag = [];
+      var tempTag1 = [];
+     for (const clip of clipHistorySnapshot.docs){
+        clipHistory[clip.id] = { score: clip.data().score };
+        var audio = this.audioRef.doc(clip.id).get();
+        tempTag = [];
+        tempTag1 = [];
+        var tagsSnapshot = this.audioRef.doc(clip.id).collection('users').doc(this.userId).get();
+       var otherTagSnapshot = this.audioRef.doc(clip.id).collection('tags').get();
+       // var otherTagSnapshot = this.audioRef.doc(clip.id).collection('users').where
+        
+        const [audio1,tagsSnapshot1,otherTagSnapshot1] = await Promise.all([audio,tagsSnapshot,otherTagSnapshot]);
+        clipHistory[clip.id].title = audio1.data().Title;
+        clipHistory[clip.id].url = audio1.data().Url;
+        clipHistory[clip.id].id = clip.id;
+
+        tempTag = tagsSnapshot1.data().tags;
+        clipHistory[clip.id].TAG = tempTag.join(", ");
+
+        
+        this.setState({ clipHistory });
+     }
   }
   togglePlay = play => {
     this.setState({ play });
@@ -127,7 +145,7 @@ class SummaryPage extends Component {
                 clip={scoredClipHistory[clip].title}
                 TAG={scoredClipHistory[clip].TAG}
                 clipId={scoredClipHistory[clip].id}
-                 other={clipHistory[clip].other}
+                other={clipHistory[clip].other}
                 togglePlay={this.togglePlay}
               />
             </Grid>

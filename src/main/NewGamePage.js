@@ -32,7 +32,7 @@
         super(props);
         this.state = {...INITIAL_STATE};
       }  
-      componentDidMount(){
+      componentDidMount = async() =>{
         this.user = firebase.auth().currentUser;
         this.db = firebase.firestore();
         this.currentId = firebase.auth().currentUser.uid;
@@ -40,6 +40,16 @@
         this.firstUserId = '';
         this.randomizeId();
         this.loadUrl();
+
+        var d = Date.parse('March 21, 2012');
+        console.log("d...", d);
+        // const doc = await this.db.collection('Randomize').doc('0').get();
+        //const doc = await this.db.collection('users').doc('gg5TmIHz2AZkFyRgaUdELkT80Xl2').collection('clipHistory').doc('0').get();
+        //this.time = await doc.data().updated;
+        //this.time = await doc.data().lastUpdatedAt;
+        //this.compareTime(this.time);
+       
+        
         
       }
       //random loading Url
@@ -78,14 +88,86 @@
         }
         return this.existingTags;
       } 
+      //compare timeStamps
+      compareTime = async timeStamp => {
+        var month = new Array();
+        month[0] = "January";
+        month[1] = "February";
+        month[2] = "March";
+        month[3] = "April";
+        month[4] = "May";
+        month[5] = "June";
+        month[6] = "July";
+        month[7] = "August";
+        month[8] = "September";
+        month[9] = "October";
+        month[10] = "November";
+        month[11] = "December";
+       
+        const thatTime = timeStamp.toMillis();
+        console.log("that time: ", thatTime);
+        
+        var d = new Date();
+        var day = d.getDay()+'';
+        var todayDate = d.getDate()+'';
+        var month = month[d.getMonth()]+' ';
+        var year = d.getFullYear()+'';
+        console.log("day", day);
+        console.log("date ", todayDate);
+        console.log("month", month);
+        console.log("year", year);
+        const parseStringToday = month+todayDate+', '+year;
+
+        console.log(parseStringToday);
+        var today = Date.parse(parseStringToday);
+        console.log("today: ", today);
+
+        const now = Date.now();
+        console.log("now: ", now);
+        
+        var compare = now - thatTime;
+        if(compare <= 3600000){
+          console.log("within an hour", compare);
+          return 1;
+        }
+        else if(thatTime <= today+3600000 * 24){
+          console.log("it's today");
+          return 2;
+        }
+        else if(thatTime <= today+3600000 * 24 * 7){
+          console.log("this week");
+          return 3;
+        }
+        else{
+          console.log("long time ago");
+          return 4;
+        }
+      }
+      withinHourNotSeen = () => {
+        var now = Date.now(); 
+        return ' "millis","<","now - 3600000" ';
+      }
+      //Randomize clipID
       randomizeId = async () => {
+         var ID = [];
          var clipIdSnapshot = await this.db.collection('Randomize').where('count', '>', 0).get();
          var size = clipIdSnapshot.size;
          console.log("size ", size);
          if(size === 0){
           return '0';
-         }
-        return '0';
+         }else{
+             var noSeenSnapshot = await this.db.collection('Randomize').where('count', '==', 0).get();
+             if(noSeenSnapshot.size != 0)
+                return noSeenSnapshot.docs[0].id+'';
+             else{
+               var now = Date.now(); 
+               var time = now - 3600000;
+               var milliSnapshot = await this.db.collection('Randomize').where('millis', '<', time).get();
+               if(milliSnapshot.size != 0)
+                return milliSnapshot.docs[0].id+'';
+             }
+          }
+         return '0';
       }  
       //getting next clips
       getNextClip = async () => {

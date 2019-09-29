@@ -22,7 +22,7 @@ class SummaryPage extends Component {
     this.audioRef = this.db.collection('audios');
     this.userId = this.user.uid;
     this.userRef = this.db.collection('users').doc(this.userId);
-   var tempTag = [];
+    var tempTag = [];
     var tempTag1 = [];
     const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
    

@@ -63,12 +63,12 @@ class SummaryPage extends Component {
       var scoreTagsSnapshot = this.audioRef.doc(clip.id).collection('tags').where("userId", 'array-contains',this.userId).get();
 
      const [audio1,scoreTagsSnapshot1] = await Promise.all([audio,scoreTagsSnapshot]);
-      scoredClipHistory[clip.id].title = audio.data().Title;
-      scoredClipHistory[clip.id].url = audio.data().Url;
+      scoredClipHistory[clip.id].title = audio1.data().Title;
+      scoredClipHistory[clip.id].url = audio1.data().Url;
       scoredClipHistory[clip.id].id = clip.id;
       tempTag = [];
 
-      for(const tag of scoreTagsSnapshot.docs){
+      for(const tag of scoreTagsSnapshot1.docs){
          tempTag.push(tag.id);
       }
       scoredClipHistory[clip.id].TAG = tempTag.join(", ");

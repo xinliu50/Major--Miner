@@ -50,12 +50,12 @@ class LeadersPage extends Component {
        
 
       })*/
-      this.db.collection("users").doc('ZA0NiS6bWLU29qwV5Uzj2roh8P53').collection("clipHistory").doc('2').get()
+      /*this.db.collection("users").doc('ZA0NiS6bWLU29qwV5Uzj2roh8P53').collection("clipHistory").doc('2').get()
         .then(time => {
           console.log(time.data().lastUpdatedAt.toDate());
            console.log(time.data().lastUpdatedAt.toMillis());
             console.log(time.data().lastUpdatedAt);
-        })
+        })*/
        
      
       //for(const documentsnapshot of time.docs){

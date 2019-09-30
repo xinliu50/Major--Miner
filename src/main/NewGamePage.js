@@ -143,9 +143,32 @@
           return 4;
         }
       }
-      withinHourNotSeen = () => {
-        var now = Date.now(); 
-        return ' "millis","<","now - 3600000" ';
+
+      oneDayRange = () => {
+        var month = new Array();
+        month[0] = "January";
+        month[1] = "February";
+        month[2] = "March";
+        month[3] = "April";
+        month[4] = "May";
+        month[5] = "June";
+        month[6] = "July";
+        month[7] = "August";
+        month[8] = "September";
+        month[9] = "October";
+        month[10] = "November";
+        month[11] = "December";
+       
+        var d = new Date();
+        var day = d.getDay()+'';
+        var todayDate = d.getDate()+'';
+        var month = month[d.getMonth()]+' ';
+        var year = d.getFullYear()+'';
+        const parseStringToday = month+todayDate+', '+year;
+        var today = Date.parse(parseStringToday);//millionSeconds for 00:00:00 today
+        console.log("today: ", today);
+
+        return today+ 3600000 * 24;
       }
       //Randomize clipID
       randomizeId = async () => {
@@ -153,21 +176,34 @@
          var clipIdSnapshot = await this.db.collection('Randomize').where('count', '>', 0).get();
          var size = clipIdSnapshot.size;
          console.log("size ", size);
-         if(size === 0){
+         var userHasSeen = {};
+         var oneHourNoSeen = [];
+         if(size === 0){//initially all clips has not yet been seen
           return '0';
          }else{
              var noSeenSnapshot = await this.db.collection('Randomize').where('count', '==', 0).get();
-             if(noSeenSnapshot.size != 0)
+             if(noSeenSnapshot.size != 0) //if some clips have been seen, choose the one has not been seen 
                 return noSeenSnapshot.docs[0].id+'';
              else{
-               var now = Date.now(); 
+               var now = Date.now(); //if all clips have been seen, pick the one has not been seen in the last hour && current user has no seen yet
                var time = now - 3600000;
-               var milliSnapshot = await this.db.collection('Randomize').where('millis', '<', time).get();
-               if(milliSnapshot.size != 0)
-                return milliSnapshot.docs[0].id+'';
+               var milliSnapshot = await this.db.collection('Randomize').where('millis', '<', time).get();//has no seen past hour
+               var currentUserSeen = await this.db.collection('Randomize').where('userId', 'array-contains', this.currentId).get();
+               for(const userSeen of currentUserSeen.docs){
+                  userHasSeen[userSeen.id] = {count: userSeen.data().count};
+               }
+               for(const millis of milliSnapshot.docs){
+                  oneHourNoSeen.push(millis.id);
+               }
+               console.log("oneHourNoSeen:" , oneHourNoSeen);
+               console.log("userHasSeen:" , userHasSeen);
+               var userHasNoSeen = oneHourNoSeen.filter(id => (!Object.keys(userHasSeen).includes(id)));
+               console.log("userHasNoSeen:" , userHasNoSeen.length);
+               if(userHasNoSeen.length != 0)
+                return userHasNoSeen[0]+'';
              }
           }
-         return '0';
+         return Math.floor((Math.random()*5))+'';
       }  
       //getting next clips
       getNextClip = async () => {
@@ -220,43 +256,47 @@
       }
       //get first user Id 
       getUserId = async tag => {
-        var doc = await this.audioTagRef.doc(tag).get();
+       /* var doc = await this.audioTagRef.doc(tag).get();
         var userIdArray = await doc.get('userId');
         this.firstUserId = userIdArray[0];
         console.log("userIdArray.length" + userIdArray.length);
         console.log("userIdArray[0]"+userIdArray[0]);
         console.log("userIdArray[1]"+userIdArray[1]);
         console.log("firstUserId"+this.firstUserId );
-        return this.firstUserId;
+        console.log("getUserId CLIPID", this.clipId);
+        return this.firstUserId;*/
+        var firstUser = await this.db.collection('audios').doc(this.clipId).collection('users').where('tags', 'array-contains', tag).get();
+        console.log("firstUser:  ", firstUser.docs[0].id);
+        return firstUser.docs[0].id;
       }
       //laoding tags into DB
       loadTagsToDb = async (currentTags) => {
         try{
           for(const tag of Object.keys(currentTags)){ 
-            await this.audioUsersRef.doc(this.currentId).set({
-              tags: staticFirebase.firestore.FieldValue.arrayUnion(tag)//add the user to "users" collection,save the tags as array
-            },{ merge: true });
             await this.addUser(tag);
-            this.History(this.userRef,0);
+            this.History(this.userRef,this.currentId,0);
             if (currentTags[tag].count === 1) {
               //if this user is the second person describe the tag, add 2 points to the first user
               var firstUserId = await this.getUserId(tag);
               var firstUserRef = await this.db.collection('users').doc(firstUserId);
               console.log("!!firstUserId: " + firstUserId);
               if(firstUserId !== this.currentId){//if the first user is not current user 
-                   this.History(firstUserRef,2);
+                   this.History(firstUserRef,firstUserId,2);
                   // this.refreshTotalScore(firstUserRef,2);
                   //get 1 point if current user is the second person describe this tag
                    currentTags[tag].score = 1;
-                   this.History(this.userRef,1);
+                   this.History(this.userRef,this.currentId,1);
                   // this.refreshTotalScore(this.userRef,1);
               }          
             } else if(currentTags[tag].count === 0){ //if the user is the first person, 0 score for now, count = 1
              // this.isFrist(tag);
-              this.History(this.userRef,0);
+              this.History(this.userRef,this.currentId,0);
             }else{//if the user is the third or more than third person, no points
-              this.History(this.userRef,0);
+              this.History(this.userRef,this.currentId,0);
             }
+            await this.audioUsersRef.doc(this.currentId).set({
+              tags: staticFirebase.firestore.FieldValue.arrayUnion(tag)//add the user to "users" collection,save the tags as array
+            },{ merge: true });
            }
           }catch(err){
           console.log("can't upload tags into DB!!:  "+ err);
@@ -285,7 +325,7 @@
         })
        // this.audioUsersRef.doc(this.user.uid).set(tag);
       }
-      History = async (userRef, score) => {
+      History = async (userRef, userId, score) => {
         try{
         var userClipHistoryRef = await userRef.collection('clipHistory');
          userClipHistoryRef.doc(this.clipId).get()
@@ -300,7 +340,33 @@
         }catch(err){
           console.log("Can't create clipHistory!! " + err);
         }
-
+        if(score != 0){//if this user gained scores, save it to the scoreRecord collection
+          var oneDayRangeMillis = this.oneDayRange();
+          try{
+            var scoreRecordRef = this.db.collection('scoreRecord').doc(userId);
+            var scoreRef = await this.db.collection('scoreRecord').doc(userId).collection('score');
+            scoreRef.doc(oneDayRangeMillis+'').get()
+              .then(doc => {
+                if(doc.exists){
+                  scoreRef.doc(oneDayRangeMillis+'').update({
+                    score: staticFirebase.firestore.FieldValue.increment(score)
+                 });
+                }else{
+                  scoreRef.doc(oneDayRangeMillis+'').set({
+                    score: score,
+                    millis: oneDayRangeMillis,
+                    createdAt: staticFirebase.firestore.FieldValue.serverTimestamp()
+                  })
+                }
+              });
+            scoreRecordRef.set({
+              updated: staticFirebase.firestore.FieldValue.serverTimestamp(),
+              millis: oneDayRangeMillis
+            });
+          }catch(e){
+            console.log("Can't add score scoreRecord!");
+          }
+        }
       }
       updateHistory = (userClipHistoryRef,score) => {
         try{

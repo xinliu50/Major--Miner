@@ -25,47 +25,54 @@ class LeadersPage extends Component {
     this.user = firebase.auth().currentUser;
     this.db = firebase.firestore();
     this.currentId = firebase.auth().currentUser.uid;
-    //this.userRef = this.db.collection('users').doc(this.currentId);
-    //this.todayLeader = [];
-    //this.weekLeader = [];
-    //this.totalLeader = [];
     this.getTotal();
-    this.getDate();
+    this.getToday();
+    this.getWeek();
   }
-
+  month = () => {
+     var month = new Array();
+      month[0] = "January";
+      month[1] = "February";
+      month[2] = "March";
+      month[3] = "April";
+      month[4] = "May";
+      month[5] = "June";
+      month[6] = "July";
+      month[7] = "August";
+      month[8] = "September";
+      month[9] = "October";
+      month[10] = "November";
+      month[11] = "December";
+      return month;
+  }
   handleChange = (event, value) => {
     this.setState({ value });
   };
-  getDate = async () => {
-    const today = new Date();
-    const todayTime = today.getMilliseconds();
-    //console.log(todayTime);
-    const withinAday = todayTime - 86400000;
-    //console.log(withinAday);
-   /* this.db.collection("users").doc('ZA0NiS6bWLU29qwV5Uzj2roh8P53').collection("clipHistory").where('lastUpdatedAt','>',0).get()
-      .then(time => {
-        time.forEach(day => {
-           console.log(day.id);
-        });
-       
-
-      })*/
-      /*this.db.collection("users").doc('ZA0NiS6bWLU29qwV5Uzj2roh8P53').collection("clipHistory").doc('2').get()
-        .then(time => {
-          console.log(time.data().lastUpdatedAt.toDate());
-           console.log(time.data().lastUpdatedAt.toMillis());
-            console.log(time.data().lastUpdatedAt);
-        })*/
-       
-     
-      //for(const documentsnapshot of time.docs){
-
-        //console.log(documentsnapshot.id);
-      //}
-   // const day = time.data().lastUpdatedAt.toDate();
-    //console.log(day);
-    //console.log(time.lastUpdatedAt);
+  oneDayRange = () => {
+    var month = this.month();
+    var d = new Date();
+    var day = d.getDay()+'';
+    var todayDate = d.getDate()+'';
+    var month = month[d.getMonth()]+' ';
+    var year = d.getFullYear()+'';
+    const parseStringToday = month+todayDate+', '+year;
+    var today = Date.parse(parseStringToday);//millionSeconds for 00:00:00 today
+    console.log("today: ", today);
+    return today+ 3600000 * 24;
   }
+  firstOfWeekRange = () => {
+    var month = this.month();
+    var d = new Date();
+    var first = d.getDay();
+    var todayDate = d.getDate()+'';
+    var month = month[d.getMonth()]+' ';
+    var year = d.getFullYear()+'';
+    const parseStringToday = month+todayDate+', '+year;
+    var today = Date.parse(parseStringToday);
+    var firstOfWeek = today - (first+1)*3600000*24; //Database collection saved a day after current day's millionseconds
+    return firstOfWeek;
+  }
+  //get Total Leaders
   getTotal = async () => {
     const totalLeader = [];
     const userSnapshot = await this.db.collection('users').where("score", ">", 0).get();
@@ -76,49 +83,64 @@ class LeadersPage extends Component {
     totalLeader.sort((a,b) => {
       return b.score-a.score;
     })
+    totalLeader.splice(10,totalLeader.length);//only display first 10th user
     await this.setState({totalLeader: totalLeader});
       console.log(this.state.totalLeader);
   };
- /* getTabContent = () => {
-    let content;
-    switch(this.state.value) {
-      case 0://TODAY
-        content = [{ id: 'aaa', score: 25 }, { id: 'bbb', score: 14 }, { id: 'ccc', score: 10 }, { id: 'ddd', score: 4 }];
-        break;
-      case 1://THIS WEEK
-        content = [{ id: 'aaa', score: 25 }, { id: 'bbb', score: 18 }, { id: 'ddd', score: 12 }, { id: 'ccc', score: 10 }];
-        break; 
-      case 2://TOTAL
-        content = [{ id: 'aaa', score: 32 }, { id: 'bbb', score: 23 }, { id: 'ddd', score: 16 }, { id: 'ddd', score: 10 }];
-        break;
-      default:
-        content = [];
-    }*/
-    getTabContent = totalLeader => {
+  //get Today's leaders
+  getToday = async () => {
+    const todayLeader = [];
+    var todayRange = this.oneDayRange();
+    var todayUserSnapshot = await this.db.collection('scoreRecord').where('millis', '==', todayRange).get();
+    for(const user of todayUserSnapshot.docs){
+      var score = await this.db.collection('scoreRecord').doc(user.id).collection('score').where('millis','==',todayRange).get();
+      let set = {username: user.data().username, score: score.docs[0].data().score, userId: user.id};
+      todayLeader.push(set);
+    }
+    todayLeader.sort((a,b) => {
+      return b.score-a.score;
+    })
+    todayLeader.splice(10,todayLeader.length);
+    await this.setState({todayLeader: todayLeader});
+    console.log("today!!!leader: ", todayLeader);
+  }
+  //get this week's leaders
+  getWeek = async () => {
+    const weekLeader = [];
+    var thisWeekRange = this.firstOfWeekRange();
+    var weekUserSnapshot = await this.db.collection('scoreRecord').where('millis', '>=', thisWeekRange).get();
+    for(const user of weekUserSnapshot.docs){
+      var totalScore=0;
+      var scoreSnapshot = await this.db.collection('scoreRecord').doc(user.id).collection('score').where('millis', '>=', thisWeekRange).get();
+      for(const score of scoreSnapshot.docs){
+        totalScore += score.data().score;
+      }
+      let set = {username: user.data().username, score: totalScore, userId: user.id};
+      weekLeader.push(set);
+    }
+    weekLeader.sort((a,b) => {
+      return b.score-a.score;
+    })
+    weekLeader.splice(10,weekLeader.length);
+    await this.setState({weekLeader: weekLeader});
+    console.log("weekLeader: ", weekLeader);
+  }
+  getTabContent = (todayLeader, weekLeader, totalLeader) => {
      
       let content;
       switch(this.state.value){
         case 0: 
-          content = totalLeader;//this.todayTable();
+          content = todayLeader;//this.todayTable();
           break;
         case 1:
-          content = [{ id: 'aaa', score: 25 }, { id: 'bbb', score: 18 }, { id: 'ddd', score: 12 }, { id: 'ccc', score: 10 }];//this.weekTable();
+          content = weekLeader;//this.weekTable();
           break;
         case 2:
-          content = [{ id: 'aaa', score: 25 }, { id: 'bbb', score: 18 }, { id: 'ddd', score: 12 }, { id: 'ccc', score: 10 }];//this.totalTable();
+          content = totalLeader;//this.totalTable();
           break;
         default:
           content = [];
-      }
-    
-    
-  /*totalTable = () => {
-    return(
-
-
-
-    );
-  }*/
+    }
     return (
       <Table className="leaderboard">
         <TableHead>
@@ -140,7 +162,7 @@ class LeadersPage extends Component {
   }
 
   render() {
-    const {totalLeader} = this.state;
+    const {todayLeader,weekLeader,totalLeader} = this.state;
     return (
       <div>
         <h1>Leaders</h1>
@@ -156,7 +178,7 @@ class LeadersPage extends Component {
               <Tab label="Total" />
             </Tabs>
           </AppBar>
-          {this.getTabContent(totalLeader)}
+          {this.getTabContent(todayLeader,weekLeader,totalLeader)}
         </div>
       </div>
     )

@@ -40,25 +40,12 @@
         this.firstUserId = '';
         this.randomizeId();
         this.loadUrl();
-
-        var d = Date.parse('March 21, 2012');
-        console.log("d...", d);
-        // const doc = await this.db.collection('Randomize').doc('0').get();
-        //const doc = await this.db.collection('users').doc('gg5TmIHz2AZkFyRgaUdELkT80Xl2').collection('clipHistory').doc('0').get();
-        //this.time = await doc.data().updated;
-        //this.time = await doc.data().lastUpdatedAt;
-        //this.compareTime(this.time);
-       
-        
-        
       }
       //random loading Url
       loadUrl = async () => {
         console.log("currentUser: " + firebase.auth().currentUser.uid);
         this.existingTags = {};
         var querySnapshot = await this.db.collection('audios').get();
-        //var id = Math.floor((Math.random()*querySnapshot.size)) + '';
-        //this.clipId = id;
         this.clipId = await this.randomizeId();
         console.log(this.clipId);
        
@@ -117,7 +104,6 @@
         console.log("month", month);
         console.log("year", year);
         const parseStringToday = month+todayDate+', '+year;
-
         console.log(parseStringToday);
         var today = Date.parse(parseStringToday);
         console.log("today: ", today);
@@ -143,7 +129,6 @@
           return 4;
         }
       }
-
       oneDayRange = () => {
         var month = new Array();
         month[0] = "January";
@@ -250,21 +235,10 @@
           console.log("currentTags:");
         
           console.log(this.state.currentTags);
-        })
-       
-        
+        }) 
       }
       //get first user Id 
       getUserId = async tag => {
-       /* var doc = await this.audioTagRef.doc(tag).get();
-        var userIdArray = await doc.get('userId');
-        this.firstUserId = userIdArray[0];
-        console.log("userIdArray.length" + userIdArray.length);
-        console.log("userIdArray[0]"+userIdArray[0]);
-        console.log("userIdArray[1]"+userIdArray[1]);
-        console.log("firstUserId"+this.firstUserId );
-        console.log("getUserId CLIPID", this.clipId);
-        return this.firstUserId;*/
         var firstUser = await this.db.collection('audios').doc(this.clipId).collection('users').where('tags', 'array-contains', tag).get();
         console.log("firstUser:  ", firstUser.docs[0].id);
         return firstUser.docs[0].id;
@@ -282,15 +256,12 @@
               console.log("!!firstUserId: " + firstUserId);
               if(firstUserId !== this.currentId){//if the first user is not current user 
                    this.History(firstUserRef,firstUserId,2);
-                  // this.refreshTotalScore(firstUserRef,2);
                   //get 1 point if current user is the second person describe this tag
                    currentTags[tag].score = 1;
                    this.History(this.userRef,this.currentId,1);
-                  // this.refreshTotalScore(this.userRef,1);
               }          
             } else if(currentTags[tag].count === 0){ //if the user is the first person, 0 score for now, count = 1
-             // this.isFrist(tag);
-              this.History(this.userRef,this.currentId,0);
+                this.History(this.userRef,this.currentId,0);
             }else{//if the user is the third or more than third person, no points
               this.History(this.userRef,this.currentId,0);
             }
@@ -323,7 +294,6 @@
           count: 1,
           userId: staticFirebase.firestore.FieldValue.arrayUnion(this.currentId)
         })
-       // this.audioUsersRef.doc(this.user.uid).set(tag);
       }
       History = async (userRef, userId, score) => {
         try{
@@ -359,9 +329,12 @@
                   })
                 }
               });
+            var username = await this.db.collection('users').doc(this.currentId).get();
+            var user = username.data().username;
             scoreRecordRef.set({
               updated: staticFirebase.firestore.FieldValue.serverTimestamp(),
-              millis: oneDayRangeMillis
+              millis: oneDayRangeMillis,
+              username: user
             });
           }catch(e){
             console.log("Can't add score scoreRecord!");

@@ -24,7 +24,7 @@
 
     const INITIAL_STATE = {
       currentTags:{},
-      loading: false,
+      loading: true,
     };
 
     export default class GamePage extends Component {
@@ -157,35 +157,37 @@
       }
       //Randomize clipID
       randomizeId = async () => {
-         var ID = [];
-         var clipIdSnapshot = await this.db.collection('Randomize').where('count', '>', 0).get();
+         var clipIdSnapshot = await this.db.collection('Randomize').where('count', '>', 0).get();//clips have been seen 
          var size = clipIdSnapshot.size;
          console.log("size ", size);
          var userHasSeen = {};
          var oneHourNoSeen = [];
+         var hasBeenSeen = [];
          if(size === 0){//initially all clips has not yet been seen
           return '0';
          }else{
-             var noSeenSnapshot = await this.db.collection('Randomize').where('count', '==', 0).get();
-             if(noSeenSnapshot.size != 0) //if some clips have been seen, choose the one has not been seen 
-                return noSeenSnapshot.docs[0].id+'';
-             else{
-               var now = Date.now(); //if all clips have been seen, pick the one has not been seen in the last hour && current user has no seen yet
-               var time = now - 3600000;
-               var milliSnapshot = await this.db.collection('Randomize').where('millis', '<', time).get();//has no seen past hour
-               var currentUserSeen = await this.db.collection('Randomize').where('userId', 'array-contains', this.currentId).get();
-               for(const userSeen of currentUserSeen.docs){
-                  userHasSeen[userSeen.id] = {count: userSeen.data().count};
-               }
-               for(const millis of milliSnapshot.docs){
+             var currentUserSeenSnapshot = await this.db.collection('Randomize').where('userId', 'array-contains', this.currentId).get();//current user has seen
+             var now = Date.now(); //pick the one has been seen && has not been seen in the last hour && current user has no seen yet
+             var oneHour = now - 3600000;
+             var milliSnapshot = await this.db.collection('Randomize').where('millis', '<', oneHour).get();//no seen past hour 
+             for(const millis of milliSnapshot.docs){
+                if(millis.data().count > 0){//has been seen 
                   oneHourNoSeen.push(millis.id);
-               }
-               console.log("oneHourNoSeen:" , oneHourNoSeen);
-               console.log("userHasSeen:" , userHasSeen);
-               var userHasNoSeen = oneHourNoSeen.filter(id => (!Object.keys(userHasSeen).includes(id)));
-               console.log("userHasNoSeen:" , userHasNoSeen.length);
-               if(userHasNoSeen.length != 0)
+                }
+             }
+             console.log("oneHourNoSeen", oneHourNoSeen);
+             for(const userSeen of currentUserSeenSnapshot.docs){
+               userHasSeen[userSeen.id] = {count: userSeen.data().count};
+             }
+             var userHasNoSeen = oneHourNoSeen.filter(id => (!Object.keys(userHasSeen).includes(id)));
+             console.log("userHasNoSeen:" , userHasNoSeen.length);
+             if(userHasNoSeen.length !== 0){
                 return userHasNoSeen[0]+'';
+             }
+             else{
+               var noSeenSnapshot = await this.db.collection('Randomize').where('count', '==', 0).get();
+               if(noSeenSnapshot.size !== 0) //else pick the one has not been seen 
+                  return noSeenSnapshot.docs[0].id+'';
              }
           }
          return Math.floor((Math.random()*5))+'';
@@ -329,7 +331,7 @@
                   })
                 }
               });
-            var username = await this.db.collection('users').doc(this.currentId).get();
+            var username = await this.db.collection('users').doc(userId).get();
             var user = username.data().username;
             scoreRecordRef.set({
               updated: staticFirebase.firestore.FieldValue.serverTimestamp(),

@@ -106,7 +106,6 @@ class RegisterForm extends Component {
     // validation part
     const { email, password, username } = await this.validateForm();
     const db = firebase.firestore();
-
     if (!this.state.policyError && !this.state.emailError && !this.state.passwordError && !this.state.password2Error && !this.state.usernameError) {
       // create User in firebase
       try {

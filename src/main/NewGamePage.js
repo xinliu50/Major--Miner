@@ -20,6 +20,7 @@
       import firebase from "../base";
       import staticFirebase from "firebase";
       import GameRuleDialog from "./GameRuleDialog";
+     // import * as firebase from 'firebase/app';
 
 
       const INITIAL_STATE = {
@@ -38,15 +39,61 @@
           this.currentId = firebase.auth().currentUser.uid;
           this.userRef = this.db.collection('users').doc(this.currentId);
           this.firstUserId = '';
+         
+
           //this.randomizeId();
-          this.loadUrl();
+         // this.loadUrl();
+          this.loadFiles();
+          //this.loadwords('./text/text.txt',this.handler());
+        }
+        loadFiles = async () => {
+          var data;
+          var xmlhttp = new XMLHttpRequest();
+          var myJSON;
+          var items;
+          var temp;
+          var dataArray = [];
+          var audiosDataRef = await this.db.collection('audiosData');
+          xmlhttp.onreadystatechange = async function(){
+            if(xmlhttp.status == 200 && xmlhttp.readyState == 4){
+              data = xmlhttp.responseText;
+              console.log(typeof(data));
+              myJSON = JSON.parse(data);
+              items = myJSON.items;
+              for(var i = 0; i < items.length; i++){
+               //var dataSet = {'name': items[i].name, 'metadata': items[i].metadata.firebaseStorageDownloadTokens};
+               //var tempString = 'https://firebasestorage.googleapis.com/v0/b/majorminer-dd13a.appspot.com/o/'+items[i].name+'?alt=media&token='+items[i].metadata.firebaseStorageDownloadTokens;
+               //await dataArray.push(dataSet);
+                await audiosDataRef.doc(i+'').set({
+                  Title: items[i].name,
+                  Url: 'https://firebasestorage.googleapis.com/v0/b/majorminer-dd13a.appspot.com/o/'+items[i].name+'?alt=media&token='+items[i].metadata.firebaseStorageDownloadTokens
+                });
+                console.log(i);
+              }
+            }
+          };
+          xmlhttp.open("GET","/text/data.json",true);
+          xmlhttp.send();
+          console.log(dataArray.length);
+         // var audiosDataRef = await this.db.collection('audiosData');
+          //console.log(audiosDataRef);
+        // for(var i = 0; i < dataArray.length; i++){
+            /*audiosDataRef.doc(i+'').set({
+              Title: dataArray[i].name,
+              Url: 'https://firebasestorage.googleapis.com/v0/b/majorminer-dd13a.appspot.com/o/'+dataArray[i].name+'?alt=media&token='+dataArray[i].metadata
+            });*/
+          //  console.log(dataArray[i]);
+         // }
+
+         // dataArray.forEach
+
         }
         //random loading Url
         loadUrl = async () => {
           console.log("currentUser: " + firebase.auth().currentUser.uid);
           this.existingTags = {};
           var querySnapshot = await this.db.collection('audios').get();
-          this.clipId = await this.randomizeId();
+          this.clipId = '6';//await this.randomizeId();
           console.log(this.clipId);
          
           this.audioRef = await this.db.collection('audios').doc(this.clipId);
@@ -215,7 +262,7 @@
         }
         pick_pioneer = async() => {
           var noSeenSnapshot = await this.db.collection('Randomize').where('count', '==', 0).get();
-            if(noSeenSnapshot.size !== 0) {//else pick the one has not been seen 
+            if(noSeenSnapshot.size !== 0) {// pick the one has not been seen 
               console.log("noSeenSnapshot[0]");
               return noSeenSnapshot.docs[0].id+'';
             }
@@ -230,16 +277,20 @@
             console.log("oneHourNoSeenSnapshot == 0");
             return this.pick_pioneer();
           }else{//some clips have no been seen in past hour
+            ///////debug console
             console.log("oneHourNoSeenSnapshot:  ",oneHourNoSeenSnapshot);
             for(const clip of oneHourNoSeenSnapshot.docs){
               console.log("oneHourNoSeenSnapshot", clip.id);
             }
+            ///////////
+
             for(const clip of oneHourNoSeenSnapshot.docs){
               if(!userHasSeen.has(clip.id)){
                 console.log("!userHasSeen.has(clip.id)");
                 return clip.id+'';
               }
             } 
+            //this user has seen all of the clips in the oneHourNoSeenSnapshot
             return this.pick_pioneer();
           }
         }

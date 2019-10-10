@@ -32,4 +32,5 @@ firebase.json
 serviceAccount.json
 
 /cypress/support/commands.js
+audioClips.json
 *.mp3

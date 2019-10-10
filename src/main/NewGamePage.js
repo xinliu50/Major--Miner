@@ -20,9 +20,7 @@
       import firebase from "../base";
       import staticFirebase from "firebase";
       import GameRuleDialog from "./GameRuleDialog";
-     // import * as firebase from 'firebase/app';
-
-
+    
       const INITIAL_STATE = {
         currentTags:{},
         loading: true,
@@ -39,13 +37,11 @@
           this.currentId = firebase.auth().currentUser.uid;
           this.userRef = this.db.collection('users').doc(this.currentId);
           this.firstUserId = '';
-         
 
-          //this.randomizeId();
-         // this.loadUrl();
-          this.loadFiles();
-          //this.loadwords('./text/text.txt',this.handler());
+          this.loadUrl();
+         //this.loadFiles();
         }
+        //this function loads JSON file under 'public' directory (which contains each clips Url) into firebase collections
         loadFiles = async () => {
           var data;
           var xmlhttp = new XMLHttpRequest();
@@ -53,7 +49,8 @@
           var items;
           var temp;
           var dataArray = [];
-          var audiosDataRef = await this.db.collection('audiosData');
+          var audiosDataRef = await this.db.collection('audios');
+          var randomRef = await this.db.collection('Randomize');
           xmlhttp.onreadystatechange = async function(){
             if(xmlhttp.status == 200 && xmlhttp.readyState == 4){
               data = xmlhttp.responseText;
@@ -61,13 +58,13 @@
               myJSON = JSON.parse(data);
               items = myJSON.items;
               for(var i = 0; i < items.length; i++){
-               //var dataSet = {'name': items[i].name, 'metadata': items[i].metadata.firebaseStorageDownloadTokens};
-               //var tempString = 'https://firebasestorage.googleapis.com/v0/b/majorminer-dd13a.appspot.com/o/'+items[i].name+'?alt=media&token='+items[i].metadata.firebaseStorageDownloadTokens;
-               //await dataArray.push(dataSet);
-                await audiosDataRef.doc(i+'').set({
+               	audiosDataRef.doc(i+'').set({
                   Title: items[i].name,
                   Url: 'https://firebasestorage.googleapis.com/v0/b/majorminer-dd13a.appspot.com/o/'+items[i].name+'?alt=media&token='+items[i].metadata.firebaseStorageDownloadTokens
                 });
+               	randomRef.doc(i+'').set({
+               		count: 0
+               	});
                 console.log(i);
               }
             }
@@ -75,25 +72,13 @@
           xmlhttp.open("GET","/text/data.json",true);
           xmlhttp.send();
           console.log(dataArray.length);
-         // var audiosDataRef = await this.db.collection('audiosData');
-          //console.log(audiosDataRef);
-        // for(var i = 0; i < dataArray.length; i++){
-            /*audiosDataRef.doc(i+'').set({
-              Title: dataArray[i].name,
-              Url: 'https://firebasestorage.googleapis.com/v0/b/majorminer-dd13a.appspot.com/o/'+dataArray[i].name+'?alt=media&token='+dataArray[i].metadata
-            });*/
-          //  console.log(dataArray[i]);
-         // }
-
-         // dataArray.forEach
-
         }
         //random loading Url
         loadUrl = async () => {
           console.log("currentUser: " + firebase.auth().currentUser.uid);
           this.existingTags = {};
           var querySnapshot = await this.db.collection('audios').get();
-          this.clipId = '6';//await this.randomizeId();
+          this.clipId = await this.randomizeId();
           console.log(this.clipId);
          
           this.audioRef = await this.db.collection('audios').doc(this.clipId);
@@ -202,43 +187,6 @@
 
           return today+ 3600000 * 24;
         }
-       /* //Randomize clipID
-        randomizeId = async () => {
-           var clipIdSnapshot = await this.db.collection('Randomize').where('count', '>', 0).get();//clips have been seen 
-           var size = clipIdSnapshot.size;
-           console.log("size ", size);
-           var userHasSeen = {};
-           var oneHourNoSeen = [];
-           var hasBeenSeen = [];
-           if(size === 0){//initially all clips has not yet been seen
-            return '0';
-           }else{
-               var currentUserSeenSnapshot = await this.db.collection('Randomize').where('userId', 'array-contains', this.currentId).get();//current user has seen
-               var now = Date.now(); //pick the one has been seen && has not been seen in the last hour && current user has no seen yet
-               var oneHour = now - 3600000;
-               var milliSnapshot = await this.db.collection('Randomize').where('millis', '<', oneHour).get();//no seen past hour 
-               for(const millis of milliSnapshot.docs){
-                  if(millis.data().count > 0){//has been seen 
-                    oneHourNoSeen.push(millis.id);
-                  }
-               }
-               console.log("oneHourNoSeen", oneHourNoSeen);
-               for(const userSeen of currentUserSeenSnapshot.docs){
-                 userHasSeen[userSeen.id] = {count: userSeen.data().count};
-               }
-               var userHasNoSeen = oneHourNoSeen.filter(id => (!Object.keys(userHasSeen).includes(id)));
-               console.log("userHasNoSeen:" , userHasNoSeen.length);
-               if(userHasNoSeen.length !== 0){
-                  return userHasNoSeen[0]+'';
-               }
-               else{
-                 var noSeenSnapshot = await this.db.collection('Randomize').where('count', '==', 0).get();
-                 if(noSeenSnapshot.size !== 0) //else pick the one has not been seen 
-                    return noSeenSnapshot.docs[0].id+'';
-               }
-            }
-           return Math.floor((Math.random()*5))+'';
-        } */ 
         randomizeId = async() => {
           var clip;
           var userHasSeen = new Set();

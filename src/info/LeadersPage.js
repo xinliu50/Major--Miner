@@ -10,7 +10,6 @@ import {
   TableCell
 } from "@material-ui/core";
 import firebase from "../base";
-import staticFirebase from "firebase";
 class LeadersPage extends Component {
   constructor(props) {
     super(props);
@@ -49,11 +48,10 @@ class LeadersPage extends Component {
     this.setState({ value });
   };
   oneDayRange = () => {
-    var month = this.month();
+    var monthArray = this.month();
     var d = new Date();
-    var day = d.getDay()+'';
     var todayDate = d.getDate()+'';
-    var month = month[d.getMonth()]+' ';
+    var month = monthArray[d.getMonth()]+' ';
     var year = d.getFullYear()+'';
     const parseStringToday = month+todayDate+', '+year;
     var today = Date.parse(parseStringToday);//millionSeconds for 00:00:00 today
@@ -61,11 +59,11 @@ class LeadersPage extends Component {
     return today+ 3600000 * 24;
   }
   firstOfWeekRange = () => {
-    var month = this.month();
+    var monthArray = this.month();
     var d = new Date();
     var first = d.getDay();
     var todayDate = d.getDate()+'';
-    var month = month[d.getMonth()]+' ';
+    var month = monthArray[d.getMonth()]+' ';
     var year = d.getFullYear()+'';
     const parseStringToday = month+todayDate+', '+year;
     var today = Date.parse(parseStringToday);

@@ -9,7 +9,6 @@ import PlayArrow from "@material-ui/icons/PlayArrow";
 import Pause from "@material-ui/icons/Pause";
 import Group from "@material-ui/icons/Group";
 import Person from "@material-ui/icons/Person";
-import firebase from "../base";
 
 class AudioCard extends Component {
   constructor(props) {
@@ -76,7 +75,7 @@ class AudioCard extends Component {
           <p>Your tags: {this.props.TAG || 'loading'}</p>
 
          {this.state.seeOthers ? (
-           <p>Other's tags: {this.props.other || 'loading'} </p>) : ""}
+           <p>Other's tags: {this.props.other || 'Loading'} </p>) : ""}
         </CardContent>
         <CardActions style={{ paddingTop: "0" }}>
           <IconButton onClick={this.toggleAudio}>

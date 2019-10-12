@@ -87,7 +87,7 @@ class RegisterForm extends Component {
       this.setState({ password2Error: false });
     }
 
-    if(username == ''){
+    if(username === ''){
       this.setState({usernameError: true});
     }else{
       this.setState({usernameError: false});

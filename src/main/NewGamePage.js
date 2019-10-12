@@ -47,12 +47,11 @@
           var xmlhttp = new XMLHttpRequest();
           var myJSON;
           var items;
-          var temp;
           var dataArray = [];
           var audiosDataRef = await this.db.collection('audios');
           var randomRef = await this.db.collection('Randomize');
           xmlhttp.onreadystatechange = async function(){
-            if(xmlhttp.status == 200 && xmlhttp.readyState == 4){
+            if(xmlhttp.status === 200 && xmlhttp.readyState === 4){
               data = xmlhttp.responseText;
               console.log(typeof(data));
               myJSON = JSON.parse(data);
@@ -77,7 +76,6 @@
         loadUrl = async () => {
           console.log("currentUser: " + firebase.auth().currentUser.uid);
           this.existingTags = {};
-          var querySnapshot = await this.db.collection('audios').get();
           this.clipId = await this.randomizeId();
           console.log(this.clipId);
          
@@ -129,13 +127,13 @@
           var d = new Date();
           var day = d.getDay()+'';
           var todayDate = d.getDate()+'';
-          var month = month[d.getMonth()]+' ';
+          var thisMonth = month[d.getMonth()]+' ';
           var year = d.getFullYear()+'';
           console.log("day", day);
           console.log("date ", todayDate);
-          console.log("month", month);
+          console.log("month", thisMonth);
           console.log("year", year);
-          const parseStringToday = month+todayDate+', '+year;
+          const parseStringToday = thisMonth+todayDate+', '+year;
           console.log(parseStringToday);
           var today = Date.parse(parseStringToday);
           console.log("today: ", today);
@@ -177,11 +175,10 @@
           month[11] = "December";
          
           var d = new Date();
-          var day = d.getDay()+'';
           var todayDate = d.getDate()+'';
-          var month = month[d.getMonth()]+' ';
+          var thisMonth = month[d.getMonth()]+' ';
           var year = d.getFullYear()+'';
-          const parseStringToday = month+todayDate+', '+year;
+          const parseStringToday = thisMonth+todayDate+', '+year;
           var today = Date.parse(parseStringToday);//millionSeconds for 00:00:00 today
           console.log("today: ", today);
 
@@ -368,7 +365,7 @@
           }catch(err){
             console.log("Can't create clipHistory!! " + err);
           }
-          if(score != 0){//if this user gained scores, save it to the scoreRecord collection
+          if(score !== 0){//if this user gained scores, save it to the scoreRecord collection
             var oneDayRangeMillis = this.oneDayRange();
             try{
               var scoreRecordRef = this.db.collection('scoreRecord').doc(userId);
@@ -423,7 +420,7 @@
         render() {
          const url = this.url;
          const clipId = this.clipId;
-         const {currentTags,existingTags} = this.state;
+         const {currentTags} = this.state;
           return (
             <Grid container className="game-container" direction="column" alignItems="center" spacing={16}>
               <Grid item container alignItems="center">

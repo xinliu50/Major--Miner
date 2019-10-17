@@ -41,6 +41,11 @@
           this.loadUrl();
          //this.loadFiles();
         }
+        handleKeyPress = event => {
+          if (event.key === 'Enter') {
+            document.getElementById("submitButton").click();
+          }
+        }
         //this function loads JSON file under 'public' directory (which contains each clips Url) into firebase collections
         loadFiles = async () => {
           var data;
@@ -472,7 +477,7 @@
                   <Input
                     id="tags"
                     type="text"
-                    //onKeyPress={this.handleKeyPress}
+                    onKeyPress={this.handleKeyPress}
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton id="submitButton" onClick={this.handleSubmit}>

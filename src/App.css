@@ -104,6 +104,10 @@ header a:link {
 /*****************
  *   Game Page   *
  *****************/
+ 
+ #listTag{
+  font-size: 25px;
+ }
 .game-container {
   padding: 2em;
 }

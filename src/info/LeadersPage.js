@@ -67,7 +67,9 @@ class LeadersPage extends Component {
     var year = d.getFullYear()+'';
     const parseStringToday = month+todayDate+', '+year;
     var today = Date.parse(parseStringToday);
-    var firstOfWeek = today - (first+1)*3600000*24; //Database collection saved a day after current day's millionseconds
+    console.log("first day of the week", first);
+
+    var firstOfWeek = today - (first-1)*3600000*24; //Database collection saved a day after current day's millionseconds
     return firstOfWeek;
   }
   //get Total Leaders
@@ -100,12 +102,15 @@ class LeadersPage extends Component {
     })
     todayLeader.splice(10,todayLeader.length);
     await this.setState({todayLeader: todayLeader});
+    console.log("today: ", new Date(todayRange));
     console.log("today!!!leader: ", todayLeader);
   }
   //get this week's leaders
   getWeek = async () => {
     const weekLeader = [];
     var thisWeekRange = this.firstOfWeekRange();
+    console.log("thisWeekRange:  ", thisWeekRange);
+    console.log("Sunday", new Date(thisWeekRange));
     var weekUserSnapshot = await this.db.collection('scoreRecord').where('millis', '>=', thisWeekRange).get();
     for(const user of weekUserSnapshot.docs){
       var totalScore=0;

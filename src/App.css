@@ -68,7 +68,9 @@ a:visited {
   padding: 0 0!important;
   font-size: 0.9em;
 }
-
+.grid-list{
+  width: 100%;
+}
 /**************
  *   Header   *
  *************/

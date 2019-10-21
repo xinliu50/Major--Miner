@@ -58,7 +58,9 @@ class Header extends Component {
             {this.props.authenticated ? (
               <ButtonBase component={Link} to="/main/clip" className="nav-item">Game</ButtonBase>
             ) : ""}
-            <ButtonBase component={Link} to="/info/leaders" className="nav-item">Leaders</ButtonBase>
+            {this.props.authenticated ? (
+              <ButtonBase component={Link} to="/info/leaders" className="nav-item">Leaders</ButtonBase>
+            ) : ""}
             <ButtonBase component={Link} to="/search" className="nav-item">Search</ButtonBase>
             {this.props.authenticated ? (
               <div className="account-button">

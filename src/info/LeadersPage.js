@@ -22,8 +22,10 @@ class LeadersPage extends Component {
   }
   componentDidMount(){
     this.user = firebase.auth().currentUser;
-    this.db = firebase.firestore();
-    this.currentId = firebase.auth().currentUser.uid;
+    if(this.user){
+      this.db = firebase.firestore();
+      this.currentId = firebase.auth().currentUser.uid;
+    }
     this.getTotal();
     this.getToday();
     this.getWeek();

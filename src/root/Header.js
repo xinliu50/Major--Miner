@@ -14,18 +14,18 @@ class Header extends Component {
     super(props);
     this.state = {
       open: false,
-      score: 0
+      score: null
     };
   }
 
   componentDidMount() {
     this.db = firebase.firestore();
     this.user = firebase.auth().currentUser;
+   // this.userRef = this.db.collection('users').doc(this.user.uid);
     if (this.user) {
-      this.userRef = this.db.collection('users').doc(this.user.uid);
-    
-      this.userDocListener = this.userRef.onSnapshot(user => {
-        this.setState({ score: user.data().score });
+      //this.userRef = 
+      this.db.collection('users').doc(this.user.uid).get().then(user => {
+          this.setState({ score: user.data().score });
       });
     }
   }
@@ -40,6 +40,7 @@ class Header extends Component {
       console.log(err);
     })
     this.props.history.push('/');
+    this.setState({ score: 0});
   }
 
   componentWillUnmount() {
@@ -49,6 +50,7 @@ class Header extends Component {
   }
 
   render() {
+  
     return (
       <AppBar position="sticky">
         <Toolbar>
@@ -58,7 +60,9 @@ class Header extends Component {
             {this.props.authenticated ? (
               <ButtonBase component={Link} to="/main/clip" className="nav-item">Game</ButtonBase>
             ) : ""}
-            <ButtonBase component={Link} to="/info/leaders" className="nav-item">Leaders</ButtonBase>
+            {this.props.authenticated ? (
+              <ButtonBase component={Link} to="/info/leaders" className="nav-item">Leaders</ButtonBase>
+             ) : ""} 
             <ButtonBase component={Link} to="/search" className="nav-item">Search</ButtonBase>
             {this.props.authenticated ? (
               <div className="account-button">

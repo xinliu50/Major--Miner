@@ -30,8 +30,13 @@
         constructor(props) {
           super(props);
           this.state = {...INITIAL_STATE};
+          
+          this.textInput = React.createRef();
         }  
         componentDidMount = async() =>{
+
+         // this.textInput.current.focus();
+
           this.user = firebase.auth().currentUser;
           this.db = firebase.firestore();
           this.currentId = firebase.auth().currentUser.uid;
@@ -41,6 +46,15 @@
           this.loadUrl();
          //this.loadFiles();
         }
+
+        componentDidUpdate(prevProps, prevState) {
+          this.textInput.current.focus();
+        }
+
+        // focusTextInput() {
+        //   this.textInput.current.focus();
+        // }
+
         handleKeyPress = event => {
           if (event.key === 'Enter') {
             document.getElementById("submitButton").click();
@@ -477,6 +491,8 @@
                   <Input
                     id="tags"
                     type="text"
+                    autoFocus={true}
+                    inputRef={this.textInput}
                     onKeyPress={this.handleKeyPress}
                     endAdornment={
                       <InputAdornment position="end">

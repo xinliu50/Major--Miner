@@ -17,20 +17,12 @@
     "react-router-dom": "^4.3.1",
     "react-scripts": "^2.1.8",
     "engines": {
-    "node": "12.10.0",
-    "npm": "6.x"
+      "node": "12.10.0",
+      "npm": "6.10.3"
   }
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "npm run build:testConfig cypress run",
-    "eject": "react-scripts eject",
-    "build:testConfig": "cypress-firebase createTestEnvFile",
-    "test:open": "npm run build:testConfig cypress open",
-    "test:stage": "npm run test -- --env envName=stage",
-    "test:open:stage": "npm run test:open -- --env envName=stage",
-    "start:dist": "npm run build && firebase serve --only hosting -p 3000"
+    "start": "node server.js"
   },
   "eslintConfig": {
     "extends": "react-app"

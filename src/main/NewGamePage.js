@@ -23,6 +23,7 @@
     
       const INITIAL_STATE = {
         currentTags:{},
+        displayTag:{},
         loading: true,
       };
 
@@ -31,13 +32,9 @@
           super(props);
           this.state = {...INITIAL_STATE};
 
-          this.displayTag = {};
-          
           this.textInput = React.createRef();
         }  
         componentDidMount = async() =>{
-
-         // this.textInput.current.focus();
 
           this.user = firebase.auth().currentUser;
           this.db = firebase.firestore();
@@ -50,12 +47,8 @@
         }
 
         componentDidUpdate(prevProps, prevState) {
-          this.textInput.current.focus();
+          this.textInput.current.focus(); 
         }
-
-        // focusTextInput() {
-        //   this.textInput.current.focus();
-        // }
 
         handleKeyPress = event => {
           if (event.key === 'Enter') {
@@ -268,12 +261,14 @@
 
         //getting next clips
         getNextClip = async () => {
-          await this.setState({currentTags:{}, loading: true});
+          await this.setState({currentTags:{}, loading: true, displayTag:{}});
           this.loadUrl();
         }  
         //submit tags
         handleSubmit = async () => {
           const newTags = document.getElementById("tags").value.toLowerCase().replace(/\s/g,'').split(",");
+          
+
           //generate temporatyTags set from new Tags
           var tempCurrentTags = {};
           this.audioTagRef = await this.audioRef.collection('tags');
@@ -282,6 +277,7 @@
           const tags = await this.audioTagRef.get();
           //generate exitingTags from DB
           this.existingTags = await this.loadExistingTag(tags);
+
          
           console.log("existingTags");
           console.log(this.existingTags);
@@ -299,22 +295,33 @@
               }
             }
           });
-          console.log("tempCurrentTags");
-          console.log(tempCurrentTags);
+          
+
+           console.log("displayTag");
+          console.log(this.state.displayTag);
          
-          console.log("newTags: " + newTags);
-          document.getElementById("tags").value = "";
+          // console.log("newTags: " + newTags);
+           document.getElementById("tags").value = "";
         
           this.loadTagsToDb(tempCurrentTags).then(tempCurrentTags => {
             tempCurrentTags = tempCurrentTags;
-            
+          
             this.setState({currentTags: tempCurrentTags});
 
-            //this.setState(prevState => ({ currentTags: {...prevState.currentTags, [tag]: 1 }}));
             console.log("currentTags:");
-          
+            
             console.log(this.state.currentTags);
+
+            console.log("tempCurrentTags");
+            console.log(tempCurrentTags);
+
+
+            for( const tag of Object.keys(tempCurrentTags)){
+               this.setState(prevState => ({ displayTag: {...prevState.displayTag, [tag]: {score: tempCurrentTags[tag].score, count:  tempCurrentTags[tag].count }}}));
+            }
           }) 
+        
+
         }
         //get first user Id 
         getUserId = async tag => {
@@ -444,7 +451,7 @@
         render() {
          const url = this.url;
          const clipId = this.clipId;
-         const {currentTags} = this.state;
+         const {currentTags,displayTag} = this.state;
           return (
             <Grid container className="game-container" direction="column" alignItems="center" spacing={16}>
               <Grid item container alignItems="center">
@@ -478,16 +485,14 @@
                 </Grid>
               </Grid>
              <Grid item id="listTag" sm={10} md={6} lg={8}>
-                {Object.keys(currentTags).map((tag, i) => {
-                  if (currentTags[tag].count === 0) {
+                {Object.keys(displayTag).map((tag, i) => {
+                  if (displayTag[tag].count === 0) {
                     return (<span key={i} className="gray">{tag}&nbsp;</span>)
-                  } else if (currentTags[tag].count === 1) {
+                  } else if (displayTag[tag].score === 1) {
                     return (<i key={i} className="1-point">{tag}&nbsp;</i>)
-                  } else if (currentTags[tag].count > 1) {
-                    return (<span key={i} className="pink">{tag}&nbsp;</span>)
                   } else {
-                    return (<b key={i}>{tag}&nbsp;</b>)
-                  }
+                    return (<span key={i} className="pink">{tag}&nbsp;</span>)
+                   } 
                 })}
               </Grid>
               <Grid item sm={10} md={6} lg={8}>
@@ -518,7 +523,7 @@
                     }
                   />
                   <FormHelperText>
-                    Tag colors: <b>2 points</b>, <i>1 point</i>, <span className="gray">no points yet (but could be 2)</span>, <span className="pink">0 points</span>.
+                    Tag colors: <i>1 point</i>, <span className="gray">no points yet (but could be 2)</span>, <span className="pink">0 points</span>.
                   </FormHelperText>
                 </FormControl>
               </Grid>

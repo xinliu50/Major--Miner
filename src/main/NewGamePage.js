@@ -30,8 +30,15 @@
         constructor(props) {
           super(props);
           this.state = {...INITIAL_STATE};
+
+          this.displayTag = {};
+          
+          this.textInput = React.createRef();
         }  
         componentDidMount = async() =>{
+
+         // this.textInput.current.focus();
+
           this.user = firebase.auth().currentUser;
           this.db = firebase.firestore();
           this.currentId = firebase.auth().currentUser.uid;
@@ -41,6 +48,15 @@
           this.loadUrl();
          //this.loadFiles();
         }
+
+        componentDidUpdate(prevProps, prevState) {
+          this.textInput.current.focus();
+        }
+
+        // focusTextInput() {
+        //   this.textInput.current.focus();
+        // }
+
         handleKeyPress = event => {
           if (event.key === 'Enter') {
             document.getElementById("submitButton").click();
@@ -62,13 +78,13 @@
               myJSON = JSON.parse(data);
               items = myJSON.items;
               for(var i = 0; i < items.length; i++){
-               	audiosDataRef.doc(i+'').set({
+                audiosDataRef.doc(i+'').set({
                   Title: items[i].name,
                   Url: 'https://firebasestorage.googleapis.com/v0/b/majorminer-dd13a.appspot.com/o/'+items[i].name+'?alt=media&token='+items[i].metadata.firebaseStorageDownloadTokens
                 });
-               	randomRef.doc(i+'').set({
-               		count: 0
-               	});
+                randomRef.doc(i+'').set({
+                  count: 0
+                });
                 console.log(i);
               }
             }
@@ -291,7 +307,10 @@
         
           this.loadTagsToDb(tempCurrentTags).then(tempCurrentTags => {
             tempCurrentTags = tempCurrentTags;
+            
             this.setState({currentTags: tempCurrentTags});
+
+            //this.setState(prevState => ({ currentTags: {...prevState.currentTags, [tag]: 1 }}));
             console.log("currentTags:");
           
             console.log(this.state.currentTags);
@@ -477,6 +496,8 @@
                   <Input
                     id="tags"
                     type="text"
+                    autoFocus={true}
+                    inputRef={this.textInput}
                     onKeyPress={this.handleKeyPress}
                     endAdornment={
                       <InputAdornment position="end">

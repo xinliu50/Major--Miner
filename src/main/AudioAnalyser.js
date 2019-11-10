@@ -49,9 +49,18 @@
          //this.loadFiles();
         }
 
+
         componentDidUpdate(prevProps, prevState) {
           this.textInput.current.focus();
         }
+  componentDidMount() {
+    this._isMounted = true;
+    this.setupAudioContext();
+    this.toggleAudio();
+    this.user = firebase.auth().currentUser;
+    this.db = firebase.firestore();
+    this.currentId = firebase.auth().currentUser.uid;
+  }
 
         // focusTextInput() {
         //   this.textInput.current.focus();

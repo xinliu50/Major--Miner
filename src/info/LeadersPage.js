@@ -23,7 +23,7 @@ class LeadersPage extends Component {
   componentDidMount(){
     this.user = firebase.auth().currentUser;
     this.db = firebase.firestore();
-    if(this.user){
+     if(this.user){
       this.currentId = firebase.auth().currentUser.uid;
     }
     this.getTotal();

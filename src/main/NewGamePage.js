@@ -241,7 +241,6 @@
             for(const clip of oneHourNoSeenSnapshot.docs){
               console.log("oneHourNoSeenSnapshot", clip.id);
             }
-            ///////////
 
             for(const clip of oneHourNoSeenSnapshot.docs){
               if(!userHasSeen.has(clip.id)){
@@ -487,11 +486,11 @@
              <Grid item id="listTag" sm={10} md={6} lg={8}>
                 {Object.keys(displayTag).map((tag, i) => {
                   if (displayTag[tag].count === 0) {
-                    return (<span key={i} className="gray">{tag}&nbsp;</span>)
+                    return (<span key={i} className="gray">{tag+","}&nbsp;</span>)
                   } else if (displayTag[tag].score === 1) {
-                    return (<i key={i} className="1-point">{tag}&nbsp;</i>)
+                    return (<i key={i} className="1-point">{tag+","}&nbsp;</i>)
                   } else {
-                    return (<span key={i} className="pink">{tag}&nbsp;</span>)
+                    return (<span key={i} className="pink">{tag+","}&nbsp;</span>)
                    } 
                 })}
               </Grid>

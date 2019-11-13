@@ -75,7 +75,7 @@ class AudioCard extends Component {
           <p>Your tags: {this.props.TAG || 'loading'}</p>
 
          {this.state.seeOthers ? (
-           <p>Other's tags: {this.props.other || 'Loading'} </p>) : ""}
+           <p>Other's tags: {this.props.other} </p>) : ""}
         </CardContent>
         <CardActions style={{ paddingTop: "0" }}>
           <IconButton onClick={this.toggleAudio}>

@@ -65,12 +65,12 @@ a:visited {
 }
 
 .privacy-in-dialog {
-  padding: 0 0!important;
+  padding: 0; /*0!important;*/
   font-size: 0.9em;
 }
-.grid-list{
+/*.grid-list{
   width: 100%;
-}
+}*/
 /**************
  *   Header   *
  *************/

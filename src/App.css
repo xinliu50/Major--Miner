@@ -46,6 +46,7 @@ body {
 }
 
 .privacy-container p {
+  overflow: scroll;
   text-align: left;
   line-height: 1.25em;
   font-size: 0.9em;
@@ -65,7 +66,7 @@ a:visited {
 }
 
 .privacy-in-dialog {
-  padding: 0; /*0!important;*/
+  padding: 0 0!important;
   font-size: 0.9em;
 }
 /*.grid-list{

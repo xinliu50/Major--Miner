@@ -144,14 +144,8 @@ class RegisterForm extends Component {
         >
           <DialogTitle>Register</DialogTitle>
           <DialogContent>
-            <Grid container direction="column" spacing={16} >
-              {/* <Grid item sm={12} md={12} lg={12}>
-                <FormControl margin="normal" fullWidth>
-                  <InputLabel>Username</InputLabel>
-                  <Input id="username" />
-                </FormControl>
-              </Grid> */}
-              <Grid item className="grid-list">
+            <Grid container direction="column" justify="space-evenly" alignItems="stretch">
+              <Grid item>
                 <FormControl margin="normal" fullWidth>
                   <InputLabel>Username</InputLabel>
                   <Input id="username" type="text" onKeyPress={this.handleKeyPress} />
@@ -160,7 +154,7 @@ class RegisterForm extends Component {
                   <FormHelperText error={true}>Must Enter Your Username.</FormHelperText>
                 ) : ""}
               </Grid>
-              <Grid item className="grid-list">
+              <Grid item>
                 <FormControl margin="normal" fullWidth>
                   <InputLabel>Email</InputLabel>
                   <Input id="email" type="email" onKeyPress={this.handleKeyPress} />
@@ -169,7 +163,7 @@ class RegisterForm extends Component {
                   <FormHelperText error={true}>Invalid email.</FormHelperText>
                 ) : ""}
               </Grid>
-              <Grid item className="grid-list">
+              <Grid item>
                 <FormControl margin="normal" fullWidth>
                   <InputLabel>Password</InputLabel>
                   <Input id="password" type="password" onKeyPress={this.handleKeyPress} />
@@ -178,7 +172,7 @@ class RegisterForm extends Component {
                   <FormHelperText error={true}>Password should be more than 6 characters.</FormHelperText>
                 ) : ""}
               </Grid>
-              <Grid item className="grid-list">
+              <Grid item>
                 <FormControl margin="normal" fullWidth>
                   <InputLabel>Reenter password</InputLabel>
                   <Input id="password2" type="password" onKeyPress={this.handleKeyPress} />

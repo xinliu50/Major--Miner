@@ -37,8 +37,22 @@ body {
   padding: 1em 3em 3em 3em;
 }
 
-.contact-container, .privacy-container {
+.contact-container {
   padding: 3em;
+}
+
+.privacy-container{
+    padding: 3em;
+    min-height: 480px;
+    min-width: 70vw;
+}
+
+@media screen and (min-width: 900px){
+    .privacy-container{
+    padding: 3em;
+    min-height: 220px;
+    min-width: 875px;
+  }
 }
 
 .contact-container a {

@@ -50,7 +50,7 @@ class AudioAnalyser extends Component {
   componentDidMount() {
     this._isMounted = true;
     this.setupAudioContext();
-    this.toggleAudio();
+    //this.toggleAudio();
     this.user = app.auth().currentUser;
     this.db = app.firestore();
     this.currentId = app.auth().currentUser.uid;

@@ -14,7 +14,7 @@ class AudioAnalyser extends Component {
       audioData: new Uint8Array(0),
       play: false,
       url: '',
-      firstPlay: 0
+      // firstPlay: 0
     };
     this.tick = this.tick.bind(this);
   }
@@ -41,7 +41,9 @@ class AudioAnalyser extends Component {
     // put 'play' state to false when the sound ends
     this.audio.onended = () => {
       if (this._isMounted) {
-        this.setState({ play: false, firstPlay: 0});
+        // this.setState({ play: false, firstPlay: 0});
+        this.setState({ play: false});
+        this.firstPlay = 0;
       }
     }
   }
@@ -53,6 +55,7 @@ class AudioAnalyser extends Component {
     this.user = firebase.auth().currentUser;
     this.db = firebase.firestore();
     this.currentId = firebase.auth().currentUser.uid;
+    this.firstPlay = 0;
   }
 
   tick() {
@@ -66,7 +69,7 @@ class AudioAnalyser extends Component {
   toggleAudio = () => {
     this.audioContext.resume().then(()=>{
       console.log('Playback resumed successfully');
-      if (this.state.firstPlay === 0) {
+      if (this.firstPlay === 0) {
         try {
           this.setupAudioContext();//first time hit play, set up audio context
           console.log("props!" , this.props.clipId);
@@ -85,7 +88,7 @@ class AudioAnalyser extends Component {
     if (this._isMounted) {
       this.setState({ play: !this.state.play });
     }
-    this.state.firstPlay ++;
+    this.firstPlay ++;
     });
   };
 

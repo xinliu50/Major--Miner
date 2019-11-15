@@ -207,7 +207,7 @@ class RegisterForm extends Component {
                 <Dialog
                   open={this.state.openPolicy}
                   onClose={this.handleClosePolicy}
-                  maxWidth="false"
+                  maxWidth={false}
                 >
                   <DialogContent className="privacy-in-dialog">
                     <PrivacyPage />

@@ -121,7 +121,7 @@
         } 
         //compare timeStamps
         compareTime = async timeStamp => {
-          var month = new Array();
+          var month = [];
           month[0] = "January";
           month[1] = "February";
           month[2] = "March";
@@ -174,7 +174,7 @@
           }
         }
         oneDayRange = () => {
-          var month = new Array();
+          var month = [];
           month[0] = "January";
           month[1] = "February";
           month[2] = "March";
@@ -303,24 +303,12 @@
            document.getElementById("tags").value = "";
         
           this.loadTagsToDb(tempCurrentTags).then(tempCurrentTags => {
-            tempCurrentTags = tempCurrentTags;
-          
+
             this.setState({currentTags: tempCurrentTags});
-
-            console.log("currentTags:");
-            
-            console.log(this.state.currentTags);
-
-            console.log("tempCurrentTags");
-            console.log(tempCurrentTags);
-
-
             for( const tag of Object.keys(tempCurrentTags)){
                this.setState(prevState => ({ displayTag: {...prevState.displayTag, [tag]: {score: tempCurrentTags[tag].score, count:  tempCurrentTags[tag].count }}}));
             }
-          }) 
-        
-
+          })   
         }
         //get first user Id 
         getUserId = async tag => {
@@ -450,7 +438,7 @@
         render() {
          const url = this.url;
          const clipId = this.clipId;
-         const {currentTags,displayTag} = this.state;
+         const {displayTag} = this.state;
           return (
             <Grid container className="game-container" direction="column" alignItems="center" spacing={16}>
               <Grid item container alignItems="center">

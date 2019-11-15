@@ -1,4 +1,4 @@
-      import React, { Component } from "react";
+ import React, { Component } from "react";
       import { Link } from "react-router-dom";
       import {
         Grid,
@@ -18,7 +18,7 @@
       import Help from "@material-ui/icons/HelpOutline";
       import AudioAnalyser from "./AudioAnalyser";
       import firebase from "../base";
-      import staticFirebase from "firebase";
+      import staticFirebase from "firebase/app";
       import GameRuleDialog from "./GameRuleDialog";
     
       const INITIAL_STATE = {
@@ -518,4 +518,3 @@
           );
         }
       }
-     

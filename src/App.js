@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
-import firebase from "./base";
+// import firebase from "./base";
+// import 'firebase/auth';
+// import "firebase/firestore";
+// import 'firebase/database';
+import app from "./base";
+
 import {
   MuiThemeProvider,
   createMuiTheme,
@@ -58,7 +63,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.listener = firebase.auth().onAuthStateChanged(user => {
+    this.listener = app.auth().onAuthStateChanged(user => {
       if (user) {
         this.setState({
           authenticated: true,

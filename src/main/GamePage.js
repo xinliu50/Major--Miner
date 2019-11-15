@@ -17,8 +17,8 @@ import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import Help from "@material-ui/icons/HelpOutline";
 import AudioAnalyser from "./AudioAnalyser";
-import firebase from "../base";
-import staticFirebase from "firebase";
+import app from "../base";
+import staticFirebase from "app";
 import GameRuleDialog from "./GameRuleDialog";
 
 //TODO: modify calls to the new collection
@@ -36,8 +36,8 @@ class GamePage extends Component {
   }
 
   componentDidMount() {
-    this.db = firebase.firestore();
-    this.userRef = this.db.collection('users').doc(firebase.auth().currentUser.uid);
+    this.db = app.firestore();
+    this.userRef = this.db.collection('users').doc(app.auth().currentUser.uid);
     this.userClipHistoryRef = this.userRef.collection('clipHistory');
     
     this.loadFromDb(this.state.clipId);
@@ -88,7 +88,7 @@ class GamePage extends Component {
 
   saveToDb = () => {
     const { currentTags, existingTags } = this.state;
-    const user = firebase.auth().currentUser;
+    const user = app.auth().currentUser;
     try {
       // update tags in DB
       Object.keys(currentTags).forEach(tag => {

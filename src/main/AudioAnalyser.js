@@ -3,8 +3,7 @@ import { Grid, IconButton } from "@material-ui/core";
 import PlayArrow from "@material-ui/icons/PlayArrow";
 import Pause from "@material-ui/icons/Pause";
 import AudioVisualizer from "./AudioVisualizer";
-import firebase from "../base";
-import staticFirebase from "firebase";
+import app from "../base";
 
 class AudioAnalyser extends Component {
   constructor(props) {
@@ -52,9 +51,9 @@ class AudioAnalyser extends Component {
     this._isMounted = true;
     this.setupAudioContext();
     this.toggleAudio();
-    this.user = firebase.auth().currentUser;
-    this.db = firebase.firestore();
-    this.currentId = firebase.auth().currentUser.uid;
+    this.user = app.auth().currentUser;
+    this.db = app.firestore();
+    this.currentId = app.auth().currentUser.uid;
     this.firstPlay = 0;
   }
 
@@ -75,10 +74,10 @@ class AudioAnalyser extends Component {
           console.log("props!" , this.props.clipId);
           var d = Date.now();
           this.db.collection('Randomize').doc(this.props.clipId).set({//this clip has been seen once by this user
-            count:  staticFirebase.firestore.FieldValue.increment(1),
-            updated: staticFirebase.firestore.FieldValue.serverTimestamp(),
+            count:  app.FieldValue.increment(1),
+            updated: app.FieldValue.serverTimestamp(),
             millis: d,
-            userId: staticFirebase.firestore.FieldValue.arrayUnion(this.currentId)
+            userId: app.FieldValue.arrayUnion(this.currentId)
           },{merge:true});
         } catch(err) {
           console.log(err);

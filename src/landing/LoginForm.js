@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-import firebase from "../base";
+import app from "../base";
 import {
   Grid,
   Dialog,
@@ -47,7 +47,7 @@ class LoginForm extends Component {
   handleSubmit = async event => {
     event.preventDefault();
     try {
-      const user = await firebase
+      const user = await app
         .auth()
         .signInWithEmailAndPassword(document.getElementById("email").value, document.getElementById("password").value);
         console.log(user);

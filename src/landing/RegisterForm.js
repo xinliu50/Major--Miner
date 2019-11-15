@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import firebase from "../base";
+import app from "../base";
 import {
   Grid,
   Dialog,
@@ -105,17 +105,17 @@ class RegisterForm extends Component {
     event.preventDefault();
     // validation part
     const { email, password, username } = await this.validateForm();
-    const db = firebase.firestore();
+    const db = app.firestore();
     if (!this.state.policyError && !this.state.emailError && !this.state.passwordError && !this.state.password2Error && !this.state.usernameError) {
-      // create User in firebase
+      // create User in app
       try {
-        const user = await firebase
+        const user = await app
           .auth()
           .createUserWithEmailAndPassword(email, password);
         console.log(user);
         if (user) {
           // to create a new user document
-          db.collection('users').doc(firebase.auth().currentUser.uid).set({
+          db.collection('users').doc(app.auth().currentUser.uid).set({
             username: username,
             score: 0
           });

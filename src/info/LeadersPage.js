@@ -9,7 +9,9 @@ import {
   TableRow,
   TableCell
 } from "@material-ui/core";
-import firebase from "../base";
+// import app from "../base";
+import app from "../base";
+
 class LeadersPage extends Component {
   constructor(props) {
     super(props);
@@ -21,10 +23,10 @@ class LeadersPage extends Component {
     };
   }
   componentDidMount(){
-    this.user = firebase.auth().currentUser;
-    this.db = firebase.firestore();
+    this.user = app.auth().currentUser;
+    this.db = app.firestore();
      if(this.user){
-      this.currentId = firebase.auth().currentUser.uid;
+      this.currentId = app.auth().currentUser.uid;
     }
     this.getTotal();
     this.getToday();

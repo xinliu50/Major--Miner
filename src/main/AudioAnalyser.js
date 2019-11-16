@@ -51,13 +51,14 @@ class AudioAnalyser extends Component {
   componentDidMount() {
     this._isMounted = true;
    // this.setupAudioContext();
-    // this.toggleAudio();
+    
     this.user = firebase.auth().currentUser;
     this.db = firebase.firestore();
     this.currentId = firebase.auth().currentUser.uid;
     this.firstPlay = 0;
     this.audio = new Audio(this.props.url);
     this.audio.crossOrigin = "anonymous";
+    this.toggleAudio();
   }
 
   tick() {

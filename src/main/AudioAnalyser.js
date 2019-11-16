@@ -93,16 +93,9 @@ class AudioAnalyser extends Component {
   };
 
   playAuto(audio){
-    var promise = audio.play();
-
-    if (promise !== undefined) {
-        promise.catch(error => {
-           console.log("auto deny");
-        }).then(() => {
-           audio.play();
-        });
-    }
-
+    this.audioContext.resume().then(() => {
+       this.audio.play();
+    });
   }
 
   componentWillUnmount() {

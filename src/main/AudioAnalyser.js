@@ -51,7 +51,7 @@ class AudioAnalyser extends Component {
     this.firstPlay = 0;
     this.audio = new Audio(this.props.url);
     this.audio.crossOrigin = "anonymous";
-    if(window.size > 420){
+    if(window.screen.height > 420 && window.screen.width > 380){
       this.toggleAudio();
     }
   }

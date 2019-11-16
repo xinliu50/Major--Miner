@@ -14,7 +14,6 @@ class AudioAnalyser extends Component {
       audioData: new Uint8Array(0),
       play: false,
       url: '',
-      // firstPlay: 0
     };
     this.tick = this.tick.bind(this);
   }
@@ -27,9 +26,7 @@ class AudioAnalyser extends Component {
     this.gainNode.connect(this.audioContext.destination);
 
     // set up audio
-   // this.audio = new Audio(this.props.url);
     this.audioSource = this.audioContext.createMediaElementSource(this.audio);
-   // this.audio.crossOrigin = "anonymous";
     this.audioSource.connect(this.gainNode);
 
     // set up audio analyser
@@ -41,24 +38,22 @@ class AudioAnalyser extends Component {
     // put 'play' state to false when the sound ends
     this.audio.onended = () => {
       if (this._isMounted) {
-        // this.setState({ play: false, firstPlay: 0});
         this.setState({ play: false});
-        //this.firstPlay = 0;
       }
     }
   }
 
   componentDidMount() {
     this._isMounted = true;
-   // this.setupAudioContext();
-    
     this.user = firebase.auth().currentUser;
     this.db = firebase.firestore();
     this.currentId = firebase.auth().currentUser.uid;
     this.firstPlay = 0;
     this.audio = new Audio(this.props.url);
     this.audio.crossOrigin = "anonymous";
-    this.toggleAudio();
+    if(window.size > 420){
+      this.toggleAudio();
+    }
   }
 
   tick() {
@@ -70,9 +65,6 @@ class AudioAnalyser extends Component {
   }
 
   toggleAudio = () => {
-    //this.setupAudioContext();
-    //this.audioContext.resume().then(()=>{
-      //console.log('Playback resumed successfully');
       if (this.firstPlay === 0) {
         try {
           this.setupAudioContext();//first time hit play, set up audio context
@@ -88,12 +80,11 @@ class AudioAnalyser extends Component {
           console.log(err);
         }
     }
-    this.state.play ? this.audio.pause() : this.playAuto(this.audio);//this.audio.play();
+    this.state.play ? this.audio.pause() : this.playAuto(this.audio);
     if (this._isMounted) {
       this.setState({ play: !this.state.play });
     }
     this.firstPlay ++;
-    //});
   };
 
   playAuto(audio){

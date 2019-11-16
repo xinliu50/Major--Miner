@@ -51,7 +51,7 @@ class AudioAnalyser extends Component {
   componentDidMount() {
     this._isMounted = true;
     this.setupAudioContext();
-    this.toggleAudio();
+    // this.toggleAudio();
     this.user = firebase.auth().currentUser;
     this.db = firebase.firestore();
     this.currentId = firebase.auth().currentUser.uid;
@@ -84,7 +84,7 @@ class AudioAnalyser extends Component {
           console.log(err);
         }
     }
-    this.state.play ? this.audio.pause() : this.playAuto(this.audio);;//this.audio.play();
+    this.state.play ? this.audio.pause() : this.playAuto(this.audio);//this.audio.play();
     if (this._isMounted) {
       this.setState({ play: !this.state.play });
     }

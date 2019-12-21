@@ -1,4 +1,5 @@
 {
+  "homepage": "http://xinliu50.github.io/Major_Miner",
   "name": "major_miner",
   "version": "6.13.0",
   "private": true,
@@ -28,12 +29,12 @@
     "node": "10.0.0"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "npm run build:testConfig cypress run",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build:testConfig": "cypress-firebase createTestEnvFile",
-    "test:open": "npm run build:testConfig cypress open",
     "test:stage": "npm run test -- --env envName=stage",
     "test:open:stage": "npm run test:open -- --env envName=stage",
     "start:dist": "npm run build && firebase serve --only hosting -p 3000"
@@ -50,6 +51,7 @@
   "devDependencies": {
     "cypress": "^3.4.1",
     "cypress-firebase": "^0.2.5",
+    "gh-pages": "^2.1.1",
     "install-peers": "^1.0.3"
   },
   "description": "## Setup instructions: 1. Clone this repository 2. Install necessary packages ```bash npm install ``` ## Connect Major Miner to your firebase",

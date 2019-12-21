@@ -1,10 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
-// import firebase from "./base";
-// import 'firebase/auth';
-// import "firebase/firestore";
-// import 'firebase/database';
 import app from "./base";
 
 import {
@@ -107,16 +103,9 @@ class App extends Component {
               toggleAuth={this.toggleAuth}
             />
             <main>
-              <Route
-                exact
-                path="/"
-                render={props => (
-                  <LandingPage
-                    {...props}
-                    authenticated={this.state.authenticated}
-                  />
-                )}
-              />
+              
+
+              <Route path="/" component={LandingPage}/>
               <Route path="/info/faq" component={FaqPage} />
               <Route path="/info/contact" component={ContactPage} />
               <Route path="/info/privacy" component={PrivacyPage} />

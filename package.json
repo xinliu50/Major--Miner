@@ -1,5 +1,5 @@
 {
-  "homepage": "http://xinliu50.github.io/Major_Miner",
+  "homepage": "https://xinliu50.github.io/Major--Miner",
   "name": "major_miner",
   "version": "6.13.0",
   "private": true,
@@ -68,6 +68,5 @@
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/xinliu50/Major--Miner/issues"
-  },
-  "homepage": "https://github.com/xinliu50/Major--Miner#readme"
+  }
 }

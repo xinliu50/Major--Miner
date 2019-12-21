@@ -105,12 +105,7 @@ class App extends Component {
             <main>
               
 
-              <Route exact path="/" component={props => (
-                  <LandingPage
-                    {...props}
-                    authenticated={this.state.authenticated}
-                  />
-                )}/>
+              <Route exact path="/" component={LandingPage}/>
               <Route path="/info/faq" component={FaqPage} />
               <Route path="/info/contact" component={ContactPage} />
               <Route path="/info/privacy" component={PrivacyPage} />

@@ -114,6 +114,16 @@ class App extends Component {
                   />
                 )}
               />
+              <Route
+                exact
+                path="/"
+                render={props => (
+                  <LandingPage
+                    {...props}
+                    authenticated={this.state.authenticated}
+                  />
+                )}
+              />
               <Route path="/info/faq" component={FaqPage} />
               <Route path="/info/contact" component={ContactPage} />
               <Route path="/info/privacy" component={PrivacyPage} />

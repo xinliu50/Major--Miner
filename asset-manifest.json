@@ -1,21 +1,21 @@
 {
   "files": {
     "main.css": "/Major--Miner/static/css/main.a2fa6970.chunk.css",
-    "main.js": "/Major--Miner/static/js/main.7fa76159.chunk.js",
-    "main.js.map": "/Major--Miner/static/js/main.7fa76159.chunk.js.map",
+    "main.js": "/Major--Miner/static/js/main.a3b150e6.chunk.js",
+    "main.js.map": "/Major--Miner/static/js/main.a3b150e6.chunk.js.map",
     "runtime-main.js": "/Major--Miner/static/js/runtime-main.63dc982f.js",
     "runtime-main.js.map": "/Major--Miner/static/js/runtime-main.63dc982f.js.map",
-    "static/js/2.7e2244f2.chunk.js": "/Major--Miner/static/js/2.7e2244f2.chunk.js",
-    "static/js/2.7e2244f2.chunk.js.map": "/Major--Miner/static/js/2.7e2244f2.chunk.js.map",
+    "static/js/2.8080c69c.chunk.js": "/Major--Miner/static/js/2.8080c69c.chunk.js",
+    "static/js/2.8080c69c.chunk.js.map": "/Major--Miner/static/js/2.8080c69c.chunk.js.map",
     "index.html": "/Major--Miner/index.html",
-    "precache-manifest.eb62ea8c7bc74db41ed45587ed59d36c.js": "/Major--Miner/precache-manifest.eb62ea8c7bc74db41ed45587ed59d36c.js",
+    "precache-manifest.d66f2a1d37e0304b6363db7538d4333d.js": "/Major--Miner/precache-manifest.d66f2a1d37e0304b6363db7538d4333d.js",
     "service-worker.js": "/Major--Miner/service-worker.js",
     "static/css/main.a2fa6970.chunk.css.map": "/Major--Miner/static/css/main.a2fa6970.chunk.css.map"
   },
   "entrypoints": [
     "static/js/runtime-main.63dc982f.js",
-    "static/js/2.7e2244f2.chunk.js",
+    "static/js/2.8080c69c.chunk.js",
     "static/css/main.a2fa6970.chunk.css",
-    "static/js/main.7fa76159.chunk.js"
+    "static/js/main.a3b150e6.chunk.js"
   ]
 }

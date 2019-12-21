@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
-import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, Redirect, Switch } from "react-router-dom";
 import app from "./base";
 
 import {
@@ -102,10 +102,18 @@ class App extends Component {
               authenticated={this.state.authenticated}
               toggleAuth={this.toggleAuth}
             />
+            <Switch>
             <main>
-              
-
-              <Route exact path="/" component={LandingPage}/>
+              <Route
+                exact
+                path="/"
+                render={props => (
+                  <LandingPage
+                    {...props}
+                    authenticated={this.state.authenticated}
+                  />
+                )}
+              />
               <Route path="/info/faq" component={FaqPage} />
               <Route path="/info/contact" component={ContactPage} />
               <Route path="/info/privacy" component={PrivacyPage} />
@@ -123,6 +131,7 @@ class App extends Component {
                 authenticated={this.state.authenticated}
               />
             </main>
+            </Switch>
             <Footer />
           </div>
         </Router>

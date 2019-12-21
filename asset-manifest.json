@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/xinliu50/Major--Miner/static/css/main.a2fa6970.chunk.css",
+    "main.js": "/xinliu50/Major--Miner/static/js/main.31aa2c90.chunk.js",
+    "main.js.map": "/xinliu50/Major--Miner/static/js/main.31aa2c90.chunk.js.map",
+    "runtime-main.js": "/xinliu50/Major--Miner/static/js/runtime-main.2b1a53fc.js",
+    "runtime-main.js.map": "/xinliu50/Major--Miner/static/js/runtime-main.2b1a53fc.js.map",
+    "static/js/2.45d38c50.chunk.js": "/xinliu50/Major--Miner/static/js/2.45d38c50.chunk.js",
+    "static/js/2.45d38c50.chunk.js.map": "/xinliu50/Major--Miner/static/js/2.45d38c50.chunk.js.map",
+    "index.html": "/xinliu50/Major--Miner/index.html",
+    "precache-manifest.42616fc2508a4f5039da19daf2afcc0c.js": "/xinliu50/Major--Miner/precache-manifest.42616fc2508a4f5039da19daf2afcc0c.js",
+    "service-worker.js": "/xinliu50/Major--Miner/service-worker.js",
+    "static/css/main.a2fa6970.chunk.css.map": "/xinliu50/Major--Miner/static/css/main.a2fa6970.chunk.css.map"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.2b1a53fc.js",
+    "static/js/2.45d38c50.chunk.js",
+    "static/css/main.a2fa6970.chunk.css",
+    "static/js/main.31aa2c90.chunk.js"
+  ]
+}

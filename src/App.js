@@ -106,7 +106,7 @@ class App extends Component {
             <main>
               <Route
                 exact
-                path="/Major--Miner"
+                path="/majorminer-react"
                 render={props => (
                   <LandingPage
                     {...props}

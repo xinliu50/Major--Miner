@@ -32,6 +32,11 @@ body {
   line-height: 1.25em;
 }
 
+.search-container {
+  padding: 1em;
+  
+}
+
 .faq-container {
   text-align: left;
   padding: 1em 3em 3em 3em;

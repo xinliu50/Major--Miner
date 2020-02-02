@@ -494,7 +494,7 @@
                     return (<span key={i} className="pink">{tag}&nbsp;</span>)
                    } 
                 })}
-              </Grid>//
+              </Grid>
               <Grid item sm={10} md={6} lg={8}>
                 <FormControl margin="normal" fullWidth>
                   <InputLabel>Input your tags...</InputLabel>

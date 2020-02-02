@@ -85,6 +85,7 @@ class AudioCard extends Component {
             {this.state.seeOthers ? (<Person />) : (<Group />)}
           </IconButton>
         </CardActions>
+        <h5>birds: 5 times</h5>
       </Card>
     );
   }

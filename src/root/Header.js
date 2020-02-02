@@ -63,7 +63,9 @@ class Header extends Component {
             {this.props.authenticated ? (
               <ButtonBase component={Link} to="/info/leaders" className="nav-item">Leaders</ButtonBase>
              ) : ""} 
-            <ButtonBase component={Link} to="/search" className="nav-item">Search</ButtonBase>
+            {this.props.authenticated ? (
+              <ButtonBase component={Link} to="/search" className="nav-item">Search</ButtonBase>
+            ) : ""} 
             {this.props.authenticated ? (
               <div className="account-button">
                 <h4 style={{ "margin": "0 0.5em", "padding": "0 0.5em" }}>Score: {this.state.score}</h4>

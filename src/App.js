@@ -17,6 +17,7 @@ import NewGamePage from "./main/NewGamePage";
 import SummaryPage from "./main/SummaryPage";
 import LeadersPage from "./info/LeadersPage";
 import SearchPage from "./search/SearchPage";
+import SearchResult from "./search/SearchResult";
 
 const theme = createMuiTheme({
   palette: {
@@ -116,7 +117,8 @@ class App extends Component {
               <Route path="/info/contact" component={ContactPage} />
               <Route path="/info/privacy" component={PrivacyPage} />
               <Route path="/info/leaders" component={LeadersPage} />
-              <Route path="/search" component={SearchPage} />
+              {/*<Route path="/search" component={SearchPage} />*/}
+              <Route path="/seachresult" component={SearchResult} />
               <PrivateRoute
                 exact
                 path="/main"
@@ -126,6 +128,11 @@ class App extends Component {
               <PrivateRoute
                 path="/main/clip"
                 component={NewGamePage}
+                authenticated={this.state.authenticated}
+              />
+              <PrivateRoute
+                path="/search"
+                component={SearchPage}
                 authenticated={this.state.authenticated}
               />
             </main>

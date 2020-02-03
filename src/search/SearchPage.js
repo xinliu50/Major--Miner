@@ -31,10 +31,74 @@ class SearchPage extends Component {
      //this.userRef = this.db.collection('users').doc(this.currentId);
      this.userRef = this.db.collection('users');
      
-     this.getAllTag();
-    
+     //this.getAllTag();
+    this.Tags();
     
   }
+
+  Tags = async () => {
+
+    var arry = [];
+    var clipIDArray = [];
+
+    var documentSnapshot = await this.db.collection('audios').get();
+    var userSnapshot = await this.db.collection('users').get();
+    console.log(userSnapshot.docs);
+    for(let user in userSnapshot.docs){
+      //var userId = await this.db.collection('users').doc(user).get();
+     // console.log(userId.id);
+     var query = await this.db.collection('users').doc(user).collection('clipHistory').get();
+     console.log(query.size);
+    }
+    // for(let user in userSnapshot.docs){
+    //   console.log(user);
+    //   var query = await this.db.collection('users').doc(user).collection('clipHistory').get();
+    //   console.log(query.size);
+    //   if(query.size != 0){
+    //       query.forEach(id =>{
+    //         //clipIDArray.push(id.id);
+    //         console.log(id);
+    //       })
+    //   }
+    // }
+  //  console.log(clipIDArray);
+    //console.log(documentSnapshot);
+
+    // for(let e in documentSnapshot.docs){
+
+    //   var query = await this.db.collection('audios').doc(e).collection('tags').get();
+    //   //console.log(typeof query);
+    //   if(query.size != 0){         
+    //        query.forEach(tag =>{
+    //         var set = {tag: tag.id, count: tag.data().count};
+    //         arry.push(set);
+    //         // console.log(tag.id);
+    //         // console.log(tag.data().count);
+    //        }
+    //       )
+    //     }
+    //   }
+    //   console.log(arry);
+   // }
+    // documentSnapshot.forEach(doc => {
+    //     this.db.collection('audios').doc(doc.id).collection('tags').get()
+    //     .then(query => {
+    //       // if(query.size != 0){
+    //       //   var set = {key: query.id, count: query.count};
+    //       //   arry.push(set);
+    //       // }
+
+
+    //       if(query.size != 0)
+    //       console.log(query.id);
+    //     });
+
+    // })
+    //console.log(arry);
+  }
+
+
+
 
   getAllTag = async () => {
     var userIdSnapshot = await this.userRef.get();

@@ -65,13 +65,39 @@ export const getTagIds = functions.https.onRequest(async (request,response) => {
             promise.push(tagSnapshot);
         }
          const all = await Promise.all(promise)
-         const TagSet = new Set();
+         const TagArray:String[] = [];
+         const countArray = [];
+         const countPromise = [];
          for(const p of all){
             for(const tag of p.docs){
-                TagSet.add(tag.id);
+                TagArray.push(String(tag.id));
+                const mypromise = await tag.ref.get();
+                countPromise.push(mypromise);
             }
          }
-         response.send(TagSet);
+         const allCount = await Promise.all(countPromise);
+         for(const myCount of allCount){
+             const data = myCount.data();
+             if(data !== undefined){
+                countArray.push(data.count);
+             }          
+         }
+
+          const TagMap = new Map();
+          for(var _i = 0; _i < TagArray.length; _i++){
+              if(TagMap.has(TagArray[_i])){
+                TagMap.set(TagArray[_i], TagMap.get(TagArray[_i])+countArray[_i]);
+              }else{
+                TagMap.set(TagArray[_i], countArray[_i]);
+              }
+              console.log("--"+TagMap);
+          }
+        //  response.write(TagArray.toString());
+        //  response.write(countArray.toString());
+        // response.end();
+        console.log(TagMap.size);
+          console.log(TagMap);
+        response.send(TagMap.toString());
     }
     catch(error){
         console.log("this error " + error);

@@ -4,6 +4,28 @@ import * as admin from 'firebase-admin';
 
 admin.initializeApp();
 const db = admin.firestore();
+
+class MyData{
+    ID: String;
+    InnerMap: Map<String, number>;
+    Title: String;
+    Url: String;
+    constructor(id: String, title: String, url: String){
+        this.ID = id;
+        this.InnerMap = new Map();
+        this.Title = title;
+        this.Url = url;
+    }
+    addTag(tag: String, count: number):void{
+        if(!this.InnerMap.has(tag))
+            this.InnerMap.set(tag,count);
+        else{
+            const mycount = this.InnerMap.get(tag)
+            if(mycount !== undefined)
+                this.InnerMap.set(tag, mycount+count);
+        }
+    }
+}
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
 //
@@ -50,54 +72,84 @@ const db = admin.firestore();
     
    
 export const getTagIds = functions.https.onRequest(async (request,response) => {
-    const clipArray:String[] = [];
     const docSnapshot = await db.collection('users').get();
+    const MyObject: MyData[]= [];
+    const ClipIDSet = new Set();
+    const ClipArray = [];
     try{
+       const myObjectPromise =[];
         for(const user of docSnapshot.docs){
             const clipId = await db.collection('users').doc(user.id).collection('clipHistory').get()
             for(const clip of clipId.docs){
-                clipArray.push(clip.id);
+                //clipArray.push(clip.id);  
+                if(!ClipIDSet.has(clip.id)){
+                    const tempPromise = await db.collection('audios').doc(clip.id).get();
+                    myObjectPromise.push(tempPromise);     
+                    ClipIDSet.add(clip.id); 
+                    ClipArray.push(clip.id);   
+                }
             }
         }
-        const promise = [];
-        for(const clipid of clipArray){
-            const tagSnapshot = await db.collection('audios').doc(String(clipid)).collection('tags').get();
-            promise.push(tagSnapshot);
+        // Promise.all(myObjectPromise)
+        // .then(p => {
+        //     p.forEach(objSnap => {
+        //         MyObject.push(new MyData(objSnap.id, objSnap?.data()?.Title, objSnap?.data()?.Url))
+        //     })
+        // })
+        // .catch(error => {
+        //     console.log("Unable to create my objects");
+        // })
+        const TagPromise = [];
+        for(let _i = 0; _i < ClipArray.length; _i++){
+            const tagSnapshot = await db.collection('audios').doc(String(ClipArray[_i])).collection('tags').get();
+            TagPromise.push(tagSnapshot);
         }
-         const all = await Promise.all(promise)
-         const TagArray:String[] = [];
-         const countArray = [];
-         const countPromise = [];
-         for(const p of all){
-            for(const tag of p.docs){
-                TagArray.push(String(tag.id));
-                const mypromise = await tag.ref.get();
-                countPromise.push(mypromise);
-            }
-         }
-         const allCount = await Promise.all(countPromise);
-         for(const myCount of allCount){
-             const data = myCount.data();
-             if(data !== undefined){
-                countArray.push(data.count);
-             }          
-         }
+        
+        const AllTagPromise = await Promise.all(TagPromise);
+        for(let _i = 0; _i < ClipArray.length; _i++){
+            let obj = new MyData(myObjectPromise[_i].id, myObjectPromise[_i]?.data()?.Title, myObjectPromise[_i]?.data()?.Url);
+            AllTagPromise[_i].forEach(doc => {
+                obj.addTag(doc.id, doc.data().count)
+            })
+            MyObject.push(obj)
+        }
+        console.log(MyObject);
+        response.send(MyObject);
+        
+        //  const TagArray:String[] = [];
+        //  const countArray = [];
+        //  const countPromise = [];
 
-          const TagMap = new Map();
-          for(var _i = 0; _i < TagArray.length; _i++){
-              if(TagMap.has(TagArray[_i])){
-                TagMap.set(TagArray[_i], TagMap.get(TagArray[_i])+countArray[_i]);
-              }else{
-                TagMap.set(TagArray[_i], countArray[_i]);
-              }
-              console.log("--"+TagMap);
-          }
-        //  response.write(TagArray.toString());
-        //  response.write(countArray.toString());
-        // response.end();
-        console.log(TagMap.size);
-          console.log(TagMap);
-        response.send(TagMap.toString());
+        //  const all = await Promise.all(promise)
+        //  for(const p of all){
+        //     for(const tag of p.docs){
+        //         TagArray.push(String(tag.id));
+        //         const mypromise = await tag.ref.get();
+        //         countPromise.push(mypromise);
+        //     }
+        //  }
+        //  const allCount = await Promise.all(countPromise);
+        //  for(const myCount of allCount){
+        //      const data = myCount.data();
+        //      if(data !== undefined){
+        //         countArray.push(data.count);
+        //      }          
+        //  }
+
+        //   const TagMap = new Map();
+        //   for(let _i = 0; _i < TagArray.length; _i++){
+        //       if(TagMap.has(TagArray[_i])){
+        //         TagMap.set(TagArray[_i], TagMap.get(TagArray[_i])+countArray[_i]);
+        //       }else{
+        //         TagMap.set(TagArray[_i], countArray[_i]);
+        //       }
+        //   }
+        // //  response.write(TagArray.toString());
+        // //  response.write(countArray.toString());
+        // // response.end();
+        // console.log(TagMap.size);
+        //   console.log(TagMap);
+        // response.send(TagMap.toString());
     }
     catch(error){
         console.log("this error " + error);

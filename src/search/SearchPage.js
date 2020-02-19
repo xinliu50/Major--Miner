@@ -39,17 +39,54 @@ class SearchPage extends Component {
   Tags = async () => {
 
     var arry = [];
-    var clipIDArray = [];
+    var clipIdSet = new Set();
 
-    var documentSnapshot = await this.db.collection('audios').get();
+   // var documentSnapshot = await this.db.collection('audios').get();
+
     var userSnapshot = await this.db.collection('users').get();
-    console.log(userSnapshot.docs);
-    for(let user in userSnapshot.docs){
+    userSnapshot.forEach(async doc =>{ 
+      var clip = await this.db.collection('users').doc(doc.id).collection('clipHistory').get();
+         
+     //clip
+      clip.forEach(async tag => {
+              var id = await tag.id;
+               clipIdSet.add(id);
+              //console.log(tag.id);
+            })
+        
+    });
+
+
+
+
+
+
+
+    // var userSnapshot = await this.db.collection('users').get();
+    // userSnapshot.forEach(doc =>{ 
+    //     this.db.collection('users').doc(doc.id).collection('clipHistory').get().then(clip => {    
+    //         clip.forEach(async tag => {
+    //           var id = await tag.id;
+    //           await clipIdSet.add(id);
+    //           //console.log(tag.id);
+    //         })
+    //     });
+    // });
+    console.log(clipIdSet);
+     console.log(clipIdSet.size);
+
+    // userSnapshot.forEach(doc =>{
+    //   //console.log(doc.id);
+    //   var query = await this.db.collection('users').doc(doc.id).collection('clipHistory').get();
+    //   console.log(query.size);
+
+    // });
+    //for(let user in userSnapshot.docs){
       //var userId = await this.db.collection('users').doc(user).get();
      // console.log(userId.id);
-     var query = await this.db.collection('users').doc(user).collection('clipHistory').get();
-     console.log(query.size);
-    }
+     //var query = await this.db.collection('users').doc(user).collection('clipHistory').get();
+     //console.log(user.id);
+    //}
     // for(let user in userSnapshot.docs){
     //   console.log(user);
     //   var query = await this.db.collection('users').doc(user).collection('clipHistory').get();

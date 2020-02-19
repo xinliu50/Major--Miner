@@ -26,10 +26,6 @@ class MyData{
         }
     }
 }
-// // Start writing Firebase Functions
-// // https://firebase.google.com/docs/functions/typescript
-//
-//const db = admin.firestore();
 
 // export const writeToTagListWhenNewTag = 
 // functions.firestore
@@ -81,7 +77,6 @@ export const getTagIds = functions.https.onRequest(async (request,response) => {
         for(const user of docSnapshot.docs){
             const clipId = await db.collection('users').doc(user.id).collection('clipHistory').get()
             for(const clip of clipId.docs){
-                //clipArray.push(clip.id);  
                 if(!ClipIDSet.has(clip.id)){
                     const tempPromise = await db.collection('audios').doc(clip.id).get();
                     myObjectPromise.push(tempPromise);     
@@ -90,15 +85,6 @@ export const getTagIds = functions.https.onRequest(async (request,response) => {
                 }
             }
         }
-        // Promise.all(myObjectPromise)
-        // .then(p => {
-        //     p.forEach(objSnap => {
-        //         MyObject.push(new MyData(objSnap.id, objSnap?.data()?.Title, objSnap?.data()?.Url))
-        //     })
-        // })
-        // .catch(error => {
-        //     console.log("Unable to create my objects");
-        // })
         const TagPromise = [];
         for(let _i = 0; _i < ClipArray.length; _i++){
             const tagSnapshot = await db.collection('audios').doc(String(ClipArray[_i])).collection('tags').get();
@@ -114,69 +100,38 @@ export const getTagIds = functions.https.onRequest(async (request,response) => {
             MyObject.push(obj)
         }
         console.log(MyObject);
+
+        MyObject.forEach(obj => {
+            WriteToFireBase(obj)
+            .then(pro => {
+                return null;
+            })
+            .catch(error => {
+                console.log("Unable write to firebase");
+            })
+        })
+
         response.send(MyObject);
-        
-        //  const TagArray:String[] = [];
-        //  const countArray = [];
-        //  const countPromise = [];
-
-        //  const all = await Promise.all(promise)
-        //  for(const p of all){
-        //     for(const tag of p.docs){
-        //         TagArray.push(String(tag.id));
-        //         const mypromise = await tag.ref.get();
-        //         countPromise.push(mypromise);
-        //     }
-        //  }
-        //  const allCount = await Promise.all(countPromise);
-        //  for(const myCount of allCount){
-        //      const data = myCount.data();
-        //      if(data !== undefined){
-        //         countArray.push(data.count);
-        //      }          
-        //  }
-
-        //   const TagMap = new Map();
-        //   for(let _i = 0; _i < TagArray.length; _i++){
-        //       if(TagMap.has(TagArray[_i])){
-        //         TagMap.set(TagArray[_i], TagMap.get(TagArray[_i])+countArray[_i]);
-        //       }else{
-        //         TagMap.set(TagArray[_i], countArray[_i]);
-        //       }
-        //   }
-        // //  response.write(TagArray.toString());
-        // //  response.write(countArray.toString());
-        // // response.end();
-        // console.log(TagMap.size);
-        //   console.log(TagMap);
-        // response.send(TagMap.toString());
     }
     catch(error){
         console.log("this error " + error);
     }
 })
-// export const getNewTag = functions.https.onRequest(async (request,response) => {
-//     const tagsDocument = await db.collection('audios').doc('102').collection('tags').get();
-//     const data: String[] = [];
-//     tagsDocument.forEach(tag => {
-//         data.push(String(tag.id));
-//     })
-//     response.send(data)
-//     return null;
-// })
 
-
-
-
-// export const getClipHistory = functions.https.onRequest((request, response) => {
-//     admin.firestore().doc('users/RgNO3TJSxPTUFZ7mfeVR0P2LlWS2').get()
-//     .then(snapshot => {
-//         const data = snapshot.data()
-//         console.log("resolve!!!")
-//         response.send(data)
-//     })
-//     .catch(error => {
-//         console.log(error)
-//         response.status(500).send(error)
-//     })
-// })
+async function WriteToFireBase(obj: MyData){
+    let map = obj.InnerMap;
+    const myPromise = [];
+    for(const key of map.keys()){
+        const promise = await db.collection('tagList').doc(String(key)).collection('clipIDs').doc(String(obj.ID)).set({
+            count: map.get(key),
+            Title: obj.Title,
+            Url: obj.Url
+        })
+        const countPromise = await db.collection('tagList').doc(String(key)).update({
+            count: admin.firestore.FieldValue.increment(Number(map.get(key)))
+        })
+        myPromise.push(countPromise);
+        myPromise.push(promise);
+    }
+    return Promise.all(myPromise);
+}

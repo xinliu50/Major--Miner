@@ -26,47 +26,6 @@ class MyData{
         }
     }
 }
-
-// export const writeToTagListWhenNewTag = 
-// functions.firestore
-//     .document('audios/{clipID}/{tags}/{tag}')
-//     .onCreate( (snapshot, context) => {
-//         const newTag = snapshot.data();
-//             if(newTag !== undefined){
-//                 const tag = newTag.id();
-    
-//                 return db.collection('tagList').doc(tag).update({
-//                         count: admin.firestore.FieldValue.increment(1)
-//                     });
-//                 }
-//             else{
-//                 return null
-//             }
-//     })
-// export const writeToFirestoreOnUpdated = 
-// functions.firestore
-//     .document('users/{userId}/{clipHistory}/{clipId}')
-//     .onCreate((snapshot, context) => {
-//         const newId = snapshot.data();
-//             if(newId !== undefined){
-//                 const count = newId.count;
-//                 return db.collection('tagList').doc('bird').set({
-//                     count: count
-//                 });
-//             }else{
-//                 return null
-//             }
-//     })
-    // .onUpdate((change, context) => {
-    //     const before = change.before.data();
-    //     const after = change.after.data();
-    //     if(before !== undefined && after !== undefined && before.username === after.username){ return null}
-    //     return change.after.ref.set({
-    //         username: after
-    //     })
-    // });
-    
-   
 export const getTagIds = functions.https.onRequest(async (request,response) => {
     const docSnapshot = await db.collection('users').get();
     const MyObject: MyData[]= [];
@@ -92,25 +51,38 @@ export const getTagIds = functions.https.onRequest(async (request,response) => {
         }
         
         const AllTagPromise = await Promise.all(TagPromise);
+        const totalCount = new Map();
         for(let _i = 0; _i < ClipArray.length; _i++){
             let obj = new MyData(myObjectPromise[_i].id, myObjectPromise[_i]?.data()?.Title, myObjectPromise[_i]?.data()?.Url);
             AllTagPromise[_i].forEach(doc => {
                 obj.addTag(doc.id, doc.data().count)
+                if(!totalCount.has(doc.id)){
+                    totalCount.set(doc.id, doc.data().count)
+                }else{
+                    totalCount.set(doc.id, totalCount.get(doc.id)+doc.data().count)
+                }
             })
             MyObject.push(obj)
         }
         console.log(MyObject);
-
+        console.log(totalCount);
+       
         MyObject.forEach(obj => {
-            WriteToFireBase(obj)
-            .then(pro => {
+           WriteToFireBase(obj)
+            .then(pro => {     
                 return null;
             })
             .catch(error => {
                 console.log("Unable write to firebase");
             })
         })
-
+        WriteCount(totalCount)
+        .then(pro => {     
+            return null;
+        })
+        .catch(error => {
+            console.log("Unable write to tagList count");
+        })     
         response.send(MyObject);
     }
     catch(error){
@@ -127,11 +99,17 @@ async function WriteToFireBase(obj: MyData){
             Title: obj.Title,
             Url: obj.Url
         })
-        const countPromise = await db.collection('tagList').doc(String(key)).update({
-            count: admin.firestore.FieldValue.increment(Number(map.get(key)))
-        })
-        myPromise.push(countPromise);
         myPromise.push(promise);
     }
     return Promise.all(myPromise);
+}
+async function WriteCount(map: Map<string,number>){
+    const promiseArray = []
+    for(const key of map.keys()){
+        const promise = await db.collection('tagList').doc(String(key)).set({
+            count: map.get(key)
+        })
+        promiseArray.push(promise)
+    }
+    return Promise.all(promiseArray)
 }

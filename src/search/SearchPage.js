@@ -10,6 +10,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import firebase from "../base";
+import { Link } from "react-router-dom";
 
 
 class SearchPage extends Component {
@@ -69,17 +70,22 @@ class SearchPage extends Component {
     for(const p of tagPromise.docs){
         this.MyTagMap[p.id] = {};
         const tagObject = await this.db.collection('tagList').doc(tag).collection('clipIDs').doc(p.id).get();
-        this.MyTagMap[p.id].Url = tagObject.data().Url;
-        this.MyTagMap[p.id].Title = tagObject.data().Title;
+        this.MyTagMap[p.id].url = tagObject.data().Url;
+        this.MyTagMap[p.id].clip = tagObject.data().Title;
         this.MyTagMap[p.id].count = tagObject.data().count;
     }
     console.log(this.MyTagMap);
-    //this.props.history.push("/seachresult");
+   // this.props.history.push("/seachresult");
     this.props.history.push({
       pathname: '/seachresult',
-      tag: tag,
-      TagMap: this.MyTagMap
+      //TagMap: this.MyTagMap
+      state: {
+        tag: tag,
+        MyTag: this.MyTagMap
+      }
     })
+
+    console.log("tag:  " + tag);
   }
   getList = (topTags) =>{
     return(

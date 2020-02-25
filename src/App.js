@@ -95,7 +95,7 @@ class App extends Component {
       );
     }
     return (
-      <MuiThemeProvider theme={theme}>
+      <MuiThemeProvider theme={theme} >
         <Router>
           <div className="App">
             <Header

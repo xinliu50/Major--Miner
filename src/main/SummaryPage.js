@@ -111,6 +111,7 @@ class SummaryPage extends Component {
                 TAG={clipHistory[clip].TAG}
                 togglePlay={this.togglePlay}
                 other={clipHistory[clip].other}
+                fromSummary={true}
               />
             </Grid>
           ))}
@@ -128,6 +129,7 @@ class SummaryPage extends Component {
                 clipId={scoredClipHistory[clip].id}
                 other={scoredClipHistory[clip].other}
                 togglePlay={this.togglePlay}
+                fromSummary={true}
               />
             </Grid>
           ))}

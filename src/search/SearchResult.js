@@ -11,7 +11,6 @@ class SearchResult extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      MyTag: {['1']: {Url: "dsdsd", count: 12}},
       play: false
     }
   }
@@ -22,8 +21,8 @@ class SearchResult extends Component {
     this.audioRef = this.db.collection('audios');
     this.userId = this.user.uid;
     this.userRef = this.db.collection('users').doc(this.userId);
-    this.map = this.props.TagMap
-    console.log(this.map)
+    
+   
     // var tempTag = [];
     // var tempTag1 = [];
     // const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
@@ -93,7 +92,8 @@ class SearchResult extends Component {
 
   render() {
     //const { clipHistory, scoredClipHistory } = this.state;
-    const {MyTag} = this.state
+    //const {MyTag} = this.state
+    const {MyTag,tag} = this.props.location.state
     return (
       <Grid container className="summary-container" direction="column" alignItems="center">
         <Grid item>
@@ -105,14 +105,18 @@ class SearchResult extends Component {
         <Grid item>
           <Link to="/main/clip">Play game!</Link>
         </Grid>
-        <h2>Here are 1 clip have been describe as bird</h2>
+    <h2>Here are 2 clip have been describe as {tag}</h2>
         <Grid item className="card-list-container"> 
           <Grid container className="card-list" spacing={8}>
           {Object.keys(MyTag).map((clip, i) => (
             <Grid item key={clip}>
               <AudioCard
-                url={MyTag[clip].Url}
+                tag={tag}
+                clip={MyTag[clip].clip}
+                url={MyTag[clip].url}
                 count={MyTag[clip].count}
+                togglePlay={this.togglePlay}
+                fromSummary={false}
               />
             </Grid>
           ))}

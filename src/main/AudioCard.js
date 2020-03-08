@@ -66,50 +66,33 @@ class AudioCard extends Component {
     this.gainNode.disconnect();
     this.audioSource.disconnect();
   }
-  
-  render() {
-    return (
-        <div>
-          {this.props.fromSummary ? <SummaryAudioCard play={this.state.play} seeOther={this.state.seeOthers} clip={this.props.clip} TAG={this.props.TAG}
-              other={this.props.other}/> 
-          
-          : <ResultAudioCard clip={this.props.clip} count={this.props.count} tag={this.props.tag}/>} 
-        </div>
-    );
-  }
-}
-export default AudioCard;
-
-class SummaryAudioCard extends React.Component{
-  constructor(props){
-    super(props);
-  }
-  render(){
+  //Audio cards for SummaryPage.js
+  SummaryAudioCard = () => {
     var toggleAudio = require('./AudioCard').toggleAudio;
     var toggleSeeOtherTags = require('./AudioCard').toggleSeeOtherTags;
     return(
       <Card className="audio-card">
-      <CardContent>  
+        <CardContent>
           <h5>{this.props.clip}</h5>
           <p>Your tags: {this.props.TAG || 'loading'}</p>
-          {this.props.seeOthers ? (
-            <p>Other's tags: {this.props.other || 'Loading'} </p>) : ""}
-      </CardContent>
-      <CardActions style={{ paddingTop: "0" }}>
-          <IconButton onClick={toggleAudio}>
-            {this.props.play ? (<Pause />) : (<PlayArrow />)}
+         {this.state.seeOthers ? (
+           <p>Other's tags: {this.props.other || 'None'} </p>) : ""}
+        </CardContent>
+        <CardActions style={{ paddingTop: "0" }}>
+          <IconButton onClick={this.toggleAudio}>
+            {this.state.play ? (<Pause />) : (<PlayArrow />)}
           </IconButton>
-          <IconButton onClick={toggleSeeOtherTags}>
-            {this.props.seeOthers ? (<Person />) : (<Group />)}
+          <IconButton onClick={this.toggleSeeOtherTags}>
+            {this.state.seeOthers ? (<Person />) : (<Group />)}
           </IconButton>
-      </CardActions>
-    </Card>
+        </CardActions>
+      </Card>
     );
   }
-}
-
-class ResultAudioCard extends React.Component{
-  render(){
+  //Audio cards for SearchResult.js
+  SearchResultAudioCard = () => {
+    var toggleAudio = require('./AudioCard').toggleAudio;
+    var toggleSeeOtherTags = require('./AudioCard').toggleSeeOtherTags;
     return(
       <Card className="audio-card">
       <CardContent>  
@@ -117,11 +100,19 @@ class ResultAudioCard extends React.Component{
       </CardContent>
       <CardActions style={{ paddingTop: "0" }}>
           <IconButton onClick={this.toggleAudio}>
-            {this.props.play ? (<Pause />) : (<PlayArrow />)}
+            {this.state.play ? (<Pause />) : (<PlayArrow />)}
           </IconButton>
       </CardActions>
      <h5>{this.props.tag}: {this.props.count} times</h5>
     </Card>
     );
   }
+  render() {
+    return (
+      <div>
+          {this.props.fromSummary ? this.SummaryAudioCard() : this.SearchResultAudioCard()}     
+      </div>  
+    )
+  }
 }
+export default AudioCard;

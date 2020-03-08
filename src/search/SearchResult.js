@@ -89,11 +89,8 @@ class SearchResult extends Component {
   togglePlay = play => {
     this.setState({ play });
   }
-
   render() {
-    //const { clipHistory, scoredClipHistory } = this.state;
-    //const {MyTag} = this.state
-    const {MyTag,tag} = this.props.location.state
+    const {MyTag,tag,clipNumber} = this.props.location.state
     return (
       <Grid container className="summary-container" direction="column" alignItems="center">
         <Grid item>
@@ -105,7 +102,7 @@ class SearchResult extends Component {
         <Grid item>
           <Link to="/main/clip">Play game!</Link>
         </Grid>
-    <h2>Here are 2 clip have been describe as {tag}</h2>
+    <h2>Here are {clipNumber} clip have been describe as {tag}</h2>
         <Grid item className="card-list-container"> 
           <Grid container className="card-list" spacing={8}>
           {Object.keys(MyTag).map((clip, i) => (
@@ -121,9 +118,7 @@ class SearchResult extends Component {
             </Grid>
           ))}
           </Grid>
-        </Grid>
-       
-        
+        </Grid>     
       </Grid>
     );
   }

@@ -82,8 +82,6 @@ class SummaryPage extends Component {
       scoredClipHistory[clip.id].other = tempTag1.join(", ");
       this.setState({ scoredClipHistory });
     }
-
-
   }
   togglePlay = play => {
     this.setState({ play });

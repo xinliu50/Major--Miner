@@ -42,14 +42,6 @@ class SearchPage extends Component {
           console.log(p.id + " ->" + p.data().count)
           index ++;
       }
-    
-      //   .then(doc => {
-    //     doc.forEach(tag => {
-    //       tagList.push({tag: tag.id, i: index});
-    //       console.log(tag.id + " ->" + tag.data().count)
-    //       index ++;
-    //     })
-    //   })
      return tagList;
   }
   handleKeyPress = event => {
@@ -58,12 +50,10 @@ class SearchPage extends Component {
     }
   }
   handleSubmit = () => {
-    // this.setState({
-    //   topTags: [{tag: 'bird', url: 'sdihfief', count: 10}, {tag: 'dog', url: 'amkjdk', count: 20}]
-    //   });
-      console.log("click");
+     var searchItem = document.getElementById("searchItem").value;
+     this.handleListClick(null,searchItem);
   }
-
+  
   handleListClick = async (event,tag) => {
     const tagPromise = await this.db.collection('tagList').doc(tag).collection('clipIDs').get();
     this.MyTagMap = {};
@@ -75,16 +65,14 @@ class SearchPage extends Component {
         this.MyTagMap[p.id].count = tagObject.data().count;
     }
     console.log(this.MyTagMap);
-   // this.props.history.push("/seachresult");
     this.props.history.push({
       pathname: '/seachresult',
-      //TagMap: this.MyTagMap
       state: {
         tag: tag,
-        MyTag: this.MyTagMap
+        MyTag: this.MyTagMap,
+        clipNumber: tagPromise.size
       }
     })
-
     console.log("tag:  " + tag);
   }
   getList = (topTags) =>{
@@ -111,6 +99,7 @@ class SearchPage extends Component {
           <Grid item >
               <label>Search by tag: </label>
               <input
+                id="searchItem"
                 type="text"  
                 onKeyPress={this.handleKeyPress}/>             
                 <Button id="searchButton" onClick={this.handleSubmit}>search</Button>

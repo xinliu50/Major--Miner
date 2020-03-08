@@ -16,10 +16,8 @@ import { Link } from "react-router-dom";
 class SearchPage extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      //resultArray: [0,1,2]
-      //tagMap: {},
-      topTags: []//[{tag: 'bird', i: 1, count: 10}, {tag: 'dog', i: 2, count: 20}]
+    this.state = {  
+      topTags: []
     };
 
   }

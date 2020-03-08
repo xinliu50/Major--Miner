@@ -22,7 +22,7 @@ class SummaryPage extends Component {
     this.audioRef = this.db.collection('audios');
     this.userId = this.user.uid;
     this.userRef = this.db.collection('users').doc(this.userId);
-    var tempTag = [];
+   /* var tempTag = [];
     var tempTag1 = [];
     const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
    
@@ -82,13 +82,14 @@ class SummaryPage extends Component {
       scoredClipHistory[clip.id].other = tempTag1.join(", ");
       this.setState({ scoredClipHistory });
     }
+    */
   }
   togglePlay = play => {
     this.setState({ play });
   }
 
   render() {
-    const { clipHistory, scoredClipHistory } = this.state;
+    const { clipHistory, scoredClipHistory } = this.props.location.state;
     return (
       <Grid container className="summary-container" direction="column" alignItems="center">
         <Grid item>

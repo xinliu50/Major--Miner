@@ -25,6 +25,8 @@
         currentTags:{},
         displayTag:{},
         loading: true,
+        clipHistory: {},
+        scoredClipHistory: {},
       };
 
       export default class GamePage extends Component {
@@ -39,17 +41,92 @@
           this.user = firebase.auth().currentUser;
           this.db = firebase.firestore();
           this.currentId = firebase.auth().currentUser.uid;
+          this.userId = this.user.uid;
           this.userRef = this.db.collection('users').doc(this.currentId);
+          this.audioRef = this.db.collection('audios');
           this.firstUserId = '';
 
           this.loadUrl();
          //this.loadFiles();
+         // this.Summary();
         }
-
         componentDidUpdate(prevProps, prevState) {
           this.textInput.current.focus(); 
         }
+        Summary = async () => {
+          var tempTag = [];
+          var tempTag1 = [];
+          const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
+          const clipHistory = {};
+          
+        for (const clip of clipHistorySnapshot.docs){
+            clipHistory[clip.id] = { score: clip.data().score };
+            var audio = this.db.collection('audios').doc(clip.id).get();
+            tempTag = [];
+            tempTag1 = [];
+            var tagsSnapshot = this.db.collection('audios').doc(clip.id).collection('users').doc(this.userId).get();
+            var otherTagSnapshot = this.db.collection('audios').doc(clip.id).collection('tags').get();
+            
+            const [audio1,tagsSnapshot1,otherTagSnapshot1] = await Promise.all([audio,tagsSnapshot,otherTagSnapshot]);
+            clipHistory[clip.id].title = audio1.data().Title;
+            clipHistory[clip.id].url = audio1.data().Url;
+            clipHistory[clip.id].id = clip.id;
 
+            tempTag = tagsSnapshot1.data().tags;
+            clipHistory[clip.id].TAG = tempTag.join(", ");
+
+            for(const tag of otherTagSnapshot1.docs){
+              if(!tempTag.includes(tag.id)){
+                tempTag1.push(tag.id);
+              }
+            }
+              clipHistory[clip.id].other = tempTag1.join(", ");
+            this.setState({ clipHistory });
+        }
+      
+          const scoredClipHistorySnapshot = await this.userRef.collection('clipHistory').where("score", ">", 0).orderBy("score").limit(10).get();
+          const scoredClipHistory = {};
+          for(const clip of scoredClipHistorySnapshot.docs){
+            scoredClipHistory[clip.id] = { score: clip.data().score };
+            var audioSnapshot = this.db.collection('audios').doc(clip.id).get();
+            var scoreTagsSnapshot = this.db.collection('audios').doc(clip.id).collection('tags').where("userId", 'array-contains',this.userId).get();
+            var otherScoreTagSnapshot = this.db.collection('audios').doc(clip.id).collection('tags').get();
+          
+          const [audio1,scoreTagsSnapshot1,otherScoreTagSnapshot1] = await Promise.all([audioSnapshot,scoreTagsSnapshot,otherScoreTagSnapshot]);
+            scoredClipHistory[clip.id].title = audio1.data().Title;
+            scoredClipHistory[clip.id].url = audio1.data().Url;
+            scoredClipHistory[clip.id].id = clip.id;
+            tempTag = [];
+            tempTag1 = [];
+
+            for(const tag of scoreTagsSnapshot1.docs){
+              tempTag.push(tag.id);
+            }
+            scoredClipHistory[clip.id].TAG = tempTag.join(", ");
+
+            for(const tag of otherScoreTagSnapshot1.docs){
+              if(!tempTag.includes(tag.id)){
+                tempTag1.push(tag.id);
+              }
+            }
+            scoredClipHistory[clip.id].other = tempTag1.join(", ");
+            this.setState({ scoredClipHistory });
+          }
+          console.log(this.state.scoredClipHistory)
+          console.log(this.state.clipHistory)
+          // <Link to={{
+          //   pathname: "/main",
+          //   clipHistory: clipHistory,
+          //   scoredClipHistory: scoredClipHistory
+          // }}
+          this.props.history.push({
+            pathname: '/main',
+            state: {
+             clipHistory: this.state.clipHistory,
+             scoredClipHistory: scoredClipHistory
+            }
+          })
+        }
         handleKeyPress = event => {
           if (event.key === 'Enter') {
             document.getElementById("submitButton").click();
@@ -447,11 +524,17 @@
           }catch(err){
             console.log("Can't create clipHistory: " + err);
           }
+          /*{-<Link to={{
+                    pathname: "/main",
+                    clipHistory: clipHistory,
+                    scoredClipHistory: scoredClipHistory
+                  }}
+                style={{ "textDecoration": "none" }}>-}*/
         }
         render() {
          const url = this.url;
          const clipId = this.clipId;
-         const {currentTags,displayTag} = this.state;
+         const {currentTags,displayTag,clipHistory,scoredClipHistory} = this.state;
           return (
             <Grid container className="game-container" direction="column" alignItems="center" spacing={16}>
               <Grid item container alignItems="center">
@@ -463,12 +546,14 @@
               </Grid>
               <Grid item container alignItems="center">
                 <Grid item sm={3} md={3} lg={3}>
-                  <Link to="/main" style={{ "textDecoration": "none" }}>
-                    <IconButton id="gameSummary" style={{ "borderRadius": "0" }}>
+                  
+                    <IconButton id="gameSummary" style={{ "borderRadius": "0" }}
+                      onClick={this.Summary}
+                    >
                       <KeyboardArrowLeft />
                       Summary
                     </IconButton>
-                  </Link>
+                  
                 </Grid>
                 {this.state.loading ? (
                   <Grid item sm={6} md={6} lg={6} className="canvas-container">

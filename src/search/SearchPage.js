@@ -54,6 +54,13 @@ class SearchPage extends Component {
   
   handleListClick = async (event,tag) => {
     const tagPromise = await this.db.collection('tagList').doc(tag).collection('clipIDs').get();
+    const tagOrder = await this.db.collection('tagList').doc(tag).collection('clipIDs').orderBy('count','desc').get();
+    var tagOrderArray = [];
+    for(const p of tagOrder.docs){
+       tagOrderArray.push({tag: p.id, count: p.data().count});
+       console.log(p.id + " ->" + p.data().count)
+   }
+  
     this.MyTagMap = {};
     for(const p of tagPromise.docs){
         this.MyTagMap[p.id] = {};
@@ -62,12 +69,15 @@ class SearchPage extends Component {
         this.MyTagMap[p.id].clip = tagObject.data().Title;
         this.MyTagMap[p.id].count = tagObject.data().count;
     }
+    console.log(typeof(this.MyTagMap));
+    
     console.log(this.MyTagMap);
     this.props.history.push({
       pathname: '/seachresult',
       state: {
         tag: tag,
         MyTag: this.MyTagMap,
+        tagOrderArray: tagOrderArray,
         clipNumber: tagPromise.size
       }
     })

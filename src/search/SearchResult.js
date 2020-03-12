@@ -90,7 +90,7 @@ class SearchResult extends Component {
     this.setState({ play });
   }
   render() {
-    const {MyTag,tag,clipNumber} = this.props.location.state
+    const {MyTag,tag,clipNumber,tagOrderArray} = this.props.location.state
     return (
       <Grid container className="summary-container" direction="column" alignItems="center">
         <Grid item>
@@ -105,13 +105,13 @@ class SearchResult extends Component {
     <h2>Here are {clipNumber} clip have been describe as {tag}</h2>
         <Grid item className="card-list-container"> 
           <Grid container className="card-list" spacing={8}>
-          {Object.keys(MyTag).map((clip, i) => (
-            <Grid item key={clip}>
+          {tagOrderArray.map((clip, i) => (
+            <Grid item key={clip.tag}>
               <AudioCard
                 tag={tag}
-                clip={MyTag[clip].clip}
-                url={MyTag[clip].url}
-                count={MyTag[clip].count}
+                clip={MyTag[clip.tag].clip}
+                url={MyTag[clip.tag].url}
+                count={MyTag[clip.tag].count}
                 togglePlay={this.togglePlay}
                 fromSummary={false}
               />

@@ -123,7 +123,7 @@
             pathname: '/main',
             state: {
              clipHistory: this.state.clipHistory,
-             scoredClipHistory: scoredClipHistory
+             scoredClipHistory: this.state.scoredClipHistory
             }
           })
         }

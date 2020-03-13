@@ -55,7 +55,7 @@ class Header extends Component {
       <AppBar position="sticky">
         <Toolbar>
           <div className="nav-container">
-            <ButtonBase component={Link} to="/" className="nav-item"><b style={{ "fontSize": "1.5em" }}>Major Miner</b></ButtonBase>
+            <ButtonBase component={Link} to="/Major--Miner" className="nav-item"><b style={{ "fontSize": "1.5em" }}>Major Miner</b></ButtonBase>
             {/* <Link to="/" className="nav-item"><h2>Major Miner</h2></Link> */}
             {this.props.authenticated ? (
               <ButtonBase component={Link} to="/main/clip" className="nav-item">Game</ButtonBase>
@@ -63,7 +63,9 @@ class Header extends Component {
             {this.props.authenticated ? (
               <ButtonBase component={Link} to="/info/leaders" className="nav-item">Leaders</ButtonBase>
              ) : ""} 
-            <ButtonBase component={Link} to="/search" className="nav-item">Search</ButtonBase>
+            {this.props.authenticated ? (
+              <ButtonBase component={Link} to="/search" className="nav-item">Search</ButtonBase>
+            ) : ""} 
             {this.props.authenticated ? (
               <div className="account-button">
                 <h4 style={{ "margin": "0 0.5em", "padding": "0 0.5em" }}>Score: {this.state.score}</h4>

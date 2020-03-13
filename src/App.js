@@ -41,7 +41,7 @@ function PrivateRoute({ component: Component, authenticated, ...rest }) {
         authenticated === true ? (
           <Component {...props} {...rest} />
         ) : (
-          <Redirect to="/" />
+          <Redirect to="/Major--Miner" />
         )
       }
     />
@@ -105,7 +105,7 @@ class App extends Component {
             <main>
               <Route
                 exact
-                path="/"
+                path="/Major--Miner"
                 render={props => (
                   <LandingPage
                     {...props}

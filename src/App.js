@@ -41,7 +41,7 @@ function PrivateRoute({ component: Component, authenticated, ...rest }) {
         authenticated === true ? (
           <Component {...props} {...rest} />
         ) : (
-          <Redirect to="/Major--Miner" />
+          <Redirect to="/" />
         )
       }
     />

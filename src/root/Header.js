@@ -39,7 +39,7 @@ class Header extends Component {
     }).catch(err => {
       console.log(err);
     })
-    this.props.history.push('/Major--Miner');
+    this.props.history.push('/');
     this.setState({ score: 0});
   }
 

@@ -7,7 +7,7 @@ class Footer extends Component {
     return (
       <Grid container className="footer" justify="center" spacing={8}>
         <Grid item>
-          <Link to="/">Home</Link>
+          <Link to="/Major--Miner">Home</Link>
         </Grid>
         <Grid item>
           <Link to="/info/faq">FAQ</Link>

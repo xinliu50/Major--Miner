@@ -1,5 +1,4 @@
- import React, { Component } from "react";
-      import { Link } from "react-router-dom";
+import React, { Component } from "react";
       import {
         Grid,
         FormControl,
@@ -18,38 +17,105 @@
       import Help from "@material-ui/icons/HelpOutline";
       import AudioAnalyser from "./AudioAnalyser";
       import firebase from "../base";
-      import staticFirebase from "firebase/app";
+      import staticFirebase from "firebase";
       import GameRuleDialog from "./GameRuleDialog";
     
       const INITIAL_STATE = {
         currentTags:{},
         displayTag:{},
         loading: true,
+        clipHistory: {},
+        scoredClipHistory: {},
       };
 
       export default class GamePage extends Component {
         constructor(props) {
           super(props);
           this.state = {...INITIAL_STATE};
-
           this.textInput = React.createRef();
         }  
         componentDidMount = async() =>{
-
           this.user = firebase.auth().currentUser;
           this.db = firebase.firestore();
           this.currentId = firebase.auth().currentUser.uid;
+          this.userId = this.user.uid;
           this.userRef = this.db.collection('users').doc(this.currentId);
+          this.audioRef = this.db.collection('audios');
           this.firstUserId = '';
-
           this.loadUrl();
-          //this.loadFiles();
+         //this.loadFiles();
+         // this.Summary();
         }
-
         componentDidUpdate(prevProps, prevState) {
           this.textInput.current.focus(); 
         }
+        Summary = async () => {
+          var tempTag = [];
+          var tempTag1 = [];
+          const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
+          const clipHistory = {};
+          
+        for (const clip of clipHistorySnapshot.docs){
+            clipHistory[clip.id] = { score: clip.data().score };
+            var audio = this.db.collection('audios').doc(clip.id).get();
+            tempTag = [];
+            tempTag1 = [];
+            var tagsSnapshot = this.db.collection('audios').doc(clip.id).collection('users').doc(this.userId).get();
+            var otherTagSnapshot = this.db.collection('audios').doc(clip.id).collection('tags').get();
+            
+            const [audio1,tagsSnapshot1,otherTagSnapshot1] = await Promise.all([audio,tagsSnapshot,otherTagSnapshot]);
+            clipHistory[clip.id].title = audio1.data().Title;
+            clipHistory[clip.id].url = audio1.data().Url;
+            clipHistory[clip.id].id = clip.id;
 
+            tempTag = tagsSnapshot1.data().tags;
+            clipHistory[clip.id].TAG = tempTag.join(", ");
+
+            for(const tag of otherTagSnapshot1.docs){
+              if(!tempTag.includes(tag.id)){
+                tempTag1.push(tag.id);
+              }
+            }
+              clipHistory[clip.id].other = tempTag1.join(", ");
+            this.setState({ clipHistory });
+        }
+      
+          const scoredClipHistorySnapshot = await this.userRef.collection('clipHistory').where("score", ">", 0).orderBy("score").limit(10).get();
+          const scoredClipHistory = {};
+          for(const clip of scoredClipHistorySnapshot.docs){
+            scoredClipHistory[clip.id] = { score: clip.data().score };
+            var audioSnapshot = this.db.collection('audios').doc(clip.id).get();
+            var scoreTagsSnapshot = this.db.collection('audios').doc(clip.id).collection('tags').where("userId", 'array-contains',this.userId).get();
+            var otherScoreTagSnapshot = this.db.collection('audios').doc(clip.id).collection('tags').get();
+          
+          const [audio1,scoreTagsSnapshot1,otherScoreTagSnapshot1] = await Promise.all([audioSnapshot,scoreTagsSnapshot,otherScoreTagSnapshot]);
+            scoredClipHistory[clip.id].title = audio1.data().Title;
+            scoredClipHistory[clip.id].url = audio1.data().Url;
+            scoredClipHistory[clip.id].id = clip.id;
+            tempTag = [];
+            tempTag1 = [];
+
+            for(const tag of scoreTagsSnapshot1.docs){
+              tempTag.push(tag.id);
+            }
+            scoredClipHistory[clip.id].TAG = tempTag.join(", ");
+
+            for(const tag of otherScoreTagSnapshot1.docs){
+              if(!tempTag.includes(tag.id)){
+                tempTag1.push(tag.id);
+              }
+            }
+            scoredClipHistory[clip.id].other = tempTag1.join(", ");
+            this.setState({ scoredClipHistory });
+          }
+          this.props.history.push({
+            pathname: '/main',
+            state: {
+             clipHistory: this.state.clipHistory,
+             scoredClipHistory: this.state.scoredClipHistory
+            }
+          })
+        }
         handleKeyPress = event => {
           if (event.key === 'Enter') {
             document.getElementById("submitButton").click();
@@ -71,14 +137,13 @@
               myJSON = JSON.parse(data);
               items = myJSON.items;
               for(var i = 0; i < items.length; i++){
-                audiosDataRef.doc(i+'').set({
+               	audiosDataRef.doc(i+'').set({
                   Title: items[i].name,
                   Url: 'https://firebasestorage.googleapis.com/v0/b/majorminer-dd13a.appspot.com/o/'+items[i].name+'?alt=media&token='+items[i].metadata.firebaseStorageDownloadTokens
                 });
-                randomRef.doc(i+'').set({
-                  count: 0
-                });
-                console.log(i);
+               	randomRef.doc(i+'').set({
+               		count: 0
+               	});
               }
             }
           };
@@ -135,43 +200,20 @@
           month[10] = "November";
           month[11] = "December";
          
-          const thatTime = timeStamp.toMillis();
-          console.log("that time: ", thatTime);
-          
+          const thatTime = timeStamp.toMillis();    
           var d = new Date();
-          var day = d.getDay()+'';
           var todayDate = d.getDate()+'';
           var thisMonth = month[d.getMonth()]+' ';
           var year = d.getFullYear()+'';
-          console.log("day", day);
-          console.log("date ", todayDate);
-          console.log("month", thisMonth);
-          console.log("year", year);
           const parseStringToday = thisMonth+todayDate+', '+year;
-          console.log(parseStringToday);
           var today = Date.parse(parseStringToday);
-          console.log("today: ", today);
-
           const now = Date.now();
-          console.log("now: ", now);
-          
           var compare = now - thatTime;
-          if(compare <= 3600000){
-            console.log("within an hour", compare);
-            return 1;
-          }
-          else if(thatTime <= today+3600000 * 24){
-            console.log("it's today");
-            return 2;
-          }
-          else if(thatTime <= today+3600000 * 24 * 7){
-            console.log("this week");
-            return 3;
-          }
-          else{
-            console.log("long time ago");
-            return 4;
-          }
+          
+          if(compare <= 3600000) return 1;
+          else if(thatTime <= today+3600000 * 24) return 2;
+          else if(thatTime <= today+3600000 * 24 * 7) return 3;
+          else return 4;
         }
         oneDayRange = () => {
           var month = [];
@@ -194,15 +236,12 @@
           var year = d.getFullYear()+'';
           const parseStringToday = thisMonth+todayDate+', '+year;
           var today = Date.parse(parseStringToday);//millionSeconds for 00:00:00 today
-          console.log("today: ", today);
-
           return today+ 3600000 * 24;
         }
         randomizeId = async() => {
           var clip;
           var userHasSeen = new Set();
-          var rand = Math.random();
-          
+          var rand = Math.random();   
           var currentUserSeenSnapshot = await this.db.collection('Randomize').where('userId', 'array-contains', this.currentId).get();//current user has seen
           for(const userSeen of currentUserSeenSnapshot.docs){
             userHasSeen.add(userSeen.id);
@@ -241,6 +280,7 @@
             for(const clip of oneHourNoSeenSnapshot.docs){
               console.log("oneHourNoSeenSnapshot", clip.id);
             }
+            ///////////
 
             for(const clip of oneHourNoSeenSnapshot.docs){
               if(!userHasSeen.has(clip.id)){
@@ -266,8 +306,6 @@
         //submit tags
         handleSubmit = async () => {
           const newTags = document.getElementById("tags").value.toLowerCase().replace(/\s/g,'').split(",");
-          
-
           //generate temporatyTags set from new Tags
           var tempCurrentTags = {};
           this.audioTagRef = await this.audioRef.collection('tags');
@@ -276,8 +314,7 @@
           const tags = await this.audioTagRef.get();
           //generate exitingTags from DB
           this.existingTags = await this.loadExistingTag(tags);
-
-         
+  
           console.log("existingTags");
           console.log(this.existingTags);
         
@@ -294,21 +331,16 @@
               }
             }
           });
-          
-
-           console.log("displayTag");
+          console.log("displayTag");
           console.log(this.state.displayTag);
-         
-          // console.log("newTags: " + newTags);
-           document.getElementById("tags").value = "";
-        
+          document.getElementById("tags").value = "";
           this.loadTagsToDb(tempCurrentTags).then(tempCurrentTags => {
-
+            //tempCurrentTags = tempCurrentTags;
             this.setState({currentTags: tempCurrentTags});
             for( const tag of Object.keys(tempCurrentTags)){
                this.setState(prevState => ({ displayTag: {...prevState.displayTag, [tag]: {score: tempCurrentTags[tag].score, count:  tempCurrentTags[tag].count }}}));
             }
-          })   
+          }) 
         }
         //get first user Id 
         getUserId = async tag => {
@@ -449,13 +481,12 @@
                 <Grid item sm={1} md={1} lg={1}></Grid>
               </Grid>
               <Grid item container alignItems="center">
-                <Grid item sm={3} md={3} lg={3}>
-                  <Link to="/main" style={{ "textDecoration": "none" }}>
-                    <IconButton id="gameSummary" style={{ "borderRadius": "0" }}>
+                <Grid item sm={3} md={3} lg={3}>       
+                    <IconButton id="gameSummary" style={{ "borderRadius": "0" }}
+                      onClick={this.Summary}>
                       <KeyboardArrowLeft />
                       Summary
-                    </IconButton>
-                  </Link>
+                    </IconButton>      
                 </Grid>
                 {this.state.loading ? (
                   <Grid item sm={6} md={6} lg={6} className="canvas-container">
@@ -474,11 +505,11 @@
              <Grid item id="listTag" sm={10} md={6} lg={8}>
                 {Object.keys(displayTag).map((tag, i) => {
                   if (displayTag[tag].count === 0) {
-                    return (<span key={i} className="gray">{tag+","}&nbsp;</span>)
+                    return (<span key={i} className="gray">{tag}&nbsp;</span>)
                   } else if (displayTag[tag].score === 1) {
-                    return (<i key={i} className="1-point">{tag+","}&nbsp;</i>)
+                    return (<i key={i} className="1-point">{tag}&nbsp;</i>)
                   } else {
-                    return (<span key={i} className="pink">{tag+","}&nbsp;</span>)
+                    return (<span key={i} className="pink">{tag}&nbsp;</span>)
                    } 
                 })}
               </Grid>
@@ -518,3 +549,4 @@
           );
         }
       }
+     

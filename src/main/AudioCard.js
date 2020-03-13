@@ -66,16 +66,15 @@ class AudioCard extends Component {
     this.gainNode.disconnect();
     this.audioSource.disconnect();
   }
-  render() {
-    return (
+  //Audio cards for SummaryPage.js
+  SummaryAudioCard = () => {
+    return(
       <Card className="audio-card">
         <CardContent>
           <h5>{this.props.clip}</h5>
-
           <p>Your tags: {this.props.TAG || 'loading'}</p>
-
          {this.state.seeOthers ? (
-           <p>Other's tags: {this.props.other} </p>) : ""}
+           <p>Other's tags: {this.props.other || 'None'} </p>) : ""}
         </CardContent>
         <CardActions style={{ paddingTop: "0" }}>
           <IconButton onClick={this.toggleAudio}>
@@ -88,6 +87,28 @@ class AudioCard extends Component {
       </Card>
     );
   }
+  //Audio cards for SearchResult.js
+  SearchResultAudioCard = () => {
+    return(
+      <Card className="audio-card">
+      <CardContent>  
+          <h5>{this.props.clip}</h5>
+      </CardContent>
+      <CardActions style={{ paddingTop: "0" }}>
+          <IconButton onClick={this.toggleAudio}>
+            {this.state.play ? (<Pause />) : (<PlayArrow />)}
+          </IconButton>
+      </CardActions>
+     <h5>{this.props.tag}: {this.props.count} times</h5>
+    </Card>
+    );
+  }
+  render() {
+    return (
+      <div>
+          {this.props.fromSummary ? this.SummaryAudioCard() : this.SearchResultAudioCard()}     
+      </div>  
+    )
+  }
 }
-
 export default AudioCard;

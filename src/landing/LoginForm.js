@@ -53,7 +53,7 @@ class LoginForm extends Component {
         console.log(user);
         if (user) {
           this.handleClose();
-          this.props.history.push("/main");
+          this.props.history.push("/main/clip");
         }
     } catch (err) {
       alert(err);

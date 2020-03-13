@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
-import { BrowserRouter as Router, Route, Redirect, Switch } from "react-router-dom";
-import app from "./base";
-
+import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import firebase from "./base";
 import {
   MuiThemeProvider,
   createMuiTheme,
@@ -18,6 +17,7 @@ import NewGamePage from "./main/NewGamePage";
 import SummaryPage from "./main/SummaryPage";
 import LeadersPage from "./info/LeadersPage";
 import SearchPage from "./search/SearchPage";
+import SearchResult from "./search/SearchResult";
 
 const theme = createMuiTheme({
   palette: {
@@ -59,7 +59,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.listener = app.auth().onAuthStateChanged(user => {
+    this.listener = firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.setState({
           authenticated: true,
@@ -95,25 +95,14 @@ class App extends Component {
       );
     }
     return (
-      <MuiThemeProvider theme={theme}>
+      <MuiThemeProvider theme={theme} >
         <Router>
           <div className="App">
             <Header
               authenticated={this.state.authenticated}
               toggleAuth={this.toggleAuth}
             />
-            <Switch>
             <main>
-              <Route
-                exact
-                path="/Major--Miner"
-                render={props => (
-                  <LandingPage
-                    {...props}
-                    authenticated={this.state.authenticated}
-                  />
-                )}
-              />
               <Route
                 exact
                 path="/"
@@ -128,7 +117,8 @@ class App extends Component {
               <Route path="/info/contact" component={ContactPage} />
               <Route path="/info/privacy" component={PrivacyPage} />
               <Route path="/info/leaders" component={LeadersPage} />
-              <Route path="/search" component={SearchPage} />
+              {/*<Route path="/search" component={SearchPage} />*/}
+              <Route path="/seachresult" component={SearchResult} />
               <PrivateRoute
                 exact
                 path="/main"
@@ -136,12 +126,17 @@ class App extends Component {
                 authenticated={this.state.authenticated}
               />
               <PrivateRoute
+                exact
                 path="/main/clip"
                 component={NewGamePage}
                 authenticated={this.state.authenticated}
               />
+              <PrivateRoute
+                path="/search"
+                component={SearchPage}
+                authenticated={this.state.authenticated}
+              />
             </main>
-            </Switch>
             <Footer />
           </div>
         </Router>

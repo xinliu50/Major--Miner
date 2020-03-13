@@ -22,7 +22,7 @@ class SummaryPage extends Component {
     this.audioRef = this.db.collection('audios');
     this.userId = this.user.uid;
     this.userRef = this.db.collection('users').doc(this.userId);
-    var tempTag = [];
+   /* var tempTag = [];
     var tempTag1 = [];
     const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
    
@@ -41,10 +41,8 @@ class SummaryPage extends Component {
       clipHistory[clip.id].title = audio1.data().Title;
       clipHistory[clip.id].url = audio1.data().Url;
       clipHistory[clip.id].id = clip.id;
-
       tempTag = tagsSnapshot1.data().tags;
       clipHistory[clip.id].TAG = tempTag.join(", ");
-
       for(const tag of otherTagSnapshot1.docs){
          if(!tempTag.includes(tag.id)){
           tempTag1.push(tag.id);
@@ -68,12 +66,10 @@ class SummaryPage extends Component {
       scoredClipHistory[clip.id].id = clip.id;
       tempTag = [];
       tempTag1 = [];
-
       for(const tag of scoreTagsSnapshot1.docs){
         tempTag.push(tag.id);
       }
       scoredClipHistory[clip.id].TAG = tempTag.join(", ");
-
       for(const tag of otherScoreTagSnapshot1.docs){
          if(!tempTag.includes(tag.id)){
           tempTag1.push(tag.id);
@@ -82,15 +78,14 @@ class SummaryPage extends Component {
       scoredClipHistory[clip.id].other = tempTag1.join(", ");
       this.setState({ scoredClipHistory });
     }
-
-
+    */
   }
   togglePlay = play => {
     this.setState({ play });
   }
 
   render() {
-    const { clipHistory, scoredClipHistory } = this.state;
+    const { clipHistory, scoredClipHistory } = this.props.location.state;
     return (
       <Grid container className="summary-container" direction="column" alignItems="center">
         <Grid item>
@@ -111,6 +106,7 @@ class SummaryPage extends Component {
                 TAG={clipHistory[clip].TAG}
                 togglePlay={this.togglePlay}
                 other={clipHistory[clip].other}
+                fromSummary={true}
               />
             </Grid>
           ))}
@@ -128,6 +124,7 @@ class SummaryPage extends Component {
                 clipId={scoredClipHistory[clip].id}
                 other={scoredClipHistory[clip].other}
                 togglePlay={this.togglePlay}
+                fromSummary={true}
               />
             </Grid>
           ))}

@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "majorminer-dd13a"
+    "default": "majorminer-dd13a",
+    "majorminer-dd13a": "majorminer-dd13a"
   }
 }

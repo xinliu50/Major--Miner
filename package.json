@@ -51,7 +51,7 @@
   "devDependencies": {
     "cypress": "^3.4.1",
     "cypress-firebase": "^0.2.5",
-    "gh-pages": "^2.1.1",
+    "gh-pages": "^2.2.0",
     "install-peers": "^1.0.3"
   },
   "description": "## Setup instructions: 1. Clone this repository 2. Install necessary packages ```bash npm install ``` ## Connect Major Miner to your firebase",

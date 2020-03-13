@@ -13,7 +13,6 @@ class SearchResult extends Component {
       play: false
     }
   }
-
   async componentDidMount() {
     this.user = firebase.auth().currentUser;
     this.db = firebase.firestore();

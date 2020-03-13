@@ -15,7 +15,6 @@ class SearchPage extends Component {
       topTags: []
     };
   }
-  
   async componentDidMount(){
      this.user = firebase.auth().currentUser;
      this.db = firebase.firestore();

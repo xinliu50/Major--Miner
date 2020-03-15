@@ -83,13 +83,9 @@ class LandingPage extends Component {
     }
     console.log(this.state.scoredClipHistory)
     console.log(this.state.clipHistory)
-    // <Link to={{
-    //   pathname: "/main",
-    //   clipHistory: clipHistory,
-    //   scoredClipHistory: scoredClipHistory
-    // }}
+    
     this.props.history.push({
-      pathname: '/main',
+      pathname: '/main/clip',
       state: {
        clipHistory: this.state.clipHistory,
        scoredClipHistory: this.state.scoredClipHistory

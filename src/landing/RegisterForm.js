@@ -120,7 +120,7 @@ class RegisterForm extends Component {
             score: 0
           });
           this.handleCloseForm();
-          history.push("/main");
+          history.push("/main/clip");
         }
       } catch(err) {
         alert(err);

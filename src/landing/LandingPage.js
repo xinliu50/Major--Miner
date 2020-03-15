@@ -13,15 +13,14 @@ class LandingPage extends Component {
       scoredClipHistory: {}
     }
   };
-  componentDidMount (){
+  
+  Summary = async () => {
     this.user = firebase.auth().currentUser;
     this.db = firebase.firestore();
     this.currentId = firebase.auth().currentUser.uid;
     this.userId = this.user.uid;
     this.userRef = this.db.collection('users').doc(this.currentId);
     this.audioRef = this.db.collection('audios');
-  }
-  Summary = async () => {
     var tempTag = [];
     var tempTag1 = [];
     const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
@@ -82,11 +81,6 @@ class LandingPage extends Component {
     }
     console.log(this.state.scoredClipHistory)
     console.log(this.state.clipHistory)
-    // <Link to={{
-    //   pathname: "/main",
-    //   clipHistory: clipHistory,
-    //   scoredClipHistory: scoredClipHistory
-    // }}
     this.props.history.push({
       pathname: '/main',
       state: {

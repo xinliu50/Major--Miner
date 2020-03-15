@@ -126,6 +126,7 @@ class App extends Component {
                 authenticated={this.state.authenticated}
               />
               <PrivateRoute
+                exact
                 path="/main/clip"
                 component={NewGamePage}
                 authenticated={this.state.authenticated}

@@ -12,8 +12,6 @@
     "firebase": "^5.10.1",
     "firebase-admin": "^8.7.0",
     "firebase-tools": "^7.3.1",
-    "grpc": "^1.20.3",
-    "http2": "^3.3.7",
     "jquery": "^3.4.1",
     "mobx": "^5.9.4",
     "mobx-react": "^5.4.3",
@@ -53,8 +51,7 @@
   ],
   "devDependencies": {
     "gh-pages": "^2.2.0",
-    "install-peers": "^1.0.3",
-    "jest": "^25.1.0"
+    "install-peers": "^1.0.3"
   },
   "description": "## Setup instructions: 1. Clone this repository 2. Install necessary packages ```bash npm install ``` ## Connect Major Miner to your firebase",
   "main": "index.js",

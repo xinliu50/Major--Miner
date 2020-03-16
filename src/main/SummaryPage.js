@@ -85,7 +85,7 @@ class SummaryPage extends Component {
   }
 
   render() {
-    const { clipHistory, scoredClipHistory } = this.props.location.state;
+      const { clipHistory, scoredClipHistory } = this.props.location.state;
     return (
       <Grid container className="summary-container" direction="column" alignItems="center">
         <Grid item>

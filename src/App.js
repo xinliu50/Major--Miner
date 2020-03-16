@@ -19,6 +19,12 @@ import LeadersPage from "./info/LeadersPage";
 import SearchPage from "./search/SearchPage";
 import SearchResult from "./search/SearchResult";
 
+
+export const add = (x,y) => {
+  return x+y;
+};
+
+
 const theme = createMuiTheme({
   palette: {
     primary: {

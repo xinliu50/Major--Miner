@@ -16,6 +16,7 @@ class AudioAnalyser extends Component {
       url: '',
     };
     this.tick = this.tick.bind(this);
+  
   }
 
   setupAudioContext = () => {

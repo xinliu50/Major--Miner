@@ -1,5 +1,5 @@
 {
-  "homepage": "https://majorminergame.github.io/majorminergame",
+  "homepage": "https://majorminergame.github.io",
   "name": "major_miner",
   "version": "6.13.0",
   "private": true,
@@ -57,7 +57,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xinliu50/Major--Miner.git"
+    "url": "git+https://github.com/majorminergame/majorminergame.github.io.git"
   },
   "keywords": [
     "major",
@@ -66,6 +66,6 @@
   "author": "xinliu50",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/xinliu50/Major--Miner/issues"
+    "url": "https://github.com/majorminergame/majorminergame.github.io/issues"
   }
 }

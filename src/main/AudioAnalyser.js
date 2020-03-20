@@ -8,6 +8,7 @@ import staticFirebase from "firebase/app";
 
 class AudioAnalyser extends Component {
   constructor(props) {
+    
     super(props);
     this._isMounted = false;
     this.state = {

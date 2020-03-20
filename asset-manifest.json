@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/Major--Miner/static/css/main.fec153ae.chunk.css",
-    "main.js": "/Major--Miner/static/js/main.738240c4.chunk.js",
-    "main.js.map": "/Major--Miner/static/js/main.738240c4.chunk.js.map",
-    "runtime-main.js": "/Major--Miner/static/js/runtime-main.229cc05f.js",
-    "runtime-main.js.map": "/Major--Miner/static/js/runtime-main.229cc05f.js.map",
-    "static/js/2.d884c419.chunk.js": "/Major--Miner/static/js/2.d884c419.chunk.js",
-    "static/js/2.d884c419.chunk.js.map": "/Major--Miner/static/js/2.d884c419.chunk.js.map",
-    "index.html": "/Major--Miner/index.html",
-    "precache-manifest.4f58bd3fa2c8dc796c438984934a01a9.js": "/Major--Miner/precache-manifest.4f58bd3fa2c8dc796c438984934a01a9.js",
-    "service-worker.js": "/Major--Miner/service-worker.js",
-    "static/css/main.fec153ae.chunk.css.map": "/Major--Miner/static/css/main.fec153ae.chunk.css.map",
-    "static/js/2.d884c419.chunk.js.LICENSE.txt": "/Major--Miner/static/js/2.d884c419.chunk.js.LICENSE.txt"
+    "main.css": "/majorminergame.github.io/static/css/main.fec153ae.chunk.css",
+    "main.js": "/majorminergame.github.io/static/js/main.d82fa69d.chunk.js",
+    "main.js.map": "/majorminergame.github.io/static/js/main.d82fa69d.chunk.js.map",
+    "runtime-main.js": "/majorminergame.github.io/static/js/runtime-main.df433de8.js",
+    "runtime-main.js.map": "/majorminergame.github.io/static/js/runtime-main.df433de8.js.map",
+    "static/js/2.800e1d32.chunk.js": "/majorminergame.github.io/static/js/2.800e1d32.chunk.js",
+    "static/js/2.800e1d32.chunk.js.map": "/majorminergame.github.io/static/js/2.800e1d32.chunk.js.map",
+    "index.html": "/majorminergame.github.io/index.html",
+    "precache-manifest.47ec3861a0303ba5cfba7ae57e01748f.js": "/majorminergame.github.io/precache-manifest.47ec3861a0303ba5cfba7ae57e01748f.js",
+    "service-worker.js": "/majorminergame.github.io/service-worker.js",
+    "static/css/main.fec153ae.chunk.css.map": "/majorminergame.github.io/static/css/main.fec153ae.chunk.css.map",
+    "static/js/2.800e1d32.chunk.js.LICENSE.txt": "/majorminergame.github.io/static/js/2.800e1d32.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.229cc05f.js",
-    "static/js/2.d884c419.chunk.js",
+    "static/js/runtime-main.df433de8.js",
+    "static/js/2.800e1d32.chunk.js",
     "static/css/main.fec153ae.chunk.css",
-    "static/js/main.738240c4.chunk.js"
+    "static/js/main.d82fa69d.chunk.js"
   ]
 }

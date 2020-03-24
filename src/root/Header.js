@@ -39,8 +39,8 @@ class Header extends Component {
     }).catch(err => {
       console.log(err);
     })
-    this.props.history.push('/Major--Miner');
-    //this.props.history.push('/');
+    //this.props.history.push('/Major--Miner');
+    this.props.history.push('/');
 
     this.setState({ score: 0});
   }
@@ -57,7 +57,7 @@ class Header extends Component {
       <AppBar position="sticky">
         <Toolbar>
           <div className="nav-container">
-            <ButtonBase component={Link} to="/Major--Miner" className="nav-item"><b style={{ "fontSize": "1.5em" }}>Major Miner</b></ButtonBase>
+            <ButtonBase component={Link} to="/" className="nav-item"><b style={{ "fontSize": "1.5em" }}>Major Miner</b></ButtonBase>
             {/* <Link to="/" className="nav-item"><h2>Major Miner</h2></Link> */}
             {this.props.authenticated ? (
               <ButtonBase component={Link} to="/main/clip" className="nav-item">Game</ButtonBase>

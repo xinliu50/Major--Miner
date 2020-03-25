@@ -4,7 +4,9 @@ import { Grid, Card, CardContent } from "@material-ui/core";
 class FaqPage extends Component {
   render() {
     return (
-      <Grid container direction="column">
+      <Grid 
+      data-testid="fagPage"
+      container direction="column">
         <Grid item>
           <h1 className="page-title" style={{ paddingTop: "1em" }}>Frequently asked questions</h1>
         </Grid>

@@ -19,7 +19,7 @@ import React, { Component } from "react";
       import firebase from "../base";
       import staticFirebase from "firebase";
       import GameRuleDialog from "./GameRuleDialog";
-    
+     
       const INITIAL_STATE = {
         currentTags:{},
         displayTag:{},

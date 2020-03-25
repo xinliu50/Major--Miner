@@ -19,12 +19,6 @@ import LeadersPage from "./info/LeadersPage";
 import SearchPage from "./search/SearchPage";
 import SearchResult from "./search/SearchResult";
 
-
-export const add = (x,y) => {
-  return x+y;
-};
-
-
 const theme = createMuiTheme({
   palette: {
     primary: {
@@ -47,7 +41,6 @@ function PrivateRoute({ component: Component, authenticated, ...rest }) {
         authenticated === true ? (
           <Component {...props} {...rest} />
         ) : (
-          //<Redirect to="/Major--Miner" />
           <Redirect to="/" />
         )
       }
@@ -112,10 +105,7 @@ class App extends Component {
             <main>
               <Route
                 exact
-               // path="/Major--Miner"
                 path="/"
-
-
                 render={props => (
                   <LandingPage
                     {...props}
@@ -127,7 +117,6 @@ class App extends Component {
               <Route path="/info/contact" component={ContactPage} />
               <Route path="/info/privacy" component={PrivacyPage} />
               <Route path="/info/leaders" component={LeadersPage} />
-              {/*<Route path="/search" component={SearchPage} />*/}
               <Route path="/seachresult" component={SearchResult} />
               <PrivateRoute
                 exact

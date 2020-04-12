@@ -20,11 +20,14 @@
 
 1. Google **Google Cloud Platform**. Login to your account and go to **console**
 
-2. <img src="images/image2.png"/>
+2. Go to **Cloud Scheduler**
+<img src="images/image2.png"/>
 
-3. <img src="images/image3.png"/>
+3. 
+<img src="images/image3.png"/>
 
-4. <img src="images/image4.png"/>
+4. **CREATE JOB**
+<img src="images/image4.png"/>
 
 5. Copy your cloud function URL from you Firebase:
 <img src="images/image5.png"/>

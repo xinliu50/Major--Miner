@@ -27,7 +27,6 @@ import React, { Component } from "react";
         clipHistory: {},
         scoredClipHistory: {},
       };
-//
       export default class GamePage extends Component {
         constructor(props) {
           super(props);

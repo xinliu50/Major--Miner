@@ -57,7 +57,7 @@ class SearchPage extends Component {
         this.MyTagMap[p.id].count = tagObject.data().count;
     }
     this.props.history.push({
-      pathname: '/seachresult',
+      pathname: '/searchresult',
       state: {
         tag: tag,
         MyTag: this.MyTagMap,

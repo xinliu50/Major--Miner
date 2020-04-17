@@ -118,7 +118,7 @@ class App extends Component {
               <Route path="/info/contact" component={ContactPage} />
               <Route path="/info/privacy" component={PrivacyPage} />
               <Route path="/info/leaders" component={LeadersPage} />
-              <Route path="/seachresult" component={SearchResult} />
+              <Route path="/searchresult" component={SearchResult} />
               <PrivateRoute
                 exact
                 path="/main"

@@ -36,7 +36,7 @@ class SearchResult extends Component {
         <Grid item>
           <Link to="/main/clip">Play game!</Link>
         </Grid>
-    <h2>Here are {clipNumber} clip have been describe as {tag}</h2>
+    <h2>Here are {clipNumber} clips have been describe as {tag}</h2>
         <Grid item className="card-list-container"> 
           <Grid container className="card-list" spacing={8}>
           {tagOrderArray.map((clip, i) => (

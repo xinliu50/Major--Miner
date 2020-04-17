@@ -96,7 +96,7 @@ class App extends Component {
     }
     return (
       <MuiThemeProvider theme={theme} >
-        <Router>
+        <Router basename="/majorminergame.github.io"> 
           <div className="App">
             <Header
               authenticated={this.state.authenticated}

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
-import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, Redirect,Switch} from "react-router-dom";
 import firebase from "./base";
 import {
   MuiThemeProvider,
@@ -103,6 +103,7 @@ class App extends Component {
               toggleAuth={this.toggleAuth}
             />
             <main>
+            <Switch>
               <Route
                 exact
                 path="/"
@@ -135,6 +136,7 @@ class App extends Component {
                 component={SearchPage}
                 authenticated={this.state.authenticated}
               />
+              </Switch>
             </main>
             <Footer />
           </div>

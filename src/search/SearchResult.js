@@ -10,6 +10,10 @@ class SearchResult extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      tag: null,
+      MyTag: null,
+      tagOrderArray: [],
+      clipNumber: null,
       play: false
     }
   }
@@ -19,7 +23,7 @@ class SearchResult extends Component {
     this.audioRef = this.db.collection('audios');
     this.userId = this.user.uid;
     this.userRef = this.db.collection('users').doc(this.userId);
-
+    this.getCurrentTarget();
   //   //summary
   //   var tempTag = [];
   //   var tempTag1 = [];
@@ -78,11 +82,52 @@ class SearchResult extends Component {
   //     this.setState({ scoredClipHistory });
   //   }
   }
+  async getCurrentTarget(){
+      console.log(window.location.href)
+      var url = window.location.href;
+      let index = url.lastIndexOf('/');
+      console.log(index);
+      let tag = url.substring(index+1,url.length);
+      console.log("target is: ", tag);
+
+
+      const tagPromise = await this.db.collection('tagList').doc(tag).collection('clipIDs').get();
+      const tagOrder = await this.db.collection('tagList').doc(tag).collection('clipIDs').orderBy('count','desc').get();
+      var tagOrderArray = [];
+      for(const p of tagOrder.docs)
+        tagOrderArray.push({tag: p.id, count: p.data().count});
+    
+      this.MyTagMap = {};
+      for(const p of tagPromise.docs){
+          this.MyTagMap[p.id] = {};
+          const tagObject = await this.db.collection('tagList').doc(tag).collection('clipIDs').doc(p.id).get();
+          this.MyTagMap[p.id].url = tagObject.data().Url;
+          this.MyTagMap[p.id].clip = tagObject.data().Title;
+          this.MyTagMap[p.id].count = tagObject.data().count;
+      }
+
+      await this.setState({
+        tag: tag,
+        MyTag: this.MyTagMap,
+        tagOrderArray: tagOrderArray,
+        clipNumber: tagPromise.size
+      });
+      // this.props.history.push({
+      //   pathname: '/searchresult',
+      //   state: {
+      //     tag: tag,
+      //     MyTag: this.MyTagMap,
+      //     tagOrderArray: tagOrderArray,
+      //     clipNumber: tagPromise.size
+      //   }
+      // })
+  }
   togglePlay = play => {
     this.setState({ play });
   }
   render() {
-    const {MyTag,tag,clipNumber,tagOrderArray} = this.props.location.state
+    //const {MyTag,tag,clipNumber,tagOrderArray} = this.props.location.state
+    const {MyTag,tag,clipNumber,tagOrderArray} = this.state
     return (
       <Grid container className="summary-container" direction="column" alignItems="center">
         <Grid item>

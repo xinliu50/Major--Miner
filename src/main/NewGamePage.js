@@ -19,6 +19,7 @@ import React, { Component } from "react";
       import firebase from "../base";
       import staticFirebase from "firebase";
       import GameRuleDialog from "./GameRuleDialog";
+      import { Link } from "react-router-dom";
      
       const INITIAL_STATE = {
         currentTags:{},
@@ -480,12 +481,14 @@ import React, { Component } from "react";
                 <Grid item sm={1} md={1} lg={1}></Grid>
               </Grid>
               <Grid item container alignItems="center">
-                <Grid item sm={3} md={3} lg={3}>       
-                    <IconButton id="gameSummary" style={{ "borderRadius": "0" }}
-                      onClick={this.Summary}>
-                      <KeyboardArrowLeft />
-                      Summary
-                    </IconButton>      
+                <Grid item sm={3} md={3} lg={3}>  
+                  <Link to="/main" style={{ "textDecoration": "none" }}>     
+                      <IconButton id="gameSummary" style={{ "borderRadius": "0" }}>
+                        <KeyboardArrowLeft />
+                        Summary
+                      </IconButton>  
+
+                    </Link>    
                 </Grid>
                 {this.state.loading ? (
                   <Grid item sm={6} md={6} lg={6} className="canvas-container">

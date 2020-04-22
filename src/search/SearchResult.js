@@ -30,7 +30,7 @@ class SearchResult extends Component {
     
   //  for (const clip of clipHistorySnapshot.docs){
   //     clipHistory[clip.id] = { score: clip.data().score };
-  //     var audio = this.audioRef.doc(clip.id).get();
+  //      var audio = this.audioRef.doc(clip.id).get();
   //     tempTag = [];
   //     tempTag1 = [];
   //     var tagsSnapshot = this.audioRef.doc(clip.id).collection('users').doc(this.userId).get();

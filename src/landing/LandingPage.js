@@ -116,9 +116,11 @@ class LandingPage extends Component {
         </Grid>
         {this.props.authenticated ? (
           <Grid item sm={8} md={8} lg={8} container justify="center" spacing={16}>
-            <Grid item onClick={this.Summary}>
-              Summary
-            </Grid>
+              <Grid item>
+                <Link to="/main">
+                  Summary
+                </Link>
+              </Grid>
             <Grid item>
               <Link to="/main/clip">Play game!</Link>
             </Grid>

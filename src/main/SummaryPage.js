@@ -16,43 +16,34 @@ class SummaryPage extends Component {
     }
   }
 
-  async componentDidMount() {
+   componentDidMount() {
     this.user = firebase.auth().currentUser;
     this.db = firebase.firestore();
     this.audioRef = this.db.collection('audios');
     this.userId = this.user.uid;
     this.userRef = this.db.collection('users').doc(this.userId);
-    //summary
+     this.getSummary();
+  }
+
+  async getSummary1() {
     var tempTag = [];
     var tempTag1 = [];
     const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
-   
-    
     const clipHistory = {};
     
    for (const clip of clipHistorySnapshot.docs){
       clipHistory[clip.id] = { score: clip.data().score };
-      var audio = this.audioRef.doc(clip.id).get();
+      var audio = await this.audioRef.doc(clip.id).get();
       tempTag = [];
       tempTag1 = [];
-      var tagsSnapshot = this.audioRef.doc(clip.id).collection('users').doc(this.userId).get();
-      var otherTagSnapshot = this.audioRef.doc(clip.id).collection('tags').get();
-      
-      const [audio1,tagsSnapshot1,otherTagSnapshot1] = await Promise.all([audio,tagsSnapshot,otherTagSnapshot]);
-      clipHistory[clip.id].title = audio1.data().Title;
-      clipHistory[clip.id].url = audio1.data().Url;
+      var tagsSnapshot = await this.audioRef.doc(clip.id).collection('users').doc(this.userId).get();
+      clipHistory[clip.id].title = audio.data().Title;
+      clipHistory[clip.id].url = audio.data().Url;
       clipHistory[clip.id].id = clip.id;
-      tempTag = tagsSnapshot1.data().tags;
+      tempTag = tagsSnapshot.data().tags;
       clipHistory[clip.id].TAG = tempTag.join(", ");
-      for(const tag of otherTagSnapshot1.docs){
-         if(!tempTag.includes(tag.id)){
-          tempTag1.push(tag.id);
-         }
-      }
-        clipHistory[clip.id].other = tempTag1.join(", ");
-      this.setState({ clipHistory });
    }
- 
+    this.setState({ clipHistory });
     const scoredClipHistorySnapshot = await this.userRef.collection('clipHistory').where("score", ">", 0).orderBy("score").limit(10).get();
     const scoredClipHistory = {};
     for(const clip of scoredClipHistorySnapshot.docs){
@@ -77,16 +68,125 @@ class SummaryPage extends Component {
          }
       }
       scoredClipHistory[clip.id].other = tempTag1.join(", ");
-      this.setState({ scoredClipHistory });
+   }
+   this.setState({ scoredClipHistory });
+ }
+  async summary1(){
+    const clipHistory = {};
+    const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
+    const clipIds = [];
+    clipHistorySnapshot.docs.forEach(doc => {
+      clipIds.push(doc.id);
+    })
+    const detailPromise = [];
+
+    for(const id of clipIds){
+      detailPromise.push(this.audioRef.doc(id).get());
+      clipHistory[id] = {}
+      clipHistory[id].id = id;
     }
-    /////
+    detailPromise
+      .forEach(info => {
+          info.then(i => {
+            clipHistory[i.id].title = i.data().Title;
+            clipHistory[i.id].url = i.data().Url;
+            this.audioRef.doc(i.id).collection('users').doc(this.userId).get()
+            .then(snap => {
+              clipHistory[i.id].TAG = snap.data().tags.join(", ")
+            });
+          })
+      })
+    
+    this.setState({ clipHistory: clipHistory});
+  }
+  async summary() {
+    const clipHistory = {};
+    
+    const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
+    for (const clip of clipHistorySnapshot.docs){
+       clipHistory[clip.id] = {};
+       var audio = await this.audioRef.doc(clip.id).get();
+       
+       clipHistory[clip.id].title = audio.data().Title;
+       clipHistory[clip.id].url = audio.data().Url;
+       clipHistory[clip.id].id = clip.id;
+       
+       this.audioRef.doc(clip.id).collection('users').doc(this.userId).get()
+          .then(snap => {
+            clipHistory[clip.id].TAG = snap.data().tags.join(", ")
+          });
+
+       this.audioRef.doc(clip.id).collection('tags').get()
+          .then(otherTag => {
+            otherTag.forEach(tag => {
+              clipHistory[clip.id].other = tag.id + ", "
+            })
+          })
+      console.log(clipHistory);
+    }
+    this.setState({ clipHistory });
+  }
+
+  async getSummary() {
+     var tempTag = [];
+     var tempTag1 = [];
+     const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
+     const clipHistory = {};
+     
+    for (const clip of clipHistorySnapshot.docs){
+       clipHistory[clip.id] = { score: clip.data().score };
+       var audio = this.audioRef.doc(clip.id).get();
+       tempTag = [];
+       tempTag1 = [];
+       var tagsSnapshot = this.audioRef.doc(clip.id).collection('users').doc(this.userId).get();
+       var otherTagSnapshot = this.audioRef.doc(clip.id).collection('tags').get();
+       
+       const [audio1,tagsSnapshot1,otherTagSnapshot1] = await Promise.all([audio,tagsSnapshot,otherTagSnapshot]);
+       clipHistory[clip.id].title = audio1.data().Title;
+       clipHistory[clip.id].url = audio1.data().Url;
+       clipHistory[clip.id].id = clip.id;
+       tempTag = tagsSnapshot1.data().tags;
+       clipHistory[clip.id].TAG = tempTag.join(", ");
+       for(const tag of otherTagSnapshot1.docs){
+          if(!tempTag.includes(tag.id)){
+           tempTag1.push(tag.id);
+          }
+       }
+       clipHistory[clip.id].other = tempTag1.join(", ");
+    }
+     this.setState({ clipHistory });
+     const scoredClipHistorySnapshot = await this.userRef.collection('clipHistory').where("score", ">", 0).orderBy("score").limit(10).get();
+     const scoredClipHistory = {};
+     for(const clip of scoredClipHistorySnapshot.docs){
+       scoredClipHistory[clip.id] = { score: clip.data().score };
+       var audioSnapshot = this.audioRef.doc(clip.id).get();
+       var scoreTagsSnapshot = this.audioRef.doc(clip.id).collection('tags').where("userId", 'array-contains',this.userId).get();
+       var otherScoreTagSnapshot = this.audioRef.doc(clip.id).collection('tags').get();
+      
+      const [audio1,scoreTagsSnapshot1,otherScoreTagSnapshot1] = await Promise.all([audioSnapshot,scoreTagsSnapshot,otherScoreTagSnapshot]);
+       scoredClipHistory[clip.id].title = audio1.data().Title;
+       scoredClipHistory[clip.id].url = audio1.data().Url;
+       scoredClipHistory[clip.id].id = clip.id;
+       tempTag = [];
+       tempTag1 = [];
+       for(const tag of scoreTagsSnapshot1.docs){
+         tempTag.push(tag.id);
+       }
+       scoredClipHistory[clip.id].TAG = tempTag.join(", ");
+       for(const tag of otherScoreTagSnapshot1.docs){
+          if(!tempTag.includes(tag.id)){
+           tempTag1.push(tag.id);
+          }
+       }
+       scoredClipHistory[clip.id].other = tempTag1.join(", ");
+    }
+    this.setState({ scoredClipHistory });
   }
   togglePlay = play => {
     this.setState({ play });
   }
 
   render() {
-      //const { clipHistory, scoredClipHistory } = this.props.location.state;
       const { clipHistory, scoredClipHistory } = this.state;
     return (
       <Grid container className="summary-container" direction="column" alignItems="center">

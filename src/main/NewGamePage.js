@@ -265,31 +265,32 @@ import React, { Component } from "react";
           try{
             for(const tag of Object.keys(currentTags)){ 
               await this.addUser(tag);
-              const AllTag = [];
-              const Tags = await this.AudioRef.doc(this.clipId).collection('tags').get();
+              // const AllTag = [];
+              // const Tags = await this.AudioRef.doc(this.clipId).collection('tags').get();
               const clipInfo = {Title: this.doc.data().Title, Url: this.doc.data().Url};
-              const MyTag = [];
-              const MyTagPromise = await this.AudioRef.doc(this.clipId).collection('users').doc(this.userId).get();
-              if(MyTagPromise.exists)
-                MyTag = MyTagPromise.data().tags;
-              for(const tag of Tags.docs)
-                AllTag.push(tag.id);
-                //Currently deleted
+              // let MyTag = [];
+              // const MyTagPromise = await this.AudioRef.doc(this.clipId).collection('users').doc(this.userId).get();
+              // if(MyTagPromise.exists)
+              //   MyTag = MyTagPromise.data().tags;
+              // for(const tag of Tags.docs)
+              //   AllTag.push(tag.id);
+                
+              //Currently deleted
              // this.History(this.userRef,this.currentId,0,clipInfo,MyTag,AllTag); 
               if (currentTags[tag].count === 1) {
                 //if this user is the second person describe the tag, add 2 points to the first user
                 var firstUserId = await this.getUserId(tag);
                 var firstUserRef = this.db.collection('users').doc(firstUserId);
                 if(firstUserId !== this.currentId){//if the first user is not current user 
-                     this.History(firstUserRef,firstUserId,2,clipInfo,MyTag,AllTag);
+                     this.History(firstUserRef,firstUserId,2,clipInfo,tag);
                     //get 1 point if current user is the second person describe this tag
                      currentTags[tag].score = 1;
-                     this.History(this.userRef,this.currentId,1,clipInfo,MyTag,AllTag);
+                     this.History(this.userRef,this.currentId,1,clipInfo,tag);
                 }          
               } else if(currentTags[tag].count === 0){ //if the user is the first person, 0 score for now, count = 1
-                  this.History(this.userRef,this.currentId,0,clipInfo,MyTag,AllTag);
+                  this.History(this.userRef,this.currentId,0,clipInfo,tag);
               }else{//if the user is the third or more than third person, no points
-                this.History(this.userRef,this.currentId,0,clipInfo,MyTag,AllTag);
+                this.History(this.userRef,this.currentId,0,clipInfo,tag);
               }
               await this.audioUsersRef.doc(this.currentId).set({
                 tags: staticFirebase.firestore.FieldValue.arrayUnion(tag)//add the user to "users" collection,save the tags as array
@@ -321,15 +322,15 @@ import React, { Component } from "react";
             userId: staticFirebase.firestore.FieldValue.arrayUnion(this.currentId)
           })
         }
-        History = async (userRef, userId, score, clipInfo, MyTag, AllTag) => {
+        History = async (userRef, userId, score, clipInfo, Tag) => {
           try{
           var userClipHistoryRef = userRef.collection('clipHistory');
            userClipHistoryRef.doc(this.clipId).get()
               .then(doc => {
                  if (doc.exists) {
-                   this.updateHistory(userClipHistoryRef,score,MyTag,AllTag);
+                   this.updateHistory(userClipHistoryRef,score,Tag);
                  } else {
-                   this.createHistory(userClipHistoryRef,score,clipInfo["Title"],clipInfo["Url"],MyTag,AllTag);
+                   this.createHistory(userClipHistoryRef,score,clipInfo["Title"],clipInfo["Url"],Tag);
                  }
                   this.refreshTotalScore(userRef,score);
               });
@@ -367,11 +368,11 @@ import React, { Component } from "react";
             }
           }
         }
-        updateHistory = (userClipHistoryRef,score,AllTag,MyTag) => {
+        updateHistory = (userClipHistoryRef,score,Tag) => {
           try{
             userClipHistoryRef.doc(this.clipId).update({
-              AllTag: AllTag,
-              MyTag: MyTag,
+              AllTag: staticFirebase.firestore.FieldValue.arrayUnion(Tag),
+              MyTag: staticFirebase.firestore.FieldValue.arrayUnion(Tag),
               score: staticFirebase.firestore.FieldValue.increment(score),
               lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
             });
@@ -379,11 +380,12 @@ import React, { Component } from "react";
             console.log("Can't update clipHistory: " + err);
           }
         }
-        createHistory = (userClipHistoryRef,score,Title,Url,AllTag,MyTag) => {
+        createHistory = (userClipHistoryRef,score,Title,Url,Tag) => {
+          const TagArray = [Tag];
           try{
             userClipHistoryRef.doc(this.clipId).set({
-              AllTag: AllTag,
-              MyTag: MyTag,
+              AllTag: TagArray,
+              MyTag: TagArray,
               Title: Title,
               Url: Url,
               score: score,

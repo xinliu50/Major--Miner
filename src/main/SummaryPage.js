@@ -55,7 +55,7 @@ class SummaryPage extends Component {
   //Optimize GetSummay functions
   async GetSummary(){
     const clipHistory = {};
-    const History = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
+    const History = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt', "desc").limit(10).get();
     for(const history of History.docs){
       clipHistory[history.id] = {};
       clipHistory[history.id].title = history.data().Title;
@@ -68,7 +68,7 @@ class SummaryPage extends Component {
       clipHistory[history.id].other = clipHistory[history.id].other.join(', ');
     }
     const scoredClipHistory = {};
-    const ScoreHistory = await this.userRef.collection('clipHistory').where("score", ">", 0).orderBy("score").limit(10).get();
+    const ScoreHistory = await this.userRef.collection('clipHistory').where("score", ">", 0).orderBy("score", "desc").limit(10).get();
     for(const history of ScoreHistory.docs){
       scoredClipHistory[history.id] = {};
       scoredClipHistory[history.id].title = history.data().Title;

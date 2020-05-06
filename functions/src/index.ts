@@ -194,6 +194,6 @@ export const getSummary_CallFromClient_v1 = functions.https.onCall(async(data,co
     }
 });
 
-export const getAllTags = functions.https.onRequest(async (request,response) => {
-    
+export const getOtherTags = functions.https.onRequest(async (request,response) => {
+
 })

@@ -396,7 +396,7 @@ import React, { Component } from "react";
         createHistory = (userClipHistoryRef,score) => {
           try{
             userClipHistoryRef.doc(this.clipId).set({
-              score: staticFirebase.firestore.FieldValue.increment(score),
+              score: 0,
               createdAt: staticFirebase.firestore.FieldValue.serverTimestamp(),
               lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
             });

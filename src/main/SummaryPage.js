@@ -40,7 +40,7 @@ class SummaryPage extends Component {
         
         for(const tag of AllTag.docs)
             allTag.push(tag.id);
-            
+
          clipInfo = {ID: clip.id, Title: Myclip.data().Title, Url: Myclip.data().Url, myTag: MyTag.data().tags, allTag: allTag};
          console.log(clipInfo);
          this.db.collection('users').doc(user.id).collection('clipHistory').doc(clip.id).update({

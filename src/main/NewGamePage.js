@@ -21,6 +21,9 @@ import React, { Component } from "react";
       import GameRuleDialog from "./GameRuleDialog";
       import { Link } from "react-router-dom";
      
+      //1: generate new data
+      //2: update game play functions
+      //3: cloud function updating AllTag once a day
       const INITIAL_STATE = {
         currentTags:{},
         displayTag:{},
@@ -49,73 +52,7 @@ import React, { Component } from "react";
         componentDidUpdate(prevProps, prevState) {
           this.textInput.current.focus(); 
         }
-        Summary = async () => {
-          var tempTag = [];
-          var tempTag1 = [];
-          const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
-          const clipHistory = {};
-          
-        for (const clip of clipHistorySnapshot.docs){
-            clipHistory[clip.id] = { score: clip.data().score };
-            var audio = this.db.collection('audios').doc(clip.id).get();
-            tempTag = [];
-            tempTag1 = [];
-            var tagsSnapshot = this.db.collection('audios').doc(clip.id).collection('users').doc(this.userId).get();
-            var otherTagSnapshot = this.db.collection('audios').doc(clip.id).collection('tags').get();
-            
-            const [audio1,tagsSnapshot1,otherTagSnapshot1] = await Promise.all([audio,tagsSnapshot,otherTagSnapshot]);
-            clipHistory[clip.id].title = audio1.data().Title;
-            clipHistory[clip.id].url = audio1.data().Url;
-            clipHistory[clip.id].id = clip.id;
 
-            tempTag = tagsSnapshot1.data().tags;
-            clipHistory[clip.id].TAG = tempTag.join(", ");
-
-            for(const tag of otherTagSnapshot1.docs){
-              if(!tempTag.includes(tag.id)){
-                tempTag1.push(tag.id);
-              }
-            }
-              clipHistory[clip.id].other = tempTag1.join(", ");
-            this.setState({ clipHistory });
-        }
-      
-          const scoredClipHistorySnapshot = await this.userRef.collection('clipHistory').where("score", ">", 0).orderBy("score").limit(10).get();
-          const scoredClipHistory = {};
-          for(const clip of scoredClipHistorySnapshot.docs){
-            scoredClipHistory[clip.id] = { score: clip.data().score };
-            var audioSnapshot = this.db.collection('audios').doc(clip.id).get();
-            var scoreTagsSnapshot = this.db.collection('audios').doc(clip.id).collection('tags').where("userId", 'array-contains',this.userId).get();
-            var otherScoreTagSnapshot = this.db.collection('audios').doc(clip.id).collection('tags').get();
-          
-          const [audio1,scoreTagsSnapshot1,otherScoreTagSnapshot1] = await Promise.all([audioSnapshot,scoreTagsSnapshot,otherScoreTagSnapshot]);
-            scoredClipHistory[clip.id].title = audio1.data().Title;
-            scoredClipHistory[clip.id].url = audio1.data().Url;
-            scoredClipHistory[clip.id].id = clip.id;
-            tempTag = [];
-            tempTag1 = [];
-
-            for(const tag of scoreTagsSnapshot1.docs){
-              tempTag.push(tag.id);
-            }
-            scoredClipHistory[clip.id].TAG = tempTag.join(", ");
-
-            for(const tag of otherScoreTagSnapshot1.docs){
-              if(!tempTag.includes(tag.id)){
-                tempTag1.push(tag.id);
-              }
-            }
-            scoredClipHistory[clip.id].other = tempTag1.join(", ");
-            this.setState({ scoredClipHistory });
-          }
-          this.props.history.push({
-            pathname: '/main',
-            state: {
-             clipHistory: this.state.clipHistory,
-             scoredClipHistory: this.state.scoredClipHistory
-            }
-          })
-        }
         handleKeyPress = event => {
           if (event.key === 'Enter') {
             document.getElementById("submitButton").click();
@@ -128,8 +65,8 @@ import React, { Component } from "react";
           var myJSON;
           var items;
           var dataArray = [];
-          var audiosDataRef = await this.db.collection('audios');
-          var randomRef = await this.db.collection('Randomize');
+          var audiosDataRef = this.db.collection('audios');
+          var randomRef = this.db.collection('Randomize');
           xmlhttp.onreadystatechange = async function(){
             if(xmlhttp.status === 200 && xmlhttp.readyState === 4){
               data = xmlhttp.responseText;
@@ -158,7 +95,7 @@ import React, { Component } from "react";
           this.clipId = await this.randomizeId();
          // console.log(this.clipId);
          
-          this.audioRef = await this.db.collection('audios').doc(this.clipId);
+          this.audioRef = this.db.collection('audios').doc(this.clipId);
           try {
             // load url
             const doc = await this.audioRef.get();
@@ -168,7 +105,7 @@ import React, { Component } from "react";
           }catch(err){
             console.log(err);
           } 
-          await this.setState({ loading: false });
+           this.setState({ loading: false });
         }
         //getting existing tags from database
         loadExistingTag = tags => {
@@ -300,7 +237,7 @@ import React, { Component } from "react";
 
         //getting next clips
         getNextClip = async () => {
-          await this.setState({currentTags:{}, loading: true, displayTag:{}});
+          this.setState({currentTags:{}, loading: true, displayTag:{}});
           this.loadUrl();
         }  
         //submit tags
@@ -308,8 +245,8 @@ import React, { Component } from "react";
           const newTags = document.getElementById("tags").value.toLowerCase().replace(/\s/g,'').split(",");
           //generate temporatyTags set from new Tags
           var tempCurrentTags = {};
-          this.audioTagRef = await this.audioRef.collection('tags');
-          this.audioUsersRef = await this.audioRef.collection('users');
+          this.audioTagRef = this.audioRef.collection('tags');
+          this.audioUsersRef = this.audioRef.collection('users');
           
           const tags = await this.audioTagRef.get();
           //generate exitingTags from DB
@@ -357,7 +294,7 @@ import React, { Component } from "react";
               if (currentTags[tag].count === 1) {
                 //if this user is the second person describe the tag, add 2 points to the first user
                 var firstUserId = await this.getUserId(tag);
-                var firstUserRef = await this.db.collection('users').doc(firstUserId);
+                var firstUserRef = this.db.collection('users').doc(firstUserId);
               //  console.log("!!firstUserId: " + firstUserId);
                 if(firstUserId !== this.currentId){//if the first user is not current user 
                      this.History(firstUserRef,firstUserId,2);
@@ -402,7 +339,7 @@ import React, { Component } from "react";
         }
         History = async (userRef, userId, score) => {
           try{
-          var userClipHistoryRef = await userRef.collection('clipHistory');
+          var userClipHistoryRef = userRef.collection('clipHistory');
            userClipHistoryRef.doc(this.clipId).get()
               .then(doc => {
                  if (doc.exists) {
@@ -419,7 +356,7 @@ import React, { Component } from "react";
             var oneDayRangeMillis = this.oneDayRange();
             try{
               var scoreRecordRef = this.db.collection('scoreRecord').doc(userId);
-              var scoreRef = await this.db.collection('scoreRecord').doc(userId).collection('score');
+              var scoreRef = this.db.collection('scoreRecord').doc(userId).collection('score');
               scoreRef.doc(oneDayRangeMillis+'').get()
                 .then(doc => {
                   if(doc.exists){

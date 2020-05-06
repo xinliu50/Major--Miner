@@ -69,7 +69,6 @@ import React, { Component } from "react";
           xmlhttp.onreadystatechange = async function(){
             if(xmlhttp.status === 200 && xmlhttp.readyState === 4){
               data = xmlhttp.responseText;
-              //console.log(typeof(data));
               myJSON = JSON.parse(data);
               items = myJSON.items;
               for(var i = 0; i < items.length; i++){
@@ -85,7 +84,6 @@ import React, { Component } from "react";
           };
           xmlhttp.open("GET","/text/data.json",true);
           xmlhttp.send();
-          //console.log(dataArray.length);
         }
         //random loading Url
         loadUrl = async () => {
@@ -197,15 +195,13 @@ import React, { Component } from "react";
           var oneHour = now - 3600000;
           var oneHourNoSeenSnapshot = await this.db.collection('Randomize').where('millis', '<', oneHour).orderBy('millis').get();//no seen past hour 
           if(oneHourNoSeenSnapshot.size === 0){//every clip has been seen in past hour, unlikely occur but still might or there are some clips have no been seen at all
-            console.log("oneHourNoSeenSnapshot == 0");
             return this.pick_pioneer();
-          }else{//some clips have no been seen in past hour
-            ///////debug console
-           // console.log("oneHourNoSeenSnapshot:  ",oneHourNoSeenSnapshot);
-            // for(const clip of oneHourNoSeenSnapshot.docs){
-            //   console.log("oneHourNoSeenSnapshot", clip.id);
-            // }
-
+          }else{/*some clips have no been seen in past hour
+                debug console
+                console.log("oneHourNoSeenSnapshot:  ",oneHourNoSeenSnapshot);
+                for(const clip of oneHourNoSeenSnapshot.docs){
+                   console.log("oneHourNoSeenSnapshot", clip.id);
+                }*/
             for(const clip of oneHourNoSeenSnapshot.docs){
               if(!userHasSeen.has(clip.id)){
                 return clip.id+'';
@@ -233,7 +229,6 @@ import React, { Component } from "react";
           var tempCurrentTags = {};
           this.audioTagRef = this.audioRef.collection('tags');
           this.audioUsersRef = this.audioRef.collection('users');
-          
           const tags = await this.audioTagRef.get();
           //generate exitingTags from DB
           this.existingTags = await this.loadExistingTag(tags);
@@ -251,7 +246,6 @@ import React, { Component } from "react";
               }
             }
           });
-
           document.getElementById("tags").value = "";
           this.loadTagsToDb(tempCurrentTags).then(tempCurrentTags => {
             this.setState({currentTags: tempCurrentTags});
@@ -278,11 +272,10 @@ import React, { Component } from "react";
               const MyTagPromise = await this.AudioRef.doc(this.clipId).collection('users').doc(this.userId).get();
               if(MyTagPromise.exists)
                 MyTag = MyTagPromise.data().tags;
-              
               for(const tag of Tags.docs)
                 AllTag.push(tag.id);
-
-              this.History(this.userRef,this.currentId,0,clipInfo,MyTag,AllTag);
+                //Currently deleted
+             // this.History(this.userRef,this.currentId,0,clipInfo,MyTag,AllTag); 
               if (currentTags[tag].count === 1) {
                 //if this user is the second person describe the tag, add 2 points to the first user
                 var firstUserId = await this.getUserId(tag);

@@ -33,6 +33,7 @@ class AudioCard extends Component {
     }
 
     this.audio = new Audio(this.props.url);
+    // console.log(this.props.url)
     this.audioSource = this.audioContext.createMediaElementSource(this.audio);
     this.audio.crossOrigin = "anonymous";
     this.audioSource.connect(this.gainNode);

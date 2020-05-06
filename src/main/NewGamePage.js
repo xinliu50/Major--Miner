@@ -133,7 +133,7 @@ import React, { Component } from "react";
           xmlhttp.onreadystatechange = async function(){
             if(xmlhttp.status === 200 && xmlhttp.readyState === 4){
               data = xmlhttp.responseText;
-              console.log(typeof(data));
+              //console.log(typeof(data));
               myJSON = JSON.parse(data);
               items = myJSON.items;
               for(var i = 0; i < items.length; i++){
@@ -149,22 +149,22 @@ import React, { Component } from "react";
           };
           xmlhttp.open("GET","/text/data.json",true);
           xmlhttp.send();
-          console.log(dataArray.length);
+          //console.log(dataArray.length);
         }
         //random loading Url
         loadUrl = async () => {
-          console.log("currentUser: " + firebase.auth().currentUser.uid);
+         // console.log("currentUser: " + firebase.auth().currentUser.uid);
           this.existingTags = {};
           this.clipId = await this.randomizeId();
-          console.log(this.clipId);
+         // console.log(this.clipId);
          
           this.audioRef = await this.db.collection('audios').doc(this.clipId);
           try {
             // load url
             const doc = await this.audioRef.get();
             this.url = doc.data().Url;
-            console.log(this.clipId);
-            console.log(this.url);
+            // console.log(this.clipId);
+            // console.log(this.url);
           }catch(err){
             console.log(err);
           } 
@@ -276,15 +276,15 @@ import React, { Component } from "react";
             return this.pick_pioneer();
           }else{//some clips have no been seen in past hour
             ///////debug console
-            console.log("oneHourNoSeenSnapshot:  ",oneHourNoSeenSnapshot);
-            for(const clip of oneHourNoSeenSnapshot.docs){
-              console.log("oneHourNoSeenSnapshot", clip.id);
-            }
+           // console.log("oneHourNoSeenSnapshot:  ",oneHourNoSeenSnapshot);
+            // for(const clip of oneHourNoSeenSnapshot.docs){
+            //   console.log("oneHourNoSeenSnapshot", clip.id);
+            // }
             ///////////
 
             for(const clip of oneHourNoSeenSnapshot.docs){
               if(!userHasSeen.has(clip.id)){
-                console.log("!userHasSeen.has(clip.id)");
+                //console.log("!userHasSeen.has(clip.id)");
                 return clip.id+'';
               }
             } 
@@ -315,8 +315,8 @@ import React, { Component } from "react";
           //generate exitingTags from DB
           this.existingTags = await this.loadExistingTag(tags);
   
-          console.log("existingTags");
-          console.log(this.existingTags);
+          // console.log("existingTags");
+          // console.log(this.existingTags);
         
           newTags.forEach(tag => {
             if(Object.keys(this.existingTags).includes(tag)){
@@ -331,8 +331,8 @@ import React, { Component } from "react";
               }
             }
           });
-          console.log("displayTag");
-          console.log(this.state.displayTag);
+          // console.log("displayTag");
+          // console.log(this.state.displayTag);
           document.getElementById("tags").value = "";
           this.loadTagsToDb(tempCurrentTags).then(tempCurrentTags => {
             //tempCurrentTags = tempCurrentTags;
@@ -345,7 +345,7 @@ import React, { Component } from "react";
         //get first user Id 
         getUserId = async tag => {
           var firstUser = await this.db.collection('audios').doc(this.clipId).collection('users').where('tags', 'array-contains', tag).get();
-          console.log("firstUser:  ", firstUser.docs[0].id);
+         // console.log("firstUser:  ", firstUser.docs[0].id);
           return firstUser.docs[0].id;
         }
         //laoding tags into DB
@@ -358,7 +358,7 @@ import React, { Component } from "react";
                 //if this user is the second person describe the tag, add 2 points to the first user
                 var firstUserId = await this.getUserId(tag);
                 var firstUserRef = await this.db.collection('users').doc(firstUserId);
-                console.log("!!firstUserId: " + firstUserId);
+              //  console.log("!!firstUserId: " + firstUserId);
                 if(firstUserId !== this.currentId){//if the first user is not current user 
                      this.History(firstUserRef,firstUserId,2);
                     //get 1 point if current user is the second person describe this tag

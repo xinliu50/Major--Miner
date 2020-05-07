@@ -217,20 +217,14 @@ export const getOtherTags_v1 = functions.https.onCall(async(data,context) => {
                     if(tag){
                         if(tag.ref?.parent?.parent?.id){
                             id = tag.ref?.parent?.parent?.id;
-                            console.log("yes,id")
                         }
                         if(!clipHistory[id].MyTag.includes(tag.id)){
                             OtherTag.push(tag.id);
-                            console.log("yes,tag.id")
                         }
-                        console.log(id);
-                        console.log(OtherTag);
-                        console.log(tag.id)
                     }
                 }
                 clipHistory[id].other = OtherTag.join(', ');
             }
-    
             for(const clipPromise of scoredClipHistoryInfo){
                 const OtherTag = [];
                 let id = "";
@@ -246,10 +240,6 @@ export const getOtherTags_v1 = functions.https.onCall(async(data,context) => {
                 }
                 scoredClipHistory[id].other = OtherTag.join(', ');
             }
-            console.log("clipHistory");
-            console.log(clipHistory);
-            console.log("scoreHistory");
-            console.log(scoredClipHistory);
         }
         return [clipHistory, scoredClipHistory];
     }catch(err){

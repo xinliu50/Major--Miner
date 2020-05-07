@@ -33,7 +33,7 @@ class LeadersPage extends Component {
     this.getWeek();
   }
   month = () => {
-     var month = [];
+     let month = [];
       month[0] = "January";
       month[1] = "February";
       month[2] = "March";
@@ -52,26 +52,26 @@ class LeadersPage extends Component {
     this.setState({ value });
   };
   oneDayRange = () => {
-    var monthArray = this.month();
-    var d = new Date();
-    var todayDate = d.getDate()+'';
-    var month = monthArray[d.getMonth()]+' ';
-    var year = d.getFullYear()+'';
+    let monthArray = this.month();
+    let d = new Date();
+    let todayDate = d.getDate()+'';
+    let month = monthArray[d.getMonth()]+' ';
+    let year = d.getFullYear()+'';
     const parseStringToday = month+todayDate+', '+year;
-    var today = Date.parse(parseStringToday);//millionSeconds for 00:00:00 today
+    let today = Date.parse(parseStringToday);//millionSeconds for 00:00:00 today
     return today+ 3600000 * 24;
   }
   firstOfWeekRange = () => {
-    var monthArray = this.month();
-    var d = new Date();
-    var first = d.getDay();
-    var todayDate = d.getDate()+'';
-    var month = monthArray[d.getMonth()]+' ';
-    var year = d.getFullYear()+'';
+    let monthArray = this.month();
+    let d = new Date();
+    let first = d.getDay();
+    let todayDate = d.getDate()+'';
+    let month = monthArray[d.getMonth()]+' ';
+    let year = d.getFullYear()+'';
     const parseStringToday = month+todayDate+', '+year;
-    var today = Date.parse(parseStringToday);
+    let today = Date.parse(parseStringToday);
 
-    var firstOfWeek = today - (first-1)*3600000*24; //Database collection saved a day after current day's millionseconds
+    let firstOfWeek = today - (first-1)*3600000*24; //Database collection saved a day after current day's millionseconds
     return firstOfWeek;
   }
   //get Total Leaders
@@ -91,10 +91,10 @@ class LeadersPage extends Component {
   //get Today's leaders
   getToday = async () => {
     const todayLeader = [];
-    var todayRange = this.oneDayRange();
-    var todayUserSnapshot = await this.db.collection('scoreRecord').where('millis', '==', todayRange).get();
+    let todayRange = this.oneDayRange();
+    let todayUserSnapshot = await this.db.collection('scoreRecord').where('millis', '==', todayRange).get();
     for(const user of todayUserSnapshot.docs){
-      var score = await this.db.collection('scoreRecord').doc(user.id).collection('score').where('millis','==',todayRange).get();
+      let score = await this.db.collection('scoreRecord').doc(user.id).collection('score').where('millis','==',todayRange).get();
       let set = {username: user.data().username, score: score.docs[0].data().score, userId: user.id};
       todayLeader.push(set);
     }
@@ -107,11 +107,11 @@ class LeadersPage extends Component {
   //get this week's leaders
   getWeek = async () => {
     const weekLeader = [];
-    var thisWeekRange = this.firstOfWeekRange();
-    var weekUserSnapshot = await this.db.collection('scoreRecord').where('millis', '>=', thisWeekRange).get();
+    let thisWeekRange = this.firstOfWeekRange();
+    let weekUserSnapshot = await this.db.collection('scoreRecord').where('millis', '>=', thisWeekRange).get();
     for(const user of weekUserSnapshot.docs){
-      var totalScore=0;
-      var scoreSnapshot = await this.db.collection('scoreRecord').doc(user.id).collection('score').where('millis', '>=', thisWeekRange).get();
+      let totalScore=0;
+      let scoreSnapshot = await this.db.collection('scoreRecord').doc(user.id).collection('score').where('millis', '>=', thisWeekRange).get();
       for(const score of scoreSnapshot.docs){
         totalScore += score.data().score;
       }

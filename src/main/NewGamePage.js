@@ -21,9 +21,6 @@ import React, { Component } from "react";
       import GameRuleDialog from "./GameRuleDialog";
       import { Link } from "react-router-dom";
      
-      //1: generate new data
-      //2: update game play functions
-      //3: cloud function updating AllTag once a day
       const INITIAL_STATE = {
         currentTags:{},
         displayTag:{},
@@ -47,7 +44,6 @@ import React, { Component } from "react";
           this.firstUserId = '';
           this.loadUrl();
          //this.loadFiles();
-         // this.Summary();
         }
         componentDidUpdate(prevProps, prevState) {
           this.textInput.current.focus(); 
@@ -60,18 +56,18 @@ import React, { Component } from "react";
         }
         //this function loads JSON file under 'public' directory (which contains each clips Url) into firebase collections
         loadFiles = async () => {
-          var data;
-          var xmlhttp = new XMLHttpRequest();
-          var myJSON;
-          var items;
-          var audiosDataRef = this.db.collection('audios');
-          var randomRef = this.db.collection('Randomize');
+          let data;
+          let xmlhttp = new XMLHttpRequest();
+          let myJSON;
+          let items;
+          let audiosDataRef = this.db.collection('audios');
+          let randomRef = this.db.collection('Randomize');
           xmlhttp.onreadystatechange = async function(){
             if(xmlhttp.status === 200 && xmlhttp.readyState === 4){
               data = xmlhttp.responseText;
               myJSON = JSON.parse(data);
               items = myJSON.items;
-              for(var i = 0; i < items.length; i++){
+              for(let i = 0; i < items.length; i++){
                	audiosDataRef.doc(i+'').set({
                   Title: items[i].name,
                   Url: 'https://firebasestorage.googleapis.com/v0/b/majorminer-dd13a.appspot.com/o/'+items[i].name+'?alt=media&token='+items[i].metadata.firebaseStorageDownloadTokens
@@ -115,7 +111,7 @@ import React, { Component } from "react";
         } 
         //compare timeStamps
         compareTime = async timeStamp => {
-          var month = [];
+          let month = [];
           month[0] = "January";
           month[1] = "February";
           month[2] = "March";
@@ -130,14 +126,14 @@ import React, { Component } from "react";
           month[11] = "December";
          
           const thatTime = timeStamp.toMillis();    
-          var d = new Date();
-          var todayDate = d.getDate()+'';
-          var thisMonth = month[d.getMonth()]+' ';
-          var year = d.getFullYear()+'';
+          let d = new Date();
+          let todayDate = d.getDate()+'';
+          let thisMonth = month[d.getMonth()]+' ';
+          let year = d.getFullYear()+'';
           const parseStringToday = thisMonth+todayDate+', '+year;
-          var today = Date.parse(parseStringToday);
+          let today = Date.parse(parseStringToday);
           const now = Date.now();
-          var compare = now - thatTime;
+          let compare = now - thatTime;
           
           if(compare <= 3600000) return 1;
           else if(thatTime <= today+3600000 * 24) return 2;
@@ -145,7 +141,7 @@ import React, { Component } from "react";
           else return 4;
         }
         oneDayRange = () => {
-          var month = [];
+          let month = [];
           month[0] = "January";
           month[1] = "February";
           month[2] = "March";
@@ -159,23 +155,23 @@ import React, { Component } from "react";
           month[10] = "November";
           month[11] = "December";
          
-          var d = new Date();
-          var todayDate = d.getDate()+'';
-          var thisMonth = month[d.getMonth()]+' ';
-          var year = d.getFullYear()+'';
+          let d = new Date();
+          let todayDate = d.getDate()+'';
+          let thisMonth = month[d.getMonth()]+' ';
+          let year = d.getFullYear()+'';
           const parseStringToday = thisMonth+todayDate+', '+year;
-          var today = Date.parse(parseStringToday);//millionSeconds for 00:00:00 today
+          let today = Date.parse(parseStringToday);//millionSeconds for 00:00:00 today
           return today+ 3600000 * 24;
         }
         randomizeId = async() => {
-          var clip;
-          var userHasSeen = new Set();
-          var rand = Math.random();   
-          var currentUserSeenSnapshot = await this.db.collection('Randomize').where('userId', 'array-contains', this.currentId).get();//current user has seen
+          let clip;
+          let userHasSeen = new Set();
+          let rand = Math.random();   
+          let currentUserSeenSnapshot = await this.db.collection('Randomize').where('userId', 'array-contains', this.currentId).get();//current user has seen
           for(const userSeen of currentUserSeenSnapshot.docs){
             userHasSeen.add(userSeen.id);
           }
-          var pnew = this.findMin(0.0066*currentUserSeenSnapshot.size,0.33);
+          let pnew = this.findMin(0.0066*currentUserSeenSnapshot.size,0.33);
           if(rand < pnew){
             clip = this.pick_pioneer();
           }else{
@@ -184,16 +180,16 @@ import React, { Component } from "react";
           return clip;
         }
         pick_pioneer = async() => {
-          var noSeenSnapshot = await this.db.collection('Randomize').where('count', '==', 0).get();
+          let noSeenSnapshot = await this.db.collection('Randomize').where('count', '==', 0).get();
             if(noSeenSnapshot.size !== 0) {// pick the one has not been seen 
               return noSeenSnapshot.docs[0].id+'';
             }
           return Math.floor((Math.random()*5))+'';//every clip has been seen
         }
         pick_settler = async (userHasSeen) => {
-          var now = Date.now(); //pick the one has been seen && has not been seen in the last hour && current user has no seen
-          var oneHour = now - 3600000;
-          var oneHourNoSeenSnapshot = await this.db.collection('Randomize').where('millis', '<', oneHour).orderBy('millis').get();//no seen past hour 
+          let now = Date.now(); //pick the one has been seen && has not been seen in the last hour && current user has no seen
+          let oneHour = now - 3600000;
+          let oneHourNoSeenSnapshot = await this.db.collection('Randomize').where('millis', '<', oneHour).orderBy('millis').get();//no seen past hour 
           if(oneHourNoSeenSnapshot.size === 0){//every clip has been seen in past hour, unlikely occur but still might or there are some clips have no been seen at all
             return this.pick_pioneer();
           }else{//some clips have no been seen in past hour
@@ -226,7 +222,7 @@ import React, { Component } from "react";
         handleSubmit = async () => {
           const newTags = document.getElementById("tags").value.toLowerCase().replace(/\s/g,'').split(",");
           //generate temporatyTags set from new Tags
-          var tempCurrentTags = {};
+          let tempCurrentTags = {};
           this.audioTagRef = this.audioRef.collection('tags');
           this.audioUsersRef = this.audioRef.collection('users');
           const tags = await this.audioTagRef.get();
@@ -256,7 +252,7 @@ import React, { Component } from "react";
         }
         //get first user Id 
         getUserId = async tag => {
-          var firstUser = await this.db.collection('audios').doc(this.clipId).collection('users').where('tags', 'array-contains', tag).get();
+          let firstUser = await this.db.collection('audios').doc(this.clipId).collection('users').where('tags', 'array-contains', tag).get();
          // console.log("firstUser:  ", firstUser.docs[0].id);
           return firstUser.docs[0].id;
         }
@@ -270,8 +266,8 @@ import React, { Component } from "react";
              // this.History(this.userRef,this.currentId,0,clipInfo,MyTag,AllTag); 
               if (currentTags[tag].count === 1) {
                 //if this user is the second person describe the tag, add 2 points to the first user
-                var firstUserId = await this.getUserId(tag);
-                var firstUserRef = this.db.collection('users').doc(firstUserId);
+                let firstUserId = await this.getUserId(tag);
+                let firstUserRef = this.db.collection('users').doc(firstUserId);
                 if(firstUserId !== this.currentId){//if the first user is not current user 
                      this.History(firstUserRef,firstUserId,2,clipInfo,tag);
                     //get 1 point if current user is the second person describe this tag
@@ -315,7 +311,7 @@ import React, { Component } from "react";
         }
         History = async (userRef, userId, score, clipInfo, Tag) => {
           try{
-          var userClipHistoryRef = userRef.collection('clipHistory');
+          let userClipHistoryRef = userRef.collection('clipHistory');
            userClipHistoryRef.doc(this.clipId).get()
               .then(doc => {
                  if (doc.exists) {
@@ -329,10 +325,10 @@ import React, { Component } from "react";
             console.log("Can't create clipHistory!! " + err);
           }
           if(score !== 0){//if this user gained scores, save it to the scoreRecord collection
-            var oneDayRangeMillis = this.oneDayRange();
+            let oneDayRangeMillis = this.oneDayRange();
             try{
-              var scoreRecordRef = this.db.collection('scoreRecord').doc(userId);
-              var scoreRef = this.db.collection('scoreRecord').doc(userId).collection('score');
+              let scoreRecordRef = this.db.collection('scoreRecord').doc(userId);
+              let scoreRef = this.db.collection('scoreRecord').doc(userId).collection('score');
               scoreRef.doc(oneDayRangeMillis+'').get()
                 .then(doc => {
                   if(doc.exists){
@@ -347,8 +343,8 @@ import React, { Component } from "react";
                     })
                   }
                 });
-              var username = await this.db.collection('users').doc(userId).get();
-              var user = username.data().username;
+              let username = await this.db.collection('users').doc(userId).get();
+              let user = username.data().username;
               scoreRecordRef.set({
                 updated: staticFirebase.firestore.FieldValue.serverTimestamp(),
                 millis: oneDayRangeMillis,

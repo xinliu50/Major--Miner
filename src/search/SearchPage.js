@@ -25,7 +25,7 @@ class SearchPage extends Component {
      })
   }
    getTagList = async () => {
-      var tagList = [];
+      let tagList = [];
       const myPromise = await this.db.collection('tagList').orderBy("count","desc").limit(10).get();
       for(const p of myPromise.docs)
          tagList.push({tag: p.id, count: p.data().count});
@@ -37,7 +37,7 @@ class SearchPage extends Component {
     }
   }
   handleSubmit = () => {
-     var searchItem = document.getElementById("searchItem").value;
+     let searchItem = document.getElementById("searchItem").value;
      this.handleListClick(null,searchItem);
   }
   //when each tag has been clicked..

@@ -95,15 +95,15 @@ class SummaryPage extends Component {
 
     const CurrenUserTagPromise = []
     const InforPromise = []
-    var otherTagSnapshot;
+    let otherTagSnapshot;
     for (const clip of clipHistorySnapshot.docs){
       clipHistory[clip.id] = {}
-      var documentRef = this.audioRef.doc(clip.id);
+      let documentRef = this.audioRef.doc(clip.id);
       CurrenUserTagPromise.push(documentRef.collection('users').doc(this.userId).get());
       InforPromise.push(documentRef.get())
       otherTagSnapshot = documentRef.collection('tags').get();
     }
-    var [InforPromiseResolve, CurrenUserTagPromiseResolve,otherTagSnapshotPromiseResolve] = await Promise.all([InforPromise,CurrenUserTagPromise,otherTagSnapshot]);
+    let [InforPromiseResolve, CurrenUserTagPromiseResolve,otherTagSnapshotPromiseResolve] = await Promise.all([InforPromise,CurrenUserTagPromise,otherTagSnapshot]);
 
     InforPromiseResolve.forEach(promise => {
       promise.then(p => {
@@ -124,7 +124,7 @@ class SummaryPage extends Component {
     const scoredClipHistory = {};
     const CurrenUserScoreTagPromise = []
     const ScoreInforPromise = []
-    var ScoreOtherTag;
+    let ScoreOtherTag;
     for(const clip of scoredClipHistorySnapshot.docs){
       scoredClipHistory[clip.id] = { score: clip.data().score };
       let documentRef = this.audioRef.doc(clip.id);
@@ -132,7 +132,7 @@ class SummaryPage extends Component {
       ScoreInforPromise.push(documentRef.get())
       ScoreOtherTag = documentRef.collection('tags').get();
     }
-    var [ScoreInforPromiseResolve, CurrenUserScoreTagPromiseResolve,ScoreOtherTagPromiseResolve] = await Promise.all([ScoreInforPromise,CurrenUserScoreTagPromise,ScoreOtherTag]);
+    let [ScoreInforPromiseResolve, CurrenUserScoreTagPromiseResolve,ScoreOtherTagPromiseResolve] = await Promise.all([ScoreInforPromise,CurrenUserScoreTagPromise,ScoreOtherTag]);
     
     ScoreInforPromiseResolve.forEach(promise => {
       promise.then(p => {
@@ -151,17 +151,17 @@ class SummaryPage extends Component {
  }
 //Try1: original version of getsummary functions
  async getSummary() {
-  var tempTag = [];
-  var tempTag1 = [];
+  let tempTag = [];
+  let tempTag1 = [];
   const clipHistorySnapshot = await this.userRef.collection('clipHistory').orderBy('lastUpdatedAt').limit(10).get();
   const clipHistory = {};
  for (const clip of clipHistorySnapshot.docs){
     clipHistory[clip.id] = {};
-    var audio = this.audioRef.doc(clip.id).get();
+    let audio = this.audioRef.doc(clip.id).get();
     tempTag = [];
     tempTag1 = [];
-    var tagsSnapshot = this.audioRef.doc(clip.id).collection('users').doc(this.userId).get();
-    var otherTagSnapshot = this.audioRef.doc(clip.id).collection('tags').get();
+    let tagsSnapshot = this.audioRef.doc(clip.id).collection('users').doc(this.userId).get();
+    let otherTagSnapshot = this.audioRef.doc(clip.id).collection('tags').get();
     const [audio1,tagsSnapshot1,otherTagSnapshot1] = await Promise.all([audio,tagsSnapshot,otherTagSnapshot]);
 
     clipHistory[clip.id].title = audio1.data().Title;
@@ -182,9 +182,9 @@ class SummaryPage extends Component {
   const scoredClipHistory = {};
   for(const clip of scoredClipHistorySnapshot.docs){
     scoredClipHistory[clip.id] = {};
-    var audioSnapshot = this.audioRef.doc(clip.id).get();
-    var scoreTagsSnapshot = this.audioRef.doc(clip.id).collection('users').doc(this.userId).get();
-    var otherScoreTagSnapshot = this.audioRef.doc(clip.id).collection('tags').get();
+    let audioSnapshot = this.audioRef.doc(clip.id).get();
+    let scoreTagsSnapshot = this.audioRef.doc(clip.id).collection('users').doc(this.userId).get();
+    let otherScoreTagSnapshot = this.audioRef.doc(clip.id).collection('tags').get();
    
    const [audio1,scoreTagsSnapshot1,otherScoreTagSnapshot1] = await Promise.all([audioSnapshot,scoreTagsSnapshot,otherScoreTagSnapshot]);
     scoredClipHistory[clip.id].title = audio1.data().Title;

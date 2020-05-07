@@ -27,11 +27,11 @@ class SearchResult extends Component {
   }
   //retrive informations for each clip has been discribe as this tag
   async getCurrentTarget(){
-      var url = window.location.href;
+      let url = window.location.href;
       let index = url.lastIndexOf('/');
       let tag = url.substring(index+1,url.length);
       const tagOrder = await this.db.collection('tagList').doc(tag).collection('clipIDs').orderBy('count','desc').get();
-      var tagOrderArray = [];
+      let tagOrderArray = [];
 
       this.MyTagMap = {};
       tagOrder.forEach(p => {

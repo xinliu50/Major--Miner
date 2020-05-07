@@ -71,7 +71,7 @@ class AudioAnalyser extends Component {
         try {
           this.setupAudioContext();//first time hit play, set up audio context
           console.log("props!" , this.props.clipId);
-          var d = Date.now();
+          let d = Date.now();
           this.db.collection('Randomize').doc(this.props.clipId).set({//this clip has been seen once by this user
             count:  staticFirebase.firestore.FieldValue.increment(1),
             updated: staticFirebase.firestore.FieldValue.serverTimestamp(),

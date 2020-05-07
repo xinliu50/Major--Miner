@@ -16,16 +16,27 @@ class SummaryPage extends Component {
     }
   }
 
-   componentDidMount() {
+   async componentDidMount() {
     this.user = firebase.auth().currentUser;
     this.db = firebase.firestore();
     this.audioRef = this.db.collection('audios');
     this.userId = this.user.uid;
     this.userRef = this.db.collection('users').doc(this.userId);
     console.log("Your are " + this.userId);
-    this.GetSummary();
+    const summaryData = await this.GetSummary();
+    this.CallCloudFunctionForOtherTags(summaryData);
   }
  
+  async CallCloudFunctionForOtherTags(summaryData){
+    try{
+      const getOther = firebase.functions().httpsCallable('getOtherTags_v1');
+      let result = await getOther({clipHistory: summaryData[0], scoredClipHistory: summaryData[1]});
+      this.setState({ clipHistory: result.data[0], scoredClipHistory: result.data[1] });
+    }catch(err){
+      console.log("Unable to getting other tags from database")
+    }
+  }
+
   //Gather some data and save it to the users collection for optimization
   async gatherData() {
     const users = await this.db.collection('users').get();
@@ -35,19 +46,13 @@ class SummaryPage extends Component {
       for(const clip of clipHistory.docs){
         const Myclip = await this.db.collection('audios').doc(clip.id).get();
         const MyTag = await this.db.collection('audios').doc(clip.id).collection('users').doc(user.id).get();
-        const allTag = [];
-        const AllTag = await this.db.collection('audios').doc(clip.id).collection('tags').get();
-        
-        for(const tag of AllTag.docs)
-            allTag.push(tag.id);
 
-         clipInfo = {ID: clip.id, Title: Myclip.data().Title, Url: Myclip.data().Url, myTag: MyTag.data().tags, allTag: allTag};
+         clipInfo = {ID: clip.id, Title: Myclip.data().Title, Url: Myclip.data().Url, myTag: MyTag.data().tags};
          console.log(clipInfo);
          this.db.collection('users').doc(user.id).collection('clipHistory').doc(clip.id).update({
             Title: Myclip.data().Title,
             Url: Myclip.data().Url,
-            MyTag: MyTag.data().tags,
-            AllTag: allTag
+            MyTag: MyTag.data().tags
          });
       }
     }
@@ -60,12 +65,13 @@ class SummaryPage extends Component {
       clipHistory[history.id] = {};
       clipHistory[history.id].title = history.data().Title;
       clipHistory[history.id].url = history.data().Url;
+      clipHistory[history.id].MyTag = history.data().MyTag;
       clipHistory[history.id].TAG = history.data().MyTag.join(', ');
-      clipHistory[history.id].other = history.data().AllTag;
-      clipHistory[history.id].other = clipHistory[history.id].other.filter(item => {
-        return !history.data().MyTag.includes(item);
-      });
-      clipHistory[history.id].other = clipHistory[history.id].other.join(', ');
+      clipHistory[history.id].other = [];
+      // clipHistory[history.id].other = clipHistory[history.id].other.filter(item => {
+      //   return !history.data().MyTag.includes(item);
+      // });
+      //clipHistory[history.id].other = clipHistory[history.id].other.join(', ');
     }
     const scoredClipHistory = {};
     const ScoreHistory = await this.userRef.collection('clipHistory').where("score", ">", 0).orderBy("score", "desc").limit(10).get();
@@ -73,14 +79,18 @@ class SummaryPage extends Component {
       scoredClipHistory[history.id] = {};
       scoredClipHistory[history.id].title = history.data().Title;
       scoredClipHistory[history.id].url = history.data().Url;
+      scoredClipHistory[history.id].MyTag = history.data().MyTag;
       scoredClipHistory[history.id].TAG = history.data().MyTag.join(', ');
-      scoredClipHistory[history.id].other = history.data().AllTag;
-      scoredClipHistory[history.id].other = scoredClipHistory[history.id].other.filter(item => {
-        return !history.data().MyTag.includes(item);
-      });
-      scoredClipHistory[history.id].other = scoredClipHistory[history.id].other.join(', ');
+      // scoredClipHistory[history.id].other = history.data().AllTag;
+      // scoredClipHistory[history.id].other = scoredClipHistory[history.id].other.filter(item => {
+      //   return !history.data().MyTag.includes(item);
+      // });
+      // scoredClipHistory[history.id].other = scoredClipHistory[history.id].other.join(', ');
     }
     this.setState({ clipHistory, scoredClipHistory});
+    console.log(clipHistory);
+    console.log(scoredClipHistory);
+    return [clipHistory,scoredClipHistory];
   }
   //Try3: get summary from cloud function. Much better performance, but very slow at first trigger
   async getSummaryFromCloudFunctions(){

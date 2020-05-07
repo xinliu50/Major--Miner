@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import {QuerySnapshot } from '@google-cloud/firestore';
 // import * as util from 'util';
 
 admin.initializeApp();
@@ -194,6 +195,65 @@ export const getSummary_CallFromClient_v1 = functions.https.onCall(async(data,co
     }
 });
 
-export const getOtherTags = functions.https.onRequest(async (request,response) => {
-
+export const getOtherTags_v1 = functions.https.onCall(async(data,context) => {
+    let clipHistory = data.clipHistory;
+    let scoredClipHistory = data.scoredClipHistory;
+    const clipHistoryInfoPromise: Promise<QuerySnapshot<FirebaseFirestore.DocumentData>>[] = [];
+    const scoredClipHistoryInfoPromise: Promise<QuerySnapshot<FirebaseFirestore.DocumentData>>[] = [];
+    try{
+        if(clipHistory && scoredClipHistory){
+            for(const clip of Object.keys(clipHistory))
+                clipHistoryInfoPromise.push(audioRef.doc(clip).collection('tags').get());
+            for(const clip of Object.keys(scoredClipHistory))
+                scoredClipHistoryInfoPromise.push(audioRef.doc(clip).collection('tags').get());
+            
+            const clipHistoryInfo = await Promise.all(clipHistoryInfoPromise);
+            const scoredClipHistoryInfo = await Promise.all(scoredClipHistoryInfoPromise);
+            
+            for(const clipPromise of clipHistoryInfo){
+                const OtherTag = [];
+                let id = "";
+                for(const tag of clipPromise.docs){
+                    if(tag){
+                        if(tag.ref?.parent?.parent?.id){
+                            id = tag.ref?.parent?.parent?.id;
+                            console.log("yes,id")
+                        }
+                        if(!clipHistory[id].MyTag.includes(tag.id)){
+                            OtherTag.push(tag.id);
+                            console.log("yes,tag.id")
+                        }
+                        console.log(id);
+                        console.log(OtherTag);
+                        console.log(tag.id)
+                    }
+                }
+                clipHistory[id].other = OtherTag.join(', ');
+            }
+    
+            for(const clipPromise of scoredClipHistoryInfo){
+                const OtherTag = [];
+                let id = "";
+                for(const tag of clipPromise.docs){
+                    if(tag){
+                        if(tag.ref?.parent?.parent?.id){
+                            id = tag.ref?.parent?.parent?.id;
+                        }
+                        if(!clipHistory[id].MyTag.includes(tag.id)){
+                            OtherTag.push(tag.id);
+                        }
+                    }
+                }
+                scoredClipHistory[id].other = OtherTag.join(', ');
+            }
+            console.log("clipHistory");
+            console.log(clipHistory);
+            console.log("scoreHistory");
+            console.log(scoredClipHistory);
+        }
+        return [clipHistory, scoredClipHistory];
+    }catch(err){
+        console.log(err);
+        return [clipHistory, scoredClipHistory];
+    }
 })

@@ -196,12 +196,11 @@ import React, { Component } from "react";
           var oneHourNoSeenSnapshot = await this.db.collection('Randomize').where('millis', '<', oneHour).orderBy('millis').get();//no seen past hour 
           if(oneHourNoSeenSnapshot.size === 0){//every clip has been seen in past hour, unlikely occur but still might or there are some clips have no been seen at all
             return this.pick_pioneer();
-          }else{/*some clips have no been seen in past hour
-                debug console
-                console.log("oneHourNoSeenSnapshot:  ",oneHourNoSeenSnapshot);
-                for(const clip of oneHourNoSeenSnapshot.docs){
-                   console.log("oneHourNoSeenSnapshot", clip.id);
-                }*/
+          }else{//some clips have no been seen in past hour
+            //     debug console
+            //     console.log("oneHourNoSeenSnapshot:  ",oneHourNoSeenSnapshot);
+                // for(const clip of oneHourNoSeenSnapshot.docs)
+                //    console.log("oneHourNoSeenSnapshot", clip.id);
             for(const clip of oneHourNoSeenSnapshot.docs){
               if(!userHasSeen.has(clip.id)){
                 return clip.id+'';
@@ -211,6 +210,7 @@ import React, { Component } from "react";
             return this.pick_pioneer();
           }
         }
+        
         findMin = (num1,num2) => {
            if(num1 > num2)
               return num2;
@@ -265,16 +265,7 @@ import React, { Component } from "react";
           try{
             for(const tag of Object.keys(currentTags)){ 
               await this.addUser(tag);
-              // const AllTag = [];
-              // const Tags = await this.AudioRef.doc(this.clipId).collection('tags').get();
               const clipInfo = {Title: this.doc.data().Title, Url: this.doc.data().Url};
-              // let MyTag = [];
-              // const MyTagPromise = await this.AudioRef.doc(this.clipId).collection('users').doc(this.userId).get();
-              // if(MyTagPromise.exists)
-              //   MyTag = MyTagPromise.data().tags;
-              // for(const tag of Tags.docs)
-              //   AllTag.push(tag.id);
-                
               //Currently deleted
              // this.History(this.userRef,this.currentId,0,clipInfo,MyTag,AllTag); 
               if (currentTags[tag].count === 1) {
@@ -371,7 +362,6 @@ import React, { Component } from "react";
         updateHistory = (userClipHistoryRef,score,Tag) => {
           try{
             userClipHistoryRef.doc(this.clipId).update({
-              AllTag: staticFirebase.firestore.FieldValue.arrayUnion(Tag),
               MyTag: staticFirebase.firestore.FieldValue.arrayUnion(Tag),
               score: staticFirebase.firestore.FieldValue.increment(score),
               lastUpdatedAt: staticFirebase.firestore.FieldValue.serverTimestamp()
@@ -384,7 +374,6 @@ import React, { Component } from "react";
           const TagArray = [Tag];
           try{
             userClipHistoryRef.doc(this.clipId).set({
-              AllTag: TagArray,
               MyTag: TagArray,
               Title: Title,
               Url: Url,

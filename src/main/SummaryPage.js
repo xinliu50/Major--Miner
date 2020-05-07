@@ -68,10 +68,6 @@ class SummaryPage extends Component {
       clipHistory[history.id].MyTag = history.data().MyTag;
       clipHistory[history.id].TAG = history.data().MyTag.join(', ');
       clipHistory[history.id].other = [];
-      // clipHistory[history.id].other = clipHistory[history.id].other.filter(item => {
-      //   return !history.data().MyTag.includes(item);
-      // });
-      //clipHistory[history.id].other = clipHistory[history.id].other.join(', ');
     }
     const scoredClipHistory = {};
     const ScoreHistory = await this.userRef.collection('clipHistory').where("score", ">", 0).orderBy("score", "desc").limit(10).get();
@@ -81,15 +77,8 @@ class SummaryPage extends Component {
       scoredClipHistory[history.id].url = history.data().Url;
       scoredClipHistory[history.id].MyTag = history.data().MyTag;
       scoredClipHistory[history.id].TAG = history.data().MyTag.join(', ');
-      // scoredClipHistory[history.id].other = history.data().AllTag;
-      // scoredClipHistory[history.id].other = scoredClipHistory[history.id].other.filter(item => {
-      //   return !history.data().MyTag.includes(item);
-      // });
-      // scoredClipHistory[history.id].other = scoredClipHistory[history.id].other.join(', ');
     }
     this.setState({ clipHistory, scoredClipHistory});
-    console.log(clipHistory);
-    console.log(scoredClipHistory);
     return [clipHistory,scoredClipHistory];
   }
   //Try3: get summary from cloud function. Much better performance, but very slow at first trigger

@@ -3,6 +3,7 @@
     "default": "majorminer-dd13a",
     "majorminer-dd13a": "majorminer-dd13a",
     "majorminerbackup": "majorminerbackup",
-    "backup": "majorminerbackup"
+    "backup": "majorminerbackup",
+    "majorMiner": "majorminer-dd13a"
   }
 }
